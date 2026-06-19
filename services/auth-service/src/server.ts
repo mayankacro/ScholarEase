@@ -5,7 +5,7 @@ import connectDB from "./config/db";
 import User from "./models/User";
 import authRoutes from "./routes/authRoutes";
 
-dotenv.config();
+dotenv.config(); //.env file padho 
 
 const app = express();
 
@@ -15,9 +15,9 @@ const PORT = process.env.PORT || 5000;
 
 // console.log(process.env.MONGO_URL)
 
-app.use(express.json());
+app.use(express.json());  //ye line express ko bolti h JSON ko samajh
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes); // mtlb /api/auth wali request authROutes ko bhejo
 
 console.log(User.modelName);
 
