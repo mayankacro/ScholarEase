@@ -1,7 +1,17 @@
+import dotenv from "dotenv";
 import express from "express";
+import { connect } from "node:http2";
+import connectDB from "./config/db";
+
+dotenv.config();
+
 const app = express();
 
-const PORT = 5000;
+connectDB();
+
+const PORT = process.env.PORT || 5000;
+
+console.log(process.env.MONGO_URL)
 
 app.get("/", (req, res) => {
     res.send("ScholarEase Auth Service Running");
