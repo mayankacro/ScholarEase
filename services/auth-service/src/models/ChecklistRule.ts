@@ -3,18 +3,18 @@ import Scholarship from "./Scholarship";
 
 const checklistRulSchema = new mongoose.Schema(
     {
-        ScholarshipType:{
+        scholarshipType:{
             type: String,
             required: true,
             unique: true,
         },
 
-        requiredDocmunets:{
+        requiredDocuments:{
             type: [String],
             required: true,
         },
     },
-    
+
     {
         timestamps: true,
     }
