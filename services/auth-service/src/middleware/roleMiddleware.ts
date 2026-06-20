@@ -7,7 +7,7 @@ export const roleMidddleware = (allowedRoles: string[]) => { //allowedrole = adm
         res: Response,
         next: NextFunction
      ) => {
-
+        
         const userRole = (req as any).user.role; //yaha user jo h uska role jwt batata hai: student
 
         if (!allowedRoles.includes(userRole)) { //checks mtlb ["admin"].includes("student")  ---> false
