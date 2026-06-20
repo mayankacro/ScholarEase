@@ -5,6 +5,7 @@ import connectDB from "./config/db";
 import User from "./models/User";
 import authRoutes from "./routes/authRoutes";
 import checklistRoutes from "./routes/checklistRoutes"
+import uploadRoutes from "./routes/uploadRoutes"
 
 dotenv.config(); //.env file padho 
 
@@ -21,6 +22,8 @@ app.use(express.json());  //ye line express ko bolti h JSON ko samajh
 app.use("/api/auth", authRoutes); // mtlb /api/auth wali request authROutes ko bhejo
 
 app.use("/api/checklist", checklistRoutes);
+
+app.use("/api/upload", uploadRoutes);
 
 console.log(User.modelName);
 
