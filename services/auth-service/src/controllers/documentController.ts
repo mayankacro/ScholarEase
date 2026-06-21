@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Document from "../models/Document";
+import { populate } from "dotenv";
+
 
 export const getMyDocuments = async ( req: Request, res: Response) => {
 
@@ -23,6 +25,32 @@ export const getMyDocuments = async ( req: Request, res: Response) => {
         return res.status(500).json({
             success: false,
             message: "Failed to fetch documents",
+        });
+    }
+};
+
+
+
+//admin agr student ke saare documnets dekhna chahta h to 
+export const getAllDocuments = async ( req: Request, res: Response ) => {
+
+    try {
+
+        const documents = await Document.find()
+             .populate("studentId", "name email role"); //populate()-> mtlb admin ko student details bhi mil jaaye
+
+        return res.status(200).json({
+            success: true,
+            documents,
+        })     
+        
+    } catch (error){
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failder to fetch Documents",
         });
     }
 };
