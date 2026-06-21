@@ -1,0 +1,58 @@
+import mongoose from "mongoose";
+import Scholarship from "./Scholarship";
+ 
+const documentSchema = new mongoose.Schema(
+
+    {
+        studentId:{  //mltb ye document kis student ka hai
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+
+        documenTypes: {
+            type: String,
+            required: true,
+        },
+
+        ScholarshipType:{ //SC, ST, OBC , GENERAL
+            type: String,
+            required: true,
+        },
+
+        fileUrl: {  //Coudinary se jo URL milegi vo yaha save hogi
+            type: String,
+            required: true,
+        },
+
+        status: { // admin ke lie 
+            type: String,
+            enum: ["pending", "approved", "rejected"],
+            default: "pending",
+        },
+
+        aiStatus: { //Ai validation ke lie 
+            type: String,
+            enum: ["pending", "valid", "invalid"],
+            default: "pending",
+        },
+
+        aiRemarks:{ //ex: like photo blur, Signature missing
+            type: String,
+            default: "",
+        },
+
+    },
+
+        {
+            timestamps: true,
+        }
+
+);
+
+const Document = mongoose.model(
+    "Document",
+    documentSchema
+);
+
+export default Document;

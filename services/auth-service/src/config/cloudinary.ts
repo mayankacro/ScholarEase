@@ -7,3 +7,8 @@ cloudinary.config({
 });
 
 export default cloudinary;
+
+
+//"We created a separate Cloudinary configuration file to centralize the Cloudinary setup. 
+// This avoids code duplication and allows us to use a single configured 
+// Cloudinary instance throughout the application."

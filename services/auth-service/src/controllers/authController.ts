@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                message: "User Already Exusts!",
+                message: "User Already Exists!",
             });
         }
 
@@ -67,6 +67,7 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
+        //email ki help se user find krega ki exist krta h ya nahi
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -76,6 +77,7 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
+        //password match krega
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
@@ -85,7 +87,8 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
-
+  
+        //agr email or pass dono shi h to
         //yaha jwt token generate hoga
         // HTTP requests stateless hoti hain. Login ke baad server user ko JWT token deta hai. User har protected request ke saath token bhejta hai aur server token verify karke identify karta hai ki request kis user ne bheji hai.
         const token = jwt.sign(  //JWT Token banao
@@ -94,7 +97,7 @@ export const login = async (req: Request, res: Response) => {
                 role: user.role,
             },
 
-            process.env.JWT_SECRET as string, //ye server ka pass hai sirf server ko pata hia JWt botla hai : main is scret se sign hua hoon
+            process.env.JWT_SECRET as string, //ye server ka pass hai sirf server ko pata hai JWt botla hai : main is scret se sign hua hoon
             {
                 expiresIn: "7d", //7 din bd token expire 
             }
@@ -103,7 +106,7 @@ export const login = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: true,
             message: "Login Successful",
-            token, //tkoen user ko milaa
+            token, //token user ko milaa
             user: {
                 id: user._id,
                 name: user.name,
@@ -121,7 +124,7 @@ export const login = async (req: Request, res: Response) => {
     }
 };  //yaha se middleware pe chala jaayega agr koi profile access krna chahta h
 
-//profile fucntion 
+//profile function 
 export const profile = async (req: Request, res: Response) => {
     try {
 

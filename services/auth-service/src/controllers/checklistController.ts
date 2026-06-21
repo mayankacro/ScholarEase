@@ -56,7 +56,7 @@ export const getChecklistRule = async (req: Request, res: Response) => {
         if (!rule) {
             return res.status(404).json({
                 success: false,
-                message: "CHecklist not found",
+                message: "Checklist not found",
             });
         }
 
