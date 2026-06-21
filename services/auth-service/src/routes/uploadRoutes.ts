@@ -2,6 +2,8 @@ import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary";
 import streamifier from "streamifier";
+import Document from "../models/Document";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -9,7 +11,8 @@ const storage = multer.memoryStorage();  //file -> RAM memory m temporaril save 
 
 const upload = multer({ storage }); //multer ko ham bol rhe h ye rule use kre -> jo bhi file aaye use memmory m rkhna 
 
-router.post("/", upload.single("document"), async (req, res) => { //upload.single("document") -> multer middleware -> iska mtlb request m ek hi file accept kro or file ka key hona chahiye "document"
+            // Ab sirf logged-in student hi upload kar payega.
+router.post("/", authMiddleware, upload.single("document"), async (req, res) => { //upload.single("document") -> multer middleware -> iska mtlb request m ek hi file accept kro or file ka key hona chahiye "document"
     try {
 
         if (!req.file) { // agr koi file upload nahi hui ho to
@@ -42,9 +45,22 @@ router.post("/", upload.single("document"), async (req, res) => { //upload.singl
                 .pipe(stream); //ye chunks cloudinary ko bhej do
         });
 
+        const studentId = (req as any).user.userId;
+
+        const { documentType, scholarshipType } = req.body;
+
+        const document = await Document.create({
+            studentId,
+            documentType,
+            scholarshipType,
+            fileUrl: result.secure_url,
+        })
+
         return res.status(200).json({  //cline ko permanent URL mil gya
             success: true,
-            url: result.secure_url,
+            // url: result.secure_url,
+            message: "Document uploaded successfully",
+            document,
         });
 
     } catch (error) {

@@ -10,12 +10,12 @@ const documentSchema = new mongoose.Schema(
             required: true,
         },
 
-        documenTypes: {
+        documentType: {
             type: String,
             required: true,
         },
 
-        ScholarshipType:{ //SC, ST, OBC , GENERAL
+        scholarshipType:{ //SC, ST, OBC , GENERAL
             type: String,
             required: true,
         },
