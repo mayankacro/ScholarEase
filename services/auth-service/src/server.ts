@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config(); //.env file padho 
+
 import express from "express";
 import { connect } from "node:http2";
 import connectDB from "./config/db";
@@ -6,8 +8,8 @@ import User from "./models/User";
 import authRoutes from "./routes/authRoutes";
 import checklistRoutes from "./routes/checklistRoutes"
 import uploadRoutes from "./routes/uploadRoutes"
+import cloudinary from "./config/cloudinary";
 
-dotenv.config(); //.env file padho 
 
 const app = express();
 
@@ -25,7 +27,17 @@ app.use("/api/checklist", checklistRoutes);
 
 app.use("/api/upload", uploadRoutes);
 
-console.log(User.modelName);
+// console.log(process.env.CLOUDINARY_CLOUD_NAME);
+
+// console.log(cloudinary.config());
+
+cloudinary.api
+   .ping()
+   .then(() => console.log("Cloudinary Connected"))
+   .catch((err: any) => console.log(err));
+
+
+// console.log(User.modelName);
 
 app.get("/", (req, res) => {
     res.send("ScholarEase Auth Service Running");
