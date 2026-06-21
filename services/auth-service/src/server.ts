@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes";
 import checklistRoutes from "./routes/checklistRoutes"
 import uploadRoutes from "./routes/uploadRoutes"
 import cloudinary from "./config/cloudinary";
+import documentRoutes from "./routes/documentRoutes";
 
 
 const app = express();
@@ -26,6 +27,9 @@ app.use("/api/auth", authRoutes); // mtlb /api/auth wali request authROutes ko b
 app.use("/api/checklist", checklistRoutes);
 
 app.use("/api/upload", uploadRoutes);
+
+
+app.use("/api/documents", documentRoutes);
 
 // console.log(process.env.CLOUDINARY_CLOUD_NAME);
 
