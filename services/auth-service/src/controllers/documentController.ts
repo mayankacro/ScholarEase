@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Document from "../models/Document";
 import { populate } from "dotenv";
+import { count } from "node:console";
 
 
 export const getMyDocuments = async ( req: Request, res: Response) => {
@@ -88,6 +89,46 @@ export const updateDocumentStatus = async ( req: Request, res: Response ) => {
         return res.status(500).json({
             success: false,
             message: "Failed to update status",
+        });
+    }
+};
+
+
+
+export const getDocumentStats = async ( req: Request, res: Response ) => {
+    try {
+
+        const totalDocuments = await Document.countDocuments();
+
+        const pendingDocuments = await Document.countDocuments({
+            status: "pending",
+        });
+
+        const approvedDocuments = await Document.countDocuments({
+            status: "approved",
+        });
+
+        const rejectedDocuments = await Document.countDocuments({
+            status: "rejected",
+        });
+
+        return res.status(200).json ({
+            status:true,
+            stats: {
+                totalDocuments,
+                pendingDocuments,
+                approvedDocuments,
+                rejectedDocuments,
+            },
+        });
+        
+    } catch (error) {
+        
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to Fetch stats",
         });
     }
 };
