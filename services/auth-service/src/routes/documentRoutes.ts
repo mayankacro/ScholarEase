@@ -5,6 +5,7 @@ import { getAllDocuments } from "../controllers/documentController";
 import { roleMidddleware } from "../middleware/roleMiddleware";
 import { updateDocumentStatus } from "../controllers/documentController";
 import { getDocumentStats } from "../controllers/documentController";
+import { validateDocumentsAI } from "../controllers/documentController";
 
 const router = express.Router();
 
@@ -17,6 +18,8 @@ router.patch("/:id/status", authMiddleware, roleMidddleware(["admin"]), updateDo
 
 
 router.get("/stats", authMiddleware, roleMidddleware(["admin"]), getDocumentStats);
+
+router.patch("/:id/validate-ai", authMiddleware, roleMidddleware(["admin"]), validateDocumentsAI);
 
 
 export default router;

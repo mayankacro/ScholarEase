@@ -132,3 +132,43 @@ export const getDocumentStats = async ( req: Request, res: Response ) => {
         });
     }
 };
+
+
+
+export const validateDocumentsAI = async ( req: Request, res: Response ) => {
+    try {
+
+        const { id } = req.params;
+
+        const document = await Document.findById(id);
+
+        if(!document) {
+            return res.status(404).json({
+                success: false,
+                message: "Document not found",
+            });
+        }
+
+        //Dummy Ai logic
+        document.aiStatus = "valid";
+        document.aiRemarks = "Document appears valid and readable.";
+
+        await document.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "AI validation completed",
+            document,
+        });
+        
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message:"AI validation failed",
+        });
+      
+    }
+};
