@@ -3,6 +3,7 @@ import { getMyDocuments } from "../controllers/documentController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { getAllDocuments } from "../controllers/documentController";
 import { roleMidddleware } from "../middleware/roleMiddleware";
+import { updateDocumentStatus } from "../controllers/documentController";
 
 
 const router = express.Router();
@@ -10,5 +11,8 @@ const router = express.Router();
 router.get("/my-documents", authMiddleware, getMyDocuments );
 
 router.get( "/all", authMiddleware, roleMidddleware(["admin"]), getAllDocuments);
+
+
+router.patch("/:id/status", authMiddleware, roleMidddleware(["admin"]), updateDocumentStatus );
 
 export default router;

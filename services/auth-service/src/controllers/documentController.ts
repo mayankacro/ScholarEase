@@ -54,3 +54,40 @@ export const getAllDocuments = async ( req: Request, res: Response ) => {
         });
     }
 };
+
+
+export const updateDocumentStatus = async ( req: Request, res: Response ) => {
+    try{
+
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const document = await Document.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+
+        if(!document) {
+            return res.status(404).json({
+                success: false,
+                message: "Document not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Document status updated",
+            document,
+        });
+
+    } catch(error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update status",
+        });
+    }
+};
