@@ -1,12 +1,13 @@
+import { validateDocumentWithAI } from "../services/aiValidationService";
 import { Request, Response } from "express";
 import Document from "../models/Document";
 import { populate } from "dotenv";
 import { count } from "node:console";
 
 
-export const getMyDocuments = async ( req: Request, res: Response) => {
+export const getMyDocuments = async (req: Request, res: Response) => {
 
-    try{
+    try {
 
         const studentId = (req as any).user.userId;
 
@@ -33,19 +34,19 @@ export const getMyDocuments = async ( req: Request, res: Response) => {
 
 
 //admin agr student ke saare documnets dekhna chahta h to 
-export const getAllDocuments = async ( req: Request, res: Response ) => {
+export const getAllDocuments = async (req: Request, res: Response) => {
 
     try {
 
         const documents = await Document.find()
-             .populate("studentId", "name email role"); //populate()-> mtlb admin ko student details bhi mil jaaye
+            .populate("studentId", "name email role"); //populate()-> mtlb admin ko student details bhi mil jaaye
 
         return res.status(200).json({
             success: true,
             documents,
-        })     
-        
-    } catch (error){
+        })
+
+    } catch (error) {
 
         console.error(error);
 
@@ -57,8 +58,8 @@ export const getAllDocuments = async ( req: Request, res: Response ) => {
 };
 
 
-export const updateDocumentStatus = async ( req: Request, res: Response ) => {
-    try{
+export const updateDocumentStatus = async (req: Request, res: Response) => {
+    try {
 
         const { id } = req.params;
         const { status } = req.body;
@@ -69,7 +70,7 @@ export const updateDocumentStatus = async ( req: Request, res: Response ) => {
             { new: true }
         );
 
-        if(!document) {
+        if (!document) {
             return res.status(404).json({
                 success: false,
                 message: "Document not found",
@@ -82,7 +83,7 @@ export const updateDocumentStatus = async ( req: Request, res: Response ) => {
             document,
         });
 
-    } catch(error) {
+    } catch (error) {
 
         console.error(error);
 
@@ -95,7 +96,7 @@ export const updateDocumentStatus = async ( req: Request, res: Response ) => {
 
 
 
-export const getDocumentStats = async ( req: Request, res: Response ) => {
+export const getDocumentStats = async (req: Request, res: Response) => {
     try {
 
         const totalDocuments = await Document.countDocuments();
@@ -112,8 +113,8 @@ export const getDocumentStats = async ( req: Request, res: Response ) => {
             status: "rejected",
         });
 
-        return res.status(200).json ({
-            status:true,
+        return res.status(200).json({
+            status: true,
             stats: {
                 totalDocuments,
                 pendingDocuments,
@@ -121,9 +122,9 @@ export const getDocumentStats = async ( req: Request, res: Response ) => {
                 rejectedDocuments,
             },
         });
-        
+
     } catch (error) {
-        
+
         console.error(error);
 
         return res.status(500).json({
@@ -135,14 +136,15 @@ export const getDocumentStats = async ( req: Request, res: Response ) => {
 
 
 
-export const validateDocumentsAI = async ( req: Request, res: Response ) => {
+
+export const validateDocumentAI = async (req: Request, res: Response) => {
     try {
 
         const { id } = req.params;
 
         const document = await Document.findById(id);
 
-        if(!document) {
+        if (!document) {
             return res.status(404).json({
                 success: false,
                 message: "Document not found",
@@ -150,8 +152,33 @@ export const validateDocumentsAI = async ( req: Request, res: Response ) => {
         }
 
         //Dummy Ai logic
+        // document.aiStatus = "valid";
+        // document.aiRemarks = "Document appears valid and readable.";
+
+        // await document.save();
+
+        // return res.status(200).json({
+        //     success: true,
+        //     message: "AI validation completed",
+        //     document,
+        // });
+
+
+        //asli ai vlidate 
+        const aiResponse =
+            await validateDocumentWithAI(
+                document.fileUrl,
+                document.documentType,
+                document.scholarshipType
+            );
+
+        console.log(
+            "AI Response:",
+            aiResponse
+        );
+
         document.aiStatus = "valid";
-        document.aiRemarks = "Document appears valid and readable.";
+        document.aiRemarks = aiResponse;
 
         await document.save();
 
@@ -160,15 +187,18 @@ export const validateDocumentsAI = async ( req: Request, res: Response ) => {
             message: "AI validation completed",
             document,
         });
-        
+
+
     } catch (error) {
 
         console.error(error);
 
         return res.status(500).json({
             success: false,
-            message:"AI validation failed",
+            message: "AI validation failed",
         });
-      
+
     }
 };
+
+
