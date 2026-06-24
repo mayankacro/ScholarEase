@@ -2,7 +2,7 @@ import { validateWithGemini } from "./geminiService";
 import { validateWithOpenRouter } from "./openRouterService";
 
 export const validateDocumentWithAI = async (
-    documentUrl: string,
+    documentText: any,
     documentType: string,
     scholarshipType: string
 ) => {
@@ -10,7 +10,12 @@ export const validateDocumentWithAI = async (
     // 1. Gemini
     try {
         console.log("Trying Gemini...");
-        return await validateWithGemini(documentUrl);
+        return await validateWithGemini(
+                documentText,
+                documentType,
+                scholarshipType
+
+        );
 
     } catch (error) {
         console.log("Gemini failed. Trying OpenRouter...");
@@ -21,7 +26,7 @@ export const validateDocumentWithAI = async (
         console.log("Trying OpenRouter...");
 
         return await validateWithOpenRouter(
-            documentUrl,
+            documentText,
             documentType,
             scholarshipType
         );

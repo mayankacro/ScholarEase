@@ -1,23 +1,38 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY as string
+    process.env.GEMINI_API_KEY as string
 );
 
 export const validateWithGemini = async (
-  documentUrl: string
+    documentText: string,
+    documentType: string,
+    scholarshipType: string
 ) => {
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
-  });
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+    });
 
-  const result = await model.generateContent(`
-    Analyze this document:
-    ${documentUrl}
+    const result = await model.generateContent(`
+You are an AI document verifier.
 
-    Tell whether it looks valid or not.
-  `);
+Document Type: ${documentType}
+Scholarship Type: ${scholarshipType}
 
-  return result.response.text();
+Extracted Text:
+${documentText}
+
+The OCR output may contain errors.
+Ignore minor OCR mistakes.
+
+Respond ONLY in JSON:
+
+{
+    "status": "valid | invalid | manual_review",
+    "remarks": "short explanation"
+}
+`);
+
+    return result.response.text();
 };

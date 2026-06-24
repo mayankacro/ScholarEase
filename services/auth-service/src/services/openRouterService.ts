@@ -3,7 +3,7 @@ import Scholarship from "../models/Scholarship";
 
 export const validateWithOpenRouter = async (
 
-    documentUrl: string,
+    documentText: string,
     documentType: string,
     scholarshipType: string
 
@@ -26,17 +26,31 @@ A student uploaded a document.
 
 Document Type: ${documentType}
 Scholarship Type: ${scholarshipType}
-Document URL: ${documentUrl}
+Extracted Document Text: ${documentText}
+
+The text was extracted using OCR and may contain spelling mistakes, random symbols, and formatting issues.
+
+Ignore OCR noise and focus on meaningful information such as:
+- Person names
+- Government/institution names
+- Dates
+- IDs
+- Gender
+- Official keywords
 
 Your job:
-1. Determine whether the document type seems appropriate.
-2. Check if the document appears usable for scholarship verification.
-3. If information is insufficient, recommend manual review.
+1. Check if the document contains meaningful information.
+2. Verify whether the document type seems correct.
+3. Detect missing important information.
+4. Decide whether the document is valid.
+
+
+
 
 Respond ONLY in this JSON format:
 
 {
-  "status": "valid" or "invalid" or "manual_review",
+  "status": "valid" | "invalid" | "manual_review",
   "remarks": "short explanation"
 }
 `

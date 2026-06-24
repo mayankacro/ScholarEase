@@ -33,7 +33,7 @@ const documentSchema = new mongoose.Schema(
 
         aiStatus: { //Ai validation ke lie 
             type: String,
-            enum: ["pending", "valid", "invalid"],
+            enum: ["pending", "valid", "invalid", "manual_review"],
             default: "pending",
         },
 

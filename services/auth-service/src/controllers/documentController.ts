@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import Document from "../models/Document";
 import { populate } from "dotenv";
 import { count } from "node:console";
+import { extractTextfromImage } from "../services/ocrService";
+
 
 
 export const getMyDocuments = async (req: Request, res: Response) => {
@@ -151,35 +153,27 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
             });
         }
 
-        //Dummy Ai logic
-        // document.aiStatus = "valid";
-        // document.aiRemarks = "Document appears valid and readable.";
+        const extractedText = await extractTextfromImage(document.fileUrl);
 
-        // await document.save();
+        console.log("Extracted Text:", extractedText);
 
-        // return res.status(200).json({
-        //     success: true,
-        //     message: "AI validation completed",
-        //     document,
-        // });
+        const aiResponse = await validateDocumentWithAI(
+            extractedText,
+            document.documentType,
+            document.scholarshipType
+        );
 
-
-        //asli ai vlidate 
-        const aiResponse =
-            await validateDocumentWithAI(
-                document.fileUrl,
-                document.documentType,
-                document.scholarshipType
-            );
+        console.log(typeof aiResponse);
 
         console.log(
             "AI Response:",
             aiResponse
         );
 
-        document.aiStatus = "valid";
-        document.aiRemarks = aiResponse;
+        const parsedResponse = JSON.parse(aiResponse);
 
+        document.aiStatus = parsedResponse.status;
+        document.aiRemarks = parsedResponse.remarks;
         await document.save();
 
         return res.status(200).json({
@@ -187,7 +181,7 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
             message: "AI validation completed",
             document,
         });
-
+ 
 
     } catch (error) {
 
