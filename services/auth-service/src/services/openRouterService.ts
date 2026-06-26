@@ -1,80 +1,51 @@
+// services/openRouterService.ts
 import axios from "axios";
-import Scholarship from "../models/Scholarship";
 
 export const validateWithOpenRouter = async (
-
-    documentText: string,
+    fileUrl: string,
     documentType: string,
     scholarshipType: string
-
 ) => {
-    
-    console.log("1. Before API Call");
+
+    const prompt = `
+You are a document validation system.
+Document type expected: ${documentType}
+Scholarship type: ${scholarshipType}
+
+Look at this image and respond ONLY with valid JSON, no markdown:
+{
+  "status": "valid" | "invalid" | "manual_review",
+  "remarks": "short explanation",
+  "confidence": number between 0-100
+}
+`;
 
     const response = await axios.post(
         "https://openrouter.ai/api/v1/chat/completions",
         {
-            model: "openai/gpt-oss-120b:free",
-
+            model: "google/gemma-4-31b-it:free", // CHANGE: vision-capable model zaroori hai
             messages: [
                 {
                     role: "user",
-                    content: `
-You are an AI document verification assistant for ScholarEase.
-
-A student uploaded a document.
-
-Document Type: ${documentType}
-Scholarship Type: ${scholarshipType}
-Extracted Document Text: ${documentText}
-
-The text was extracted using OCR and may contain spelling mistakes, random symbols, and formatting issues.
-
-Ignore OCR noise and focus on meaningful information such as:
-- Person names
-- Government/institution names
-- Dates
-- IDs
-- Gender
-- Official keywords
-
-Your job:
-1. Check if the document contains meaningful information.
-2. Verify whether the document type seems correct.
-3. Detect missing important information.
-4. Decide whether the document is valid.
-
-
-
-
-Respond ONLY in this JSON format:
-
-{
-  "status": "valid" | "invalid" | "manual_review",
-  "remarks": "short explanation"
-}
-`
+                    content: [
+                        { type: "text", text: prompt },
+                        { type: "image_url", image_url: { url: fileUrl } }
+                    ]
                 }
             ]
         },
-
         {
             headers: {
                 Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "http://localhost:5000",
-                "X-Title": "ScholarEase"
-            },
-
-            timeout: 30000
+                "Content-Type": "application/json"
+            }
         }
     );
 
-    // console.log("2. After API Call");
-    // console.log(response.data);
+    const rawText = response.data.choices[0].message.content;
+    const cleanedText = rawText.replace(/```json|```/g, "").trim();
 
-    // console.log(
-    // response.data.choices[0].message.content
+    JSON.parse(cleanedText); // validate, warna throw hoga aur fallback chalega
 
-    return response.data.choices[0].message.content;
+    return cleanedText;
 };

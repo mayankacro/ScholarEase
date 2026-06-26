@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import Document from "../models/Document";
 import { populate } from "dotenv";
 import { count } from "node:console";
-import { extractTextfromImage } from "../services/ocrService";
 
 
 
@@ -153,27 +152,31 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
             });
         }
 
-        const extractedText = await extractTextfromImage(document.fileUrl);
-
-        console.log("Extracted Text:", extractedText);
-
+        // CHANGE: OCR step hata diya, seedha fileUrl bhej rahe hain
         const aiResponse = await validateDocumentWithAI(
-            extractedText,
+            document.fileUrl,
             document.documentType,
             document.scholarshipType
         );
 
-        console.log(typeof aiResponse);
-
-        console.log(
-            "AI Response:",
-            aiResponse
-        );
+        console.log("AI Response:", aiResponse);
 
         const parsedResponse = JSON.parse(aiResponse);
 
         document.aiStatus = parsedResponse.status;
         document.aiRemarks = parsedResponse.remarks;
+        document.aiConfidence = parsedResponse.confidence; // NAYA — confidence bhi save karo
+
+        // NAYA — agar invalid hai, action required set karo
+        if (parsedResponse.status === "invalid") {
+            document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") || 
+                                       parsedResponse.remarks.toLowerCase().includes("clear")
+                ? "reupload_clearer_image"
+                : "reupload_correct_document";
+        } else {
+            document.actionRequired = null;
+        }
+
         await document.save();
 
         return res.status(200).json({
@@ -181,7 +184,6 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
             message: "AI validation completed",
             document,
         });
- 
 
     } catch (error) {
 
@@ -191,8 +193,6 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
             success: false,
             message: "AI validation failed",
         });
-
     }
 };
-
 

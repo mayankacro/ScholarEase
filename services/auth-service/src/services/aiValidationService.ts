@@ -2,7 +2,7 @@ import { validateWithGemini } from "./geminiService";
 import { validateWithOpenRouter } from "./openRouterService";
 
 export const validateDocumentWithAI = async (
-    documentText: any,
+    fileUrl: string,          // CHANGE: documentText nahi, ab fileUrl
     documentType: string,
     scholarshipType: string
 ) => {
@@ -11,14 +11,14 @@ export const validateDocumentWithAI = async (
     try {
         console.log("Trying Gemini...");
         return await validateWithGemini(
-                documentText,
-                documentType,
-                scholarshipType
-
+            fileUrl,
+            documentType,
+            scholarshipType
         );
 
-    } catch (error) {
-        console.log("Gemini failed. Trying OpenRouter...");
+    } catch (error: any) {
+        console.log("Gemini failed:", error.message);
+        console.log("Trying OpenRouter...");
     }
 
     // 2. OpenRouter
@@ -26,7 +26,7 @@ export const validateDocumentWithAI = async (
         console.log("Trying OpenRouter...");
 
         return await validateWithOpenRouter(
-            documentText,
+            fileUrl,
             documentType,
             scholarshipType
         );
@@ -41,7 +41,8 @@ export const validateDocumentWithAI = async (
 
     // 3. Final fallback
     return JSON.stringify({
-        status: "pending",
-        remarks: "All AI services unavailable. Manual review required."
+        status: "manual_review",   // CHANGE: "pending" nahi, "manual_review" — tera enum match karega
+        remarks: "All AI services unavailable. Manual review required.",
+        confidence: 0
     });
 };

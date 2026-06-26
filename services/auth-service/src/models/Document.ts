@@ -42,6 +42,19 @@ const documentSchema = new mongoose.Schema(
             default: "",
         },
 
+        // NAYA FIELD — confidence score store karne ke liye
+        aiConfidence: {
+            type: Number,
+            default: 0,
+        },
+
+        // NAYA FIELD — student ko exactly batane ke liye kya karna hai
+        actionRequired: {
+            type: String,
+            enum: ["reupload_clearer_image", "reupload_correct_document", null],
+            default: null,
+        },
+
     },
 
         {

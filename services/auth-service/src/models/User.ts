@@ -10,7 +10,7 @@ const userschema = new mongoose.Schema(
         email: {
             type: String,
             required: true,
-            unique: true, //same email 2 baar nahi
+            unique: true, //har user ki ek apni 1 unique email honi chahiye
         },
 
         password: {
