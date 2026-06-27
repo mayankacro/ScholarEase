@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { request } from "node:http";
 
-export const roleMidddleware = (allowedRoles: string[]) => { //allowedrole = admin hai routes se aya 
+export const roleMiddleware = (allowedRoles: string[]) => { //allowedrole = admin hai routes se aya 
     return (
         req: Request,
         res: Response,

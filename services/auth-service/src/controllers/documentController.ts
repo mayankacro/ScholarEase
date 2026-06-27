@@ -141,9 +141,9 @@ export const getDocumentStats = async (req: Request, res: Response) => {
 export const validateDocumentAI = async (req: Request, res: Response) => {
     try {
 
-        const { id } = req.params;
+        const { id } = req.params; //request URL se document id nikalta hai
 
-        const document = await Document.findById(id);
+        const document = await Document.findById(id); //id ki help se mongoDB se document nikal rha h 
 
         if (!document) {
             return res.status(404).json({
@@ -153,24 +153,23 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
         }
 
         // CHANGE: OCR step hata diya, seedha fileUrl bhej rahe hain
-        const aiResponse = await validateDocumentWithAI(
+        const aiResponse = await validateDocumentWithAI( //ab ai ko yaha 3 chize bheji ja rhi h
             document.fileUrl,
             document.documentType,
             document.scholarshipType
         );
 
-        console.log("AI Response:", aiResponse);
+        console.log("AI Response:", aiResponse); //response string m ata h
 
-        const parsedResponse = JSON.parse(aiResponse);
+        const parsedResponse = JSON.parse(aiResponse); //us string response ko parse krke object m convert krta h
 
-        document.aiStatus = parsedResponse.status;
+        document.aiStatus = parsedResponse.status; //ai ka result database m save
         document.aiRemarks = parsedResponse.remarks;
         document.aiConfidence = parsedResponse.confidence; // NAYA — confidence bhi save karo
 
         // NAYA — agar invalid hai, action required set karo
-        if (parsedResponse.status === "invalid") {
-            document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") || 
-                                       parsedResponse.remarks.toLowerCase().includes("clear")
+        if (parsedResponse.status === "invalid") { //img agr blur h 
+            document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") || parsedResponse.remarks.toLowerCase().includes("clear")
                 ? "reupload_clearer_image"
                 : "reupload_correct_document";
         } else {

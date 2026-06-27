@@ -1,7 +1,7 @@
 import express from "express";
 import { register, login, profile } from "../controllers/authController";
 import { authMiddleware } from "../middleware/authMiddleware";
-import { roleMidddleware } from "../middleware/roleMiddleware";
+import { roleMiddleware } from "../middleware/roleMiddleware";
 // import { register, login, profile } from "../controllers/authController";
 
 
@@ -13,7 +13,7 @@ router.post("/register", register); //ye ek traffic police ki tarah kaam krta h 
 router.post("/login", login);
 router.get("/profile", authMiddleware, profile);
 
-router.get("/admin", authMiddleware, roleMidddleware(["admin"]), (req, res) => {
+router.get("/admin", authMiddleware, roleMiddleware(["admin"]), (req, res) => {
     res.json({
         success: true,
         message: "Welcome Admin",
