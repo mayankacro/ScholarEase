@@ -1,8 +1,8 @@
 import { validateDocumentWithAI } from "../services/aiValidationService";
 import { Request, Response } from "express";
 import Document from "../models/Document";
-import { populate } from "dotenv";
-import { count } from "node:console";
+import User from "../models/User";
+import { sendStatusEmail } from "../services/notificationService";
 
 
 
@@ -76,6 +76,17 @@ export const updateDocumentStatus = async (req: Request, res: Response) => {
                 success: false,
                 message: "Document not found",
             });
+        }
+
+        const student = await User.findById(document.studentId);
+
+        if(student) {
+            await sendStatusEmail(
+                student.email,
+                document.documentType,
+             status,
+             status === "approved" ? "Your Documents Approved by Admin." : "Your document is rejected by admin. please reupload."
+            )
         }
 
         return res.status(200).json({
