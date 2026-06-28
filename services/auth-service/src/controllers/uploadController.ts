@@ -3,6 +3,8 @@ import cloudinary from "../config/cloudinary";
 import streamifier from "streamifier";
 import Document from "../models/Document";
 import { validateDocumentWithAI } from "../services/aiValidationService";
+import User from "../models/User";
+import { sendStatusEmail } from "../services/notificationService";
 
 export const uploadDocument = async( req: Request, res: Response) => {
 
@@ -77,6 +79,21 @@ export const uploadDocument = async( req: Request, res: Response) => {
             }
 
             await document.save();
+
+
+
+
+
+            //email notifcation 
+            const student = await User.findById(studentId);
+            if(student) {
+                await sendStatusEmail(student.email, document.documentType, document.aiStatus, document.aiRemarks);
+            }
+
+
+
+
+            
 
         } catch (aiError) {
             // AI fail ho gaya — document already upload ho gaya hai, sirf validation pending rahegi

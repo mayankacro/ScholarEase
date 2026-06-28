@@ -42,7 +42,7 @@ Rules for status:
 `;
 
     // Step 3 — Gemini ko image + text dono bhejo
-    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const result = await model.generateContent([
         prompt,
@@ -61,4 +61,4 @@ Rules for status:
     JSON.parse(cleanedText); // agar invalid JSON hai, yahi throw ho jaayega
 
     return cleanedText;
-};
+}; 
