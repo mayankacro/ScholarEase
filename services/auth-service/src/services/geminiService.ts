@@ -13,7 +13,7 @@ export const validateWithGemini = async (
     // Step 1 — Cloudinary se image fetch karo, base64 banao
     const imageResponse = await axios.get(fileUrl, { responseType: "arraybuffer" }); //dwloading image from cloudinary
     const base64Image = Buffer.from(imageResponse.data).toString("base64"); //image ko binary se bae64 m conveert kr rha h kyuki gemini ko image format m chahhiye document
-    const mimeType = imageResponse.headers["content-type"] as string|| "image/jpeg"; //determining whether img/jpeg or image/png
+    const mimeType = imageResponse.headers["content-type"] as string || "image/jpeg"; //determining whether img/jpeg or image/png
 
     // Step 2 — Prompt
     const prompt = `
