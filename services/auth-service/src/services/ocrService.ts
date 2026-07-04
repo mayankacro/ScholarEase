@@ -1,3 +1,6 @@
+//isko hamne abhi hata dia hai kyuki ham document directly ai ko de rhe h verify krne ke liye 
+
+
 // "The system first extracts text from uploaded documents using Tesseract OCR. 
 // Since OCR output can contain noise, the extracted text is cleaned 
 // and then sent to a multi-provider AI validation layer (Gemini with OpenRouter fallback).

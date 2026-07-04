@@ -23,15 +23,15 @@ Look at this image and respond ONLY with valid JSON, no markdown:
     const response = await axios.post(
         "https://openrouter.ai/api/v1/chat/completions",
         {
-            model: "google/gemma-4-31b-it:free", // CHANGE: vision-capable model zaroori hai
+            model: "openai/gpt-image-1", // CHANGE: vision-capable model zaroori hai
             messages: [
-                {
+                {  
                     role: "user",
                     content: [
                         { type: "text", text: prompt },
                         { type: "image_url", image_url: { url: fileUrl } }
                     ]
-                }
+                } 
             ]
         },
         {

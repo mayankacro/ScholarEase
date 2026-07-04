@@ -19,6 +19,6 @@ router.get("/admin", authMiddleware, roleMiddleware(["admin"]), (req, res) => {
         message: "Welcome Admin",
     });
  }
-);
+); 
 
 export default router;

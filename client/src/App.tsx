@@ -7,7 +7,7 @@ import './App.css'
 function App() {
   return (
     <div className="bg-blue-500 text-white text-3xl p-10">
-      ScholarEase Frontend Ready! 🎉
+      ScholarEase Frontend RadytoWork! 🎉
     </div>
   )
 }

@@ -1,13 +1,13 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import cloudinary from "../config/cloudinary";
 import streamifier from "streamifier";
 import Document from "../models/Document";
 import { validateDocumentWithAI } from "../services/aiValidationService";
 
 
-export const uploadDocument = async( req: Request, res: Response) => {
+export const uploadDocument = async (req: Request, res: Response) => {
 
-    try {
+    try {  // it will try is it fails then catch will handle the situation
 
         if (!req.file) { // agr koi file upload nahi hui ho to
             return res.status(400).json({
@@ -34,10 +34,10 @@ export const uploadDocument = async( req: Request, res: Response) => {
             );
 
             streamifier
-                .createReadStream(req.file!.buffer) //req.file.buffer -> Ram m rkhu hui file  || createReadStream() -> File ko ek stream me convert karta hai
+                .createReadStream(req.file!.buffer) //req.file.buffer -> Ram m rkhi hui file  || createReadStream() -> File ko ek stream me convert karta hai
                 //mtlb puri file ek sath nahi bhejenge thoda thoda data bhejenge
                 .pipe(stream); //ye chunks cloudinary ko bhej do
-            });
+        });
 
         const studentId = (req as any).user.userId;
 
@@ -50,7 +50,7 @@ export const uploadDocument = async( req: Request, res: Response) => {
             fileUrl: result.secure_url,
         })
 
-        
+
         try {
             console.log("Auto-triggering AI validation...");
 
@@ -70,7 +70,7 @@ export const uploadDocument = async( req: Request, res: Response) => {
 
             if (parsedResponse.status === "invalid") {
                 document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") ||
-                                           parsedResponse.remarks.toLowerCase().includes("clear")
+                    parsedResponse.remarks.toLowerCase().includes("clear")
                     ? "reupload_clearer_image"
                     : "reupload_correct_document";
             } else {
@@ -82,7 +82,7 @@ export const uploadDocument = async( req: Request, res: Response) => {
 
 
 
-        } catch (aiError) {
+        } catch (aiError) { //Error fixing
             // AI fail ho gaya — document already upload ho gaya hai, sirf validation pending rahegi
             console.error("AI validation failed during upload:", aiError);
             document.aiStatus = "pending";
@@ -96,11 +96,11 @@ export const uploadDocument = async( req: Request, res: Response) => {
             message: "Document uploaded and validated",
             document, // ab isme aiStatus, aiRemarks turant milenge
         });
-        
+
     } catch (error) {
 
         console.error(error);
-        
+
         return res.status(500).json({
             success: false,
             message: "Upload Failed"
