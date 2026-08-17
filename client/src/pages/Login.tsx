@@ -1,14 +1,20 @@
 import { useState } from "react"
+import api from "../api/axios";
 
 function Login(){
     // useSate() --> React ka ek Hook hai jo component ke andar data ko remember/state mein rakhne deta hai.
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e: any) => {
         e.preventDefault(); //Email likho Password likho Login click karo Console check karo Page reload nahi hona chahiye
-        console.log("Email:", email);
-        console.log("Password:", password);
+        
+        const res = await api.post("/api/auth/login", {
+            email: email,
+            password: password
+        });
+        console.log(res.data)
+    
     };
 
     return (
