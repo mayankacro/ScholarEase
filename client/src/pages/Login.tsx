@@ -1,8 +1,10 @@
 import { useState } from "react"
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 function Login(){
     // useSate() --> React ka ek Hook hai jo component ke andar data ko remember/state mein rakhne deta hai.
+    const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
@@ -26,6 +28,12 @@ function Login(){
         console.log("Token:", token);
         console.log("User:", user);
         console.log("Role:", user.role);
+
+        if(user.role === "admin"){
+            navigate("/admin");
+        } else if(user.role === "student"){
+            navigate("/student");
+        }
 
 
         // localStorage.setItem("token", res.data.token);
