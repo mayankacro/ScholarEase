@@ -17,10 +17,19 @@ function Login(){
             email,
             password,
         });
-        console.log(res.data);
 
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        const {token, user} = res.data;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        console.log("Token:", token);
+        console.log("User:", user);
+        console.log("Role:", user.role);
+
+
+        // localStorage.setItem("token", res.data.token);
+        // localStorage.setItem("user", JSON.stringify(res.data.user));
 
     } catch (error: any){
         setError(
