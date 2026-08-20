@@ -12,9 +12,12 @@ export const getMyDocuments = async (req: Request, res: Response) => {
 
         const studentId = (req as any).user.userId;
 
+        console.log("Loged in student ID:", studentId);
         const documents = await Document.find({
             studentId,
         });
+
+        console.log("Documents found:", documents);
 
         return res.status(200).json({
             success: true,
