@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Scholarship from "./Scholarship";
 
 const userschema = new mongoose.Schema(
     {
@@ -23,7 +24,14 @@ const userschema = new mongoose.Schema(
             enum: ["student", "admin", "officer"],
             default: "student",
         },
+        
+        scholarshipType: {
+            type: String,
+            enum: ["ST", "SC", "OBC", "General"],
+            required: true,
+        },
     },
+
     {
         timestamps: true,
     }

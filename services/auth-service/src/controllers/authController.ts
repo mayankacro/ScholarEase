@@ -5,11 +5,11 @@ import User from "../models/User";
 //Registeration yaha hota h 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, scholarshipType } = req.body;
 
 
         //Check required fields mltb ye sb require hona chhahiye 
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !scholarshipType) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
@@ -34,12 +34,19 @@ export const register = async (req: Request, res: Response) => {
             name,
             email,
             password: hashPassword,
+            scholarshipType,
         });
 
         return res.status(201).json({
             success: true,
             message: "User registered Successfully",
-            user,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                scholarshipType: user.scholarshipType,
+            },
         });
 
     } catch (error) {
@@ -87,7 +94,7 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
-  
+
         //agr email or pass dono shi h to
         //yaha jwt token generate hoga
         // HTTP requests stateless hoti hain. Login ke baad server user ko JWT token deta hai. User har protected request ke saath token bhejta hai aur server token verify karke identify karta hai ki request kis user ne bheji hai.
@@ -133,7 +140,7 @@ export const profile = async (req: Request, res: Response) => {
         //Is id wala user de
         const user = await User.findById(userId).select("-password");//MongoDB gaya fir password hide kr dia 
 
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found",
@@ -145,7 +152,7 @@ export const profile = async (req: Request, res: Response) => {
             user,
         });
 
-    }catch(error){
+    } catch (error) {
         console.error(error);
 
         return res.status(500).json({
