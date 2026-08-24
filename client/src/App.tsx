@@ -3,6 +3,7 @@ import Login from "./pages/Login"
 import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import Register from "./pages/Register";
 
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
 
         <Route path="/login" element={<Login />} />
+
+        <Route path = "/register" element={<Register/>} />
 
         <Route
           path="/student" element={
