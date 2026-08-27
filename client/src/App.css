@@ -182,3 +182,41 @@
     border-right-color: var(--border);
   }
 }
+
+
+.stat-card {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    width: 160px;
+    height: 150px;
+    box-sizing: border-box;
+}
+
+.stats-container {
+   display: flex;  /*cards ko horizontally arrange krega qki div vertically arrange krta h student dhasboard m*/
+   gap: 12px;
+}
+
+.stat-card h2 {
+    font-size: 32px;
+    margin: 10px 0;
+}
+
+ .stat-card p:first-child {  /*chote or subtle ho jaayene */
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.stat-card p:last-child {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}
+
+.dashboard-container {
+    padding: 30px 24px;
+}

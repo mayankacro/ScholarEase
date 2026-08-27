@@ -62,6 +62,7 @@ export const register = async (req: Request, res: Response) => {
 
 //Login kaa kaam yaha hota hai
 import jwt from "jsonwebtoken";
+import Scholarship from "../models/Scholarship";
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -119,6 +120,7 @@ export const login = async (req: Request, res: Response) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                scholarshipType: user.scholarshipType,
             },
         });
     } catch (error) {

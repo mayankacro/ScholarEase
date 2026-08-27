@@ -274,9 +274,9 @@ function Login(){
 
                         No account?
 
-                        <span className="text-gray-300 ml-1 cursor-pointer hover:text-white">
+                        <button onClick={() => navigate("/register")} className="text-gray-300 ml-1 cursor-pointer hover:text-white">
                             Create one
-                        </span>
+                        </button>
 
                     </p>
 
