@@ -106,6 +106,37 @@ function StudentDashboard() {
     console.log("Rejected doc:", rejectedDocuments);
     console.log("Rejected count:", rejectedDocuments.length);
 
+    const uploadedDocumentTypes = documents.map(
+        (doc) => doc.documentType.toLowerCase()
+    );
+
+
+    const checklistDocuments = checklist?.requiredDocuments || [];
+
+    console.log("Uploaded types:", uploadedDocumentTypes);
+    console.log("Checklist documents:", checklistDocuments);
+
+
+
+    const documentStatus = checklistDocuments.map((requiredDoc: string) => {
+        
+        const isUploaded = uploadedDocumentTypes.includes( /*true false return krega*/
+            requiredDoc.toLowerCase()   /*Required document mein se ye wala document student ne upload kiya hai kya?*/
+        );
+
+        return {
+            name: requiredDoc,
+            uploaded: isUploaded
+        };
+    });
+
+    console.log("Status:", documentStatus);
+
+
+    const uploadedRequiredCount = documentStatus.filter(
+        (doc: {name: String; uploaded: Boolean;}) => doc.uploaded
+    ).length;
+
 
 //     const requiredDocuments = [
 //     "Aadhaar card",
@@ -268,10 +299,18 @@ function StudentDashboard() {
             
         </div>
               <div className="document-checklist">
-                <h2>Document checklist</h2>    
-                 {checklist?.requiredDocuments?.map((doc: string) => (   /*? ka mtlb hai --> Agar checklist abhi available nahi hai, to error mat do. */
-                      <p key={doc}>{doc}</p> /* Har document ke liye ek <p> banao, document ka naam usme dikhao, aur React ko us document ko identify karne ke liye key do */
-                          ))}            
+
+                <h2>Document checklist</h2>  
+
+                <p>{uploadedRequiredCount} of {documentStatus.length} documents uploaded</p>  
+                
+                 {documentStatus.map((doc: {name:string; uploaded:boolean;}) => (   /*? ka mtlb hai --> Agar checklist abhi available nahi hai, to error mat do. */
+                      <p key={doc.name}>
+                        {doc.uploaded ? "✓" : "○"} {doc.name}
+                        </p> /* Har document ke liye ek <p> banao, document ka naam usme dikhao, aur React ko us document ko identify karne ke liye key do */
+                     ))}   
+                          
+                                   
               </div>
 
     </div>
