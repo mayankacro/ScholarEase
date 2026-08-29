@@ -15,7 +15,7 @@ function StudentDashboard() {
     // console.log("First Initial:", nameParts[0].charAt(0));
     // console.log("Second Initial:", nameParts[1].charAt(0));
     // console.log("initials:", initials);
-    
+
 
     const [documents, setDocuments] = useState<any[]>([]);
     const [showProfile, setShowProfile] = useState(false);
@@ -37,7 +37,7 @@ function StudentDashboard() {
 
         console.log("Student Dashboard loaded");
         console.log("Ab documents fetch krne hain");
-        
+
         const fetchDocuments = async () => {
 
             const res = await api.get("/api/documents/my-documents");
@@ -46,7 +46,7 @@ function StudentDashboard() {
 
             setDocuments(res.data.documents);
         };
-        
+
         fetchDocuments();
 
         const fetchChecklist = async () => {
@@ -60,8 +60,8 @@ function StudentDashboard() {
         };
 
         fetchChecklist();
-        
-        
+
+
     }, []);
 
 
@@ -89,6 +89,7 @@ function StudentDashboard() {
         (doc) => doc.status === "verified"
 
     );
+
     console.log("verified doc:", verifiedDocuments);
     console.log("verified count:", verifiedDocuments.length);
 
@@ -119,206 +120,247 @@ function StudentDashboard() {
 
 
     const documentStatus = checklistDocuments.map((requiredDoc: string) => {
-        
-        const isUploaded = uploadedDocumentTypes.includes( /*true false return krega*/
-            requiredDoc.toLowerCase()   /*Required document mein se ye wala document student ne upload kiya hai kya?*/
-        );
 
-        return {
-            name: requiredDoc,
-            uploaded: isUploaded
-        };
-    });
+           const uploadedDocument = documents.find(
+        (doc) =>
+            doc.documentType.toLowerCase() ===
+            requiredDoc.toLowerCase()
+    );
 
-    console.log("Status:", documentStatus);
+    return {
+        name: requiredDoc,
+        uploaded: !!uploadedDocument, /* !! -> iska simple meaning if document mila to true otherwise false */
+        aiConfidence: uploadedDocument?.aiConfidence ?? null
+    };
+});
+
+    console.log("Status:", documentStatus); 
 
 
     const uploadedRequiredCount = documentStatus.filter(
-        (doc: {name: String; uploaded: Boolean;}) => doc.uploaded
+        (doc: { name: String; uploaded: Boolean; }) => doc.uploaded
     ).length;
 
 
-//     const requiredDocuments = [
-//     "Aadhaar card",
-//     "Marksheet",
-//     "Income certificate",
-//     "Caste certificate",
-//     "Bank passbook",
-//     "Passport photo",
-//     "admit card"
-// ];
+    //     const requiredDocuments = [
+    //     "Aadhaar card",
+    //     "Marksheet",
+    //     "Income certificate",
+    //     "Caste certificate",
+    //     "Bank passbook",
+    //     "Passport photo",
+    //     "admit card"
+    // ];
 
-// const documentTypeMap: { [key: string]: string } = {
-//     "aadhaar": "Aadhaar card",
-//     "marksheet": "Marksheet",
-//     "income certificate": "Income certificate",
-//     "caste certificate": "Caste certificate",
-//     "bank passbook": "Bank passbook",
-//     "professional photo": "Passport photo",
-//     "admit card": "admit card",
-// };
+    // const documentTypeMap: { [key: string]: string } = {
+    //     "aadhaar": "Aadhaar card",
+    //     "marksheet": "Marksheet",
+    //     "income certificate": "Income certificate",
+    //     "caste certificate": "Caste certificate",
+    //     "bank passbook": "Bank passbook",
+    //     "professional photo": "Passport photo",
+    //     "admit card": "admit card",
+    // };
 
-// const uploadedDocumnetNames = documents.map(
-//     (doc)=> documentTypeMap[doc.documentType]
-// );
+    // const uploadedDocumnetNames = documents.map(
+    //     (doc)=> documentTypeMap[doc.documentType]
+    // );
 
-// console.log("Uploadd documents:", uploadedDocumnetNames);
- 
+    // console.log("Uploadd documents:", uploadedDocumnetNames);
+
 
     return (
-    <div className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-[#050505] text-white">
 
-        {/* Navbar */}
-        <nav className="h-16 border-b border-gray-900 flex items-center justify-between px-6">
+            {/* Navbar */}
+            <nav className="h-16 border-b border-gray-900 flex items-center justify-between px-6">
 
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-white text-black flex items-center justify-center font-bold">
-                    Λ
+                {/* Logo */}
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-md bg-white text-black flex items-center justify-center font-bold">
+                        Λ
+                    </div>
+
+                    <span className="font-semibold">
+                        ScholarEase
+                    </span>
                 </div>
 
-                <span className="font-semibold">
-                    ScholarEase
-                </span>
-            </div>
 
+                {/* Navigation */}
+                <div className="flex items-center gap-2">
 
-            {/* Navigation */}
-            <div className="flex items-center gap-2">
+                    <button className="px-4 py-2 rounded-lg border border-gray-700">
 
-                <button className="px-4 py-2 rounded-lg border border-gray-700">
-                    
-                    <h1>Dashboard</h1>
+                        <h1>Dashboard</h1>
 
-{/* <p>Student: {user.name}</p>
+                        {/* <p>Student: {user.name}</p>
 
 <p>Scholarship: {user.scholarshipType}</p> */}
-                </button>
-
-                <button className="px-4 py-2 rounded-lg border border-gray-700">
-                    Upload
-                </button>
-
-                <button className="px-4 py-2 rounded-lg border border-gray-700">
-                    Documents
-                </button>
-
-            </div>
-
-
-            {/* Right side */}
-            <div className="flex items-center gap-3">
-
-                <span className="text-xs text-gray-500 border border-gray-900 px-3 py-1 rounded-full">
-                    {user.scholarshipType} Scholarship
-                </span>
-
-                <div className="w-7 h-7 rounded-full bg-gray-800 flex items-center justify-center text-xs">
-                    <button onClick={() => setShowProfile(!showProfile)}>
-                        {initials}
- 
                     </button>
 
-                    {showProfile && (
-                        <div> 
-                            <p> {user.name}</p>
-                            <p>{user.email}</p>
-                            <p>{user.scholarshipType} Scholarship</p> 
-                        <button onClick={handleLogout}>
-                            Logout
+                    <button className="px-4 py-2 rounded-lg border border-gray-700">
+                        Upload
+                    </button>
+
+                    <button className="px-4 py-2 rounded-lg border border-gray-700">
+                        Documents
+                    </button>
+
+                </div>
+
+
+                {/* Right side */}
+                <div className="flex items-center gap-3">
+
+                    <span className="text-xs text-gray-500 border border-gray-900 px-3 py-1 rounded-full">
+                        {user.scholarshipType} Scholarship
+                    </span>
+
+                    <div className="w-7 h-7 rounded-full bg-gray-800 flex items-center justify-center text-xs">
+                        <button onClick={() => setShowProfile(!showProfile)}>
+                            {initials}
+
                         </button>
+
+                        {showProfile && (
+                            <div>
+                                <p> {user.name}</p>
+                                <p>{user.email}</p>
+                                <p>{user.scholarshipType} Scholarship</p>
+                                <button onClick={handleLogout}>
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+
+            </nav>
+
+
+            {/* Temporary */}
+            {/* Dashboard Header */}
+            <div className="dashboard-container">
+
+                {/* Top row */}
+                <div className="flex items-center justify-between">
+
+                    <div>
+                        <h1 className="text-xl font-semibold">
+                            Dashboard
+                        </h1>
+
+                        <p className="text-sm text-gray-600 mt-1">
+                            0 of {documents.length} documents verified · {user.scholarshipType} Scholarship
+                        </p>
+
+                        <br></br>
+
+                    </div>
+
+
+                    {/* Upload Button */}
+                    <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-white hover:text-black transition font-medium">
+                        ↑ Upload
+                    </button>
+
+                </div>
+
+                <div>
+
+                    <div className="stats-container">
+
+                        <div className="stat-card" >
+                            <p>UPLOADED</p>
+                            <h2>{documents.length}</h2>
+                            <p>Total</p>
+
                         </div>
-                    )}
+
+                        <div className="stat-card verified-card" >
+                            <p>VERIFIED</p>
+                            <h2>{verifiedDocuments.length}</h2>
+                            <p>Done</p>
+
+                        </div>
+
+                        <div className="stat-card pending-card" >
+                            <p>PENDING</p>
+                            <h2>{pendingDocuments.length}</h2>
+                            <p>Verification needed</p>
+
+                        </div>
+
+                        <div className="stat-card rejected-card" >
+                            <p>REJECTED</p>
+                            <h2>{rejectedDocuments.length}</h2>
+                            <p>Re-upload needed</p>
+
+                        </div>
+
+
+
+                    </div>
+
+                    <div className="document-checklist">
+
+                        <div className="checklist-header">
+                            <h2>Document checklist</h2>
+
+                            <span>
+                                {user.scholarshipType} Scholarship
+                            </span>
+                        </div>
+
+                        <div className="completion-header">
+                            <span>COMPLETION</span>
+                            <span>{uploadedRequiredCount} / {documentStatus.length}</span>
+                        </div>
+
+                        <div className="progress-bar">
+                            <div
+                                className="progress-fill"
+                                style={{
+                                    width: `${(uploadedRequiredCount / documentStatus.length) * 100}%`
+                                }}
+                            ></div>
+                        </div>
+                        <div className="checklist-items">
+
+                            {documentStatus.map(
+                                (doc) => (
+
+                                    <div className="checklist-item" key={doc.name}>
+
+                                        <span className={doc.uploaded ? "status-icon uploaded" : "status-icon"}>
+                                            {doc.uploaded ? "✓" : "◦"}
+                                        </span>
+
+                                        <span className="document-name">
+                                            {doc.name}
+                                        </span>
+
+                                        <span className= {doc.uploaded ? "document-confidence" : "document-status"}>
+                                            {doc.uploaded ? `${doc.aiConfidence}%` : "Not uploaded"}
+                                        </span>
+
+                                    </div>
+                                )
+                            )}
+
+                        </div>
+
+
+                    </div>
+
                 </div>
 
             </div>
 
-        </nav>
-
-
-        {/* Temporary */}
-       {/* Dashboard Header */}
-<div className="dashboard-container">
-
-    {/* Top row */}
-    <div className="flex items-center justify-between">
-
-        <div>
-            <h1 className="text-xl font-semibold">
-                Dashboard
-            </h1>
-
-            <p className="text-sm text-gray-600 mt-1">
-                0 of {documents.length} documents verified · {user.scholarshipType} Scholarship
-            </p>
-
-            
         </div>
-
-
-        {/* Upload Button */}
-        <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-white hover:text-black transition font-medium">
-            ↑ Upload
-        </button>
-
-    </div>
-
-    <div>
-
-        <div className="stats-container">
-
-              <div className="stat-card" >
-                    <p>UPLOADED</p>
-                    <h2>{documents.length}</h2>
-                    <p>Total</p>
-
-              </div>
-
-              <div className="stat-card" >
-                    <p>VERIFIED</p>
-                    <h2>{verifiedDocuments.length}</h2>
-                    <p>Total</p>
-
-              </div>
-
-              <div className="stat-card" >
-                    <p>PENDING</p>
-                    <h2>{pendingDocuments.length}</h2>
-                    <p>Total</p>
-
-              </div>
-
-              <div className="stat-card" >
-                    <p>REJECTED</p>
-                    <h2>{rejectedDocuments.length}</h2>
-                    <p>Total</p>
-
-              </div>
-
-
-            
-        </div>
-              <div className="document-checklist">
-
-                <h2>Document checklist</h2>  
-
-                <p>{uploadedRequiredCount} of {documentStatus.length} documents uploaded</p>  
-                
-                 {documentStatus.map((doc: {name:string; uploaded:boolean;}) => (   /*? ka mtlb hai --> Agar checklist abhi available nahi hai, to error mat do. */
-                      <p key={doc.name}>
-                        {doc.uploaded ? "✓" : "○"} {doc.name}
-                        </p> /* Har document ke liye ek <p> banao, document ka naam usme dikhao, aur React ko us document ko identify karne ke liye key do */
-                     ))}   
-                          
-                                   
-              </div>
-
-    </div>
-
-</div>
-
-    </div>
-);
+    );
 
 }
 
