@@ -121,20 +121,20 @@ function StudentDashboard() {
 
     const documentStatus = checklistDocuments.map((requiredDoc: string) => {
 
-           const uploadedDocument = documents.find(
-        (doc) =>
-            doc.documentType.toLowerCase() ===
-            requiredDoc.toLowerCase()
-    );
+        const uploadedDocument = documents.find(
+            (doc) =>
+                doc.documentType.toLowerCase() ===
+                requiredDoc.toLowerCase()
+        );
 
-    return {
-        name: requiredDoc,
-        uploaded: !!uploadedDocument, /* !! -> iska simple meaning if document mila to true otherwise false */
-        aiConfidence: uploadedDocument?.aiConfidence ?? null
-    };
-});
+        return {
+            name: requiredDoc,
+            uploaded: !!uploadedDocument, /* !! -> iska simple meaning if document mila to true otherwise false */
+            aiConfidence: uploadedDocument?.aiConfidence ?? null
+        };
+    });
 
-    console.log("Status:", documentStatus); 
+    console.log("Status:", documentStatus);
 
 
     const uploadedRequiredCount = documentStatus.filter(
@@ -262,7 +262,7 @@ function StudentDashboard() {
 
 
                     {/* Upload Button */}
-                    <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-white hover:text-black transition font-medium">
+                    <button className=" mb-7 px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium">
                         ↑ Upload
                     </button>
 
@@ -299,12 +299,16 @@ function StudentDashboard() {
                             <p>Re-upload needed</p>
 
                         </div>
-
-
-
                     </div>
 
-                    <div className="document-checklist">
+                        
+
+
+
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+                    <div className="bg-[#111] border border-[#27272a] rounded-xl p-5 box-border mt-5">
 
                         <div className="checklist-header">
                             <h2>Document checklist</h2>
@@ -342,7 +346,7 @@ function StudentDashboard() {
                                             {doc.name}
                                         </span>
 
-                                        <span className= {doc.uploaded ? "document-confidence" : "document-status"}>
+                                        <span className={doc.uploaded ? "document-confidence" : "document-status"}>
                                             {doc.uploaded ? `${doc.aiConfidence}%` : "Not uploaded"}
                                         </span>
 
@@ -352,9 +356,69 @@ function StudentDashboard() {
 
                         </div>
 
+                        
+
 
                     </div>
 
+                    
+                    <div className="application-progress">
+                        <h2>Application progress</h2>
+
+                        <div className="progress-step">
+
+                            <span className="step-icon">✓</span>
+
+                            <div>
+                                <h3>Documents uploaded</h3>
+
+                                <p>{uploadedRequiredCount} of {documentStatus.length} completed</p>
+
+                                <span className="step-status done">Done</span>
+                            </div>
+
+                        </div>
+
+                        <div className="progress-step">
+
+                            <span className="step-icon">✓</span>
+
+                            <div>
+                                <h3>AI validation</h3>
+
+                                <p>Documents are being validated</p>
+
+                                <span className="step-status done">Done</span>
+                            </div>
+
+                        </div>
+
+                        <div className="progress-step">
+                            <span className="step-icon">→</span>
+
+                            <div>
+                                <h3>Admin review</h3>
+
+                                <p>Waiting for admin approval</p>
+
+                                <span className="step-status progress">In progress</span>
+                            </div>
+                        </div>
+
+                        <div className="progress-step">
+                            <span className="step-icon">○</span>
+
+                            <div>
+                                <h3>Scholarship approved</h3>
+
+                                <p>Final decision pending</p>
+
+                                <span className="step-status pending">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    </div>
                 </div>
 
             </div>
