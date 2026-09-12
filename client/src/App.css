@@ -505,3 +505,6 @@
 
 
 
+html {
+    overflow-y: scroll;
+}

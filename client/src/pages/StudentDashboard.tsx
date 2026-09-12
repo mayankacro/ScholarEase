@@ -3,6 +3,7 @@ import api from "../api/axios"
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+
 function StudentDashboard() {
 
     const navigate = useNavigate();
@@ -190,7 +191,7 @@ function StudentDashboard() {
                 {/* Navigation */}
                 <div className="flex items-center gap-2">
 
-                    <button className="px-4 py-2 rounded-lg border border-gray-700">
+                    <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black ">
 
                         <h1>Dashboard</h1>
 
@@ -199,11 +200,11 @@ function StudentDashboard() {
 <p>Scholarship: {user.scholarshipType}</p> */}
                     </button>
 
-                    <button className="px-4 py-2 rounded-lg border border-gray-700">
+                    <button onClick={() => navigate("/upload")} className="hover:bg-purple-300 hover:text-black px-4 py-2 rounded-lg border border-gray-700 ">
                         Upload
                     </button>
 
-                    <button className="px-4 py-2 rounded-lg border border-gray-700">
+                    <button className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black">
                         Documents
                     </button>
 
@@ -217,22 +218,46 @@ function StudentDashboard() {
                         {user.scholarshipType} Scholarship
                     </span>
 
-                    <div className="w-7 h-7 rounded-full bg-gray-800 flex items-center justify-center text-xs">
-                        <button onClick={() => setShowProfile(!showProfile)}>
-                            {initials}
+                  {/* Profile */}
+                    <div className="relative">
 
+                        <button
+                            onClick={() =>
+                                setShowProfile(!showProfile)
+                            }
+                            className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs"
+                        >
+                            {initials}
                         </button>
 
+
                         {showProfile && (
-                            <div>
-                                <p> {user.name}</p>
-                                <p>{user.email}</p>
-                                <p>{user.scholarshipType} Scholarship</p>
-                                <button onClick={handleLogout}>
+
+                            <div className="absolute right-0 top-10 w-56 bg-[#111111] border border-[#27272a] rounded-xl p-4 z-50">
+
+                                <p className="font-medium">
+                                    {user.name}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {user.email}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-2">
+                                    {user.scholarshipType} Scholarship
+                                </p>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="mt-4 w-full text-left text-sm text-red-400 hover:text-red-300"
+                                >
                                     Logout
                                 </button>
+
                             </div>
+
                         )}
+
                     </div>
 
                 </div>
@@ -240,7 +265,7 @@ function StudentDashboard() {
             </nav>
 
 
-            {/* Temporary */}
+
             {/* Dashboard Header */}
             <div className="dashboard-container">
 
@@ -253,7 +278,7 @@ function StudentDashboard() {
                         </h1>
 
                         <p className="text-sm text-gray-600 mt-1">
-                            0 of {documents.length} documents verified · {user.scholarshipType} Scholarship
+                            {verifiedDocuments.length} of {documents.length} documents verified · {user.scholarshipType} Scholarship
                         </p>
 
                         <br></br>
@@ -262,7 +287,7 @@ function StudentDashboard() {
 
 
                     {/* Upload Button */}
-                    <button className=" mb-7 px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium">
+                    <button onClick={() => navigate("/upload")} className=" mb-7 px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium">
                         ↑ Upload
                     </button>
 

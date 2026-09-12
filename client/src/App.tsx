@@ -4,6 +4,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Register from "./pages/Register";
+import Upload from "./pages/Upload";
 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
 
-        <Route path = "/register" element={<Register/>} />
+        <Route path="/register" element={<Register />} />
 
         <Route
           path="/student" element={
@@ -29,6 +30,15 @@ function App() {
           path="/admin" element={
             <ProtectedRoute allowedRole="admin">
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute allowedRole="student">
+              <Upload/>
             </ProtectedRoute>
           }
         />
