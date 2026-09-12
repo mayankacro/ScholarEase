@@ -308,7 +308,7 @@ function StudentDashboard() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-                    <div className="bg-[#111] border border-[#27272a] rounded-xl p-5 box-border mt-5">
+                    <div className="bg-[#111] border border-[#27272a] rounded-xl p-5 box-border mt-5 lg:mb-20">
 
                         <div className="checklist-header">
                             <h2>Document checklist</h2>
@@ -362,7 +362,7 @@ function StudentDashboard() {
                     </div>
 
                     
-                    <div className="application-progress">
+                    <div className="bg-[#111111] border border-[#27272a] rounded-xl p-5 flex-1 max-w-none box-border lg:mt-5 mb-5 lg:text-">
                         <h2>Application progress</h2>
 
                         <div className="progress-step">
@@ -417,9 +417,9 @@ function StudentDashboard() {
                             </div>
                         </div>
                     </div>
+                </div>
 
                     </div>
-                </div>
 
             </div>
 

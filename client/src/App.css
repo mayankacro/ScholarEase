@@ -235,6 +235,7 @@
     max-width: none;
     flex: 1;
     box-sizing: border-box;
+    /* margin-bottom: 90px; */
 }
 
 .document-checklist h2 {
@@ -366,7 +367,7 @@
 
 
 /*Application Progress card ki basic styling */
-.application-progress {
+/* .application-progress {
     background: #111111;
     border: 1px solid #27272a;
     border-radius: 12px;
@@ -374,27 +375,28 @@
     flex: 1;
     max-width: none;
     box-sizing: border-box;
-    margin-top: 25px;
+    margin-top: 20px;
+    lg:margin-top:
     margin-bottom: 20px;
-}
+} */
 
-.dashboard-bottom {
+/* .dashboard-bottom {
     display: flex;
     gap: 20px;
     align-items: flex-start;
-}
+} */
 
-.document-checklist,
+/* .document-checklist,
 .application-progress {
     flex: 1;
-}
+} */
 
-.progress-step {
+/* .progress-step {
     display: flex;
     align-items: flex-start;
     gap: 14px;
     margin-top: 14px;
-}
+} */
 
 .step-icon {
     width: 22px;

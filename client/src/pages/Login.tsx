@@ -59,11 +59,13 @@ function Login(){
 // };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#0c0c0c] via-[#050505] to-[#020202] text-white flex">
+        <div className="min-h-screen bg-linear-to-b from-[#0c0c0c] via-[#050505] to-[#020202] text-white flex">
 
-            {/* ================= LEFT SIDE ================= */}
+            {/* ================= LOGO ================= */}
 
-            <div className="w-1/2 min-h-screen border-r border-gray-800 px-12 py-8">
+            {/* <div className="w-1/2 min-h-screen border-r border-gray-800 px-12 py-8"> */}
+
+            <div className="w-1/2 min-h-screen border-r border-gray-800 px-6 lg:px-12 py-8">
 
                 {/* Logo */}
                 <div className="flex items-center gap-2">
@@ -80,13 +82,13 @@ function Login(){
 
 
                 {/* Left Content */}
-                <div className="mt-10 max-w-xl">
+                <div className="mt-20 lg:mt-20 max-w-xl">
 
                     <p className="text-xs tracking-[0.2em] text-gray-500 mb-5">
                         AI-POWERED DOCUMENT PLATFORM
                     </p>
 
-                    <h1 className="text-5xl font-semibold leading-[1.05]">
+                    <h1 className="text-6xl lg:text-7xl font-semibold leading-[1.05]">
 
                         Scholarship
                         <br />
@@ -137,6 +139,14 @@ function Login(){
                             Email on admin decision
                         </p>
 
+                        <p className="text-gray-500">
+                            <span className="text-green-400 mr-2">
+                                •
+                            </span>
+
+                            AI validation online
+                        </p>
+
                         <p className="text-gray-700">
                             <span className="mr-2">
                                 •
@@ -154,24 +164,13 @@ function Login(){
 
             {/* ================= RIGHT SIDE ================= */}
 
-            <div className="w-1/2 min-h-screen flex items-start justify-center px-12 pt-9">
+            <div className="mt-25 w-1/2 min-h-screen flex items-start justify-center px-12 lg:px-8 pt-9">
 
                 <form
                     onSubmit={handleLogin}
                     className="w-full max-w-md">
 
-                    {/* Status */}
-                    <div className="flex items-center gap-2 mb-6">
-
-                        <span className="w-2 h-2 rounded-full bg-green-400"></span>
-
-                        <span className="text-sm text-gray-600">
-                            AI validation online
-                        </span>
-
-                    </div>
-
-
+                
                     {/* Heading */}
                     <h2 className="text-2xl font-semibold mb-1">
                         Sign in
@@ -249,7 +248,7 @@ function Login(){
                     {/* Continue */}
                     <button
                         type="submit"
-                        className="w-full py-3 rounded-lg border border-gray-700 hover:bg-white hover:text-black transition font-medium"
+                        className="w-full py-3 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium"
                     >
                         Continue →
                     </button>
