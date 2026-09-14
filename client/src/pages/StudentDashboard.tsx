@@ -204,7 +204,7 @@ function StudentDashboard() {
                         Upload
                     </button>
 
-                    <button className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black">
+                    <button onClick={() => navigate("/documents")} className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black">
                         Documents
                     </button>
 

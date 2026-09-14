@@ -5,6 +5,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import Register from "./pages/Register";
 import Upload from "./pages/Upload";
+import Documents from "./pages/Documents";
 
 
 function App() {
@@ -41,7 +42,18 @@ function App() {
               <Upload/>
             </ProtectedRoute>
           }
+
+          
         />
+
+        <Route
+    path="/documents"
+    element={
+        <ProtectedRoute allowedRole="student">
+            <Documents />
+        </ProtectedRoute>
+    }
+/>
 
       </Routes>
     </BrowserRouter>

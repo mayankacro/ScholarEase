@@ -16,6 +16,116 @@ function Upload() {
     const [documents, setDocuments] = useState<string[]>([]);
     const [selectedDocument, setSelectedDocument] = useState("");
     const [showProfile, setShowProfile] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [fileError, setFileError] = useState("");
+    const [isDragging, setIsDragging] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState("");
+    const [uploadedDocument, setUploadedDocument] = useState<any>(null);
+
+
+
+    const handleUpload = async () => {
+        if (!selectedDocument) {
+            setUploadError("Please select a document type.");
+            return;
+        }
+
+        if (!selectedFile) {
+            setUploadError("Please select a file.");
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            setUploadError("");
+
+            const formData = new FormData();
+
+            formData.append("document", selectedFile);
+            formData.append("documentType", selectedDocument);
+            formData.append("scholarshipType", user.scholarshipType);
+
+            const res = await api.post("/api/upload", formData);
+
+            console.log("Upload Response:", res.data);
+
+            setUploadedDocument(res.data.document);
+
+        } catch (error: any) {
+            console.error("Upload failed:", error);
+
+            setUploadError(
+                error.response?.data?.message || "Document upload failed."
+            );
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+
+    const validateFile = (file: File) => {
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "application/pdf"
+        ];
+
+        const maxSize = 5 * 1024 * 1024; // 5 MB
+
+        if (!allowedTypes.includes(file.type)) {
+            setFileError("Only JPG, PNG and PDF files are allowed.");
+            return false;
+        }
+
+        if (file.size > maxSize) {
+            setFileError("File size must be less than 5 MB.");
+            return false;
+        }
+
+        setFileError("");
+        return true;
+    };
+
+
+
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        if (validateFile(file)) {
+            setSelectedFile(file);
+        }
+
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+
+        e.preventDefault();
+        setIsDragging(false);
+
+        const file = e.dataTransfer.files?.[0];
+
+        if (!file) return;
+
+        if (validateFile(file)) {
+            setSelectedFile(file);
+        }
+
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -232,25 +342,159 @@ function Upload() {
 
 
                 {/* Upload Area */}
-                <div className="border border-dashed border-[#3f3f46] rounded-xl bg-[#111111] p-12 text-center">
+                <div
+                    onClick={() =>
+                        document.getElementById("fileInput")?.click()
+                    }
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`border border-dashed rounded-xl bg-[#111111] p-12 text-center cursor-pointer transition ${isDragging
+                        ? "border-purple-400 bg-purple-400/5"
+                        : "border-[#3f3f46] hover:border-gray-500"
+                        }`}
+                >
+
+                    <input
+                        id="fileInput"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
 
                     <div className="text-4xl mb-4">
                         ↑
                     </div>
 
-                    <h2 className="text-base font-medium">
-                        Drag & drop your file here
-                    </h2>
+                    {selectedFile ? (
 
-                    <p className="text-sm text-gray-500 mt-2">
-                        or click to browse
-                    </p>
+                        <>
+                            <h2 className="text-base font-medium">
+                                {selectedFile.name}
+                            </h2>
 
-                    <p className="text-xs text-gray-600 mt-4">
-                        JPG, PNG, PDF
-                    </p>
+                            <p className="text-sm text-gray-500 mt-2">
+                                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                        </>
+
+                    ) : (
+
+                        <>
+                            <h2 className="text-base font-medium">
+                                Drag & drop your file here
+                            </h2>
+
+                            <p className="text-sm text-gray-500 mt-2">
+                                or click to browse
+                            </p>
+
+                            <p className="text-xs text-gray-600 mt-4">
+                                JPG, PNG, PDF
+                            </p>
+                        </>
+
+                    )}
+
+                    {fileError && (
+                        <p className="text-sm text-red-400 mt-4">
+                            {fileError}
+                        </p>
+                    )}
 
                 </div>
+
+                <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={isUploading || !selectedFile || !selectedDocument}
+                    className="mt-6 w-full rounded-xl bg-purple-400 px-6 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    {isUploading ? "Uploading & Validating..." : "Upload Document"}
+                </button>
+
+
+                {uploadedDocument && (
+                    <div
+                        className={`mt-3 rounded-xl border p-4 ${uploadedDocument.aiStatus === "valid"
+                                ? "border-green-500/40 bg-green-500/5"
+                                : "border-red-500/40 bg-red-500/5"
+                            }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className={`h-1.5 w-1.5 rounded-full ${uploadedDocument.aiStatus === "valid"
+                                            ? "bg-green-400"
+                                            : "bg-red-400"
+                                        }`}
+                                />
+
+                                <span
+                                    className={`text-sm font-medium ${uploadedDocument.aiStatus === "valid"
+                                            ? "text-green-300"
+                                            : "text-red-300"
+                                        }`}
+                                >
+                                    {uploadedDocument.aiStatus === "valid"
+                                        ? "Verified by Gemini Vision"
+                                        : "Gemini Verification Failed"}
+                                </span>
+                            </div>
+
+                            <span
+                                className={`rounded border px-2 py-0.5 text-xs ${uploadedDocument.aiStatus === "valid"
+                                        ? "border-green-500/40 text-green-400"
+                                        : "border-red-500/40 text-red-400"
+                                    }`}
+                            >
+                                {uploadedDocument.aiStatus === "valid"
+                                    ? "Valid"
+                                    : "Invalid"}
+                            </span>
+                        </div>
+
+                        <p className="mt-3 text-sm leading-5 text-zinc-400">
+                            {uploadedDocument.aiRemarks}
+                        </p>
+
+                        <div className="mt-4 flex items-center gap-3">
+                            <span className="text-[11px] uppercase tracking-wider text-zinc-500">
+                                Confidence
+                            </span>
+
+                            <div className="h-0.5 flex-1 bg-zinc-800">
+                                <div
+                                    className={`h-full ${uploadedDocument.aiStatus === "valid"
+                                            ? "bg-green-400"
+                                            : "bg-red-400"
+                                        }`}
+                                    style={{
+                                        width: `${uploadedDocument.aiConfidence}%`,
+                                    }}
+                                />
+                            </div>
+
+                            <span className="text-xs font-semibold text-green-400">
+                                {uploadedDocument.aiConfidence}%
+                            </span>
+                        </div>
+
+                        {uploadedDocument.actionRequired && (
+                            <p className="mt-3 text-xs text-yellow-400">
+                                {uploadedDocument.actionRequired}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+
+                {uploadError && (
+                    <p className="mt-3 text-sm text-red-400">
+                        {uploadError}
+                    </p>
+                )}
 
             </main>
 
