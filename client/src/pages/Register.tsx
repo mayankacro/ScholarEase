@@ -1,7 +1,14 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import {
+    User,
+    Mail,
+    Lock,
+    Eye,
+    EyeOff,
+    GraduationCap,
+} from "lucide-react";
 
 function Register() {
 
@@ -172,58 +179,69 @@ function Register() {
                     >
 
                         {/* Name */}
-                        <div>
+                        <div className="relative">
                             <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
                                 Full name
                             </label>
+                            <User
+                                size={16}
+                                className="absolute left-3 top-11.5 -translate-y-1/2 text-zinc-500"
+                            />
 
                             <input
                                 type="text"
-                                placeholder="Your full name"
+                                placeholder="Enter your full name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                required
-                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-700 focus:border-zinc-500"
+                                className="w-full rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-4 text-sm text-white outline-none  placeholder:text-zinc-700"
                             />
                         </div>
 
 
                         {/* Email */}
-                        <div>
+                        <div className="relative">
+
                             <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
                                 Email
                             </label>
+                            <Mail
+                                size={16}
+                                className="absolute left-3 top-11.5 -translate-y-1/2 text-zinc-500"
+                            />
 
                             <input
                                 type="email"
                                 placeholder="name@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-700 focus:border-zinc-500"
+                                className="w-full rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-4 text-sm text-white outline-none placeholder:text-zinc-700"
                             />
                         </div>
 
 
                         {/* Password */}
                         <div className="relative">
+
                             <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
                                 Password
                             </label>
-
+                            <Lock
+                                size={16}
+                                className="absolute left-3 top-11.5 -translate-y-1/2 text-zinc-500"
+                            />
 
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 pr-12 text-sm text-white outline-none  placeholder:text-zinc-700 focus:border-zinc-500"
+                                className="w-full rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-12 text-sm text-white outline-none placeholder:text-zinc-700"
                             />
 
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white mt-3"
+                                className="absolute right-3 top-12 -translate-y-1/2 text-zinc-500 hover:text-white"
                             >
                                 {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
                             </button>
@@ -232,15 +250,21 @@ function Register() {
                         <div className="relative">
 
                             <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
-                                Confirm Password
+                                Password
                             </label>
+
+
+                            <Lock
+                                size={16}
+                                className="absolute left-3 top-11.5 -translate-y-1/2 text-zinc-500"
+                            />
 
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm your password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 pr-12 text-sm text-white outline-none  placeholder:text-zinc-700 focus:border-zinc-500"
+                                className="w-full rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-12 text-sm text-white outline-none placeholder:text-zinc-700"
                             />
 
                             <button
@@ -248,7 +272,7 @@ function Register() {
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 className="absolute right-3 top-12 -translate-y-1/2 text-zinc-500 hover:text-white"
                             >
-                                {showConfirmPassword ? <Eye size={17} /> : <EyeOff size={17} />}
+                                {showConfirmPassword ? <Eye size={16} /> : <EyeOff size={16} />}
                             </button>
                         </div>
 
@@ -257,39 +281,25 @@ function Register() {
 
                         {/* Scholarship Type */}
                         <div className="relative">
-                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
-                                Scholarship category
-                            </label>
+                            <GraduationCap
+                                size={16}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                            />
 
                             <select
                                 value={scholarshipType}
                                 onChange={(e) => setScholarshipType(e.target.value)}
-                                required
-                                className="w-full appearance-none rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none focus:border-zinc-500 "
+                                className="w-full appearance-none rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-10 text-sm text-white outline-none"
                             >
-                                <option value="">
-                                    Select category
-                                </option>
-
-                                <option value="ST">
-                                    ST
-                                </option>
-
-                                <option value="SC">
-                                    SC
-                                </option>
-
-                                <option value="OBC">
-                                    OBC
-                                </option>
-
-                                <option value="General">
-                                    General
-                                </option>
+                                <option value="">Select category</option>
+                                <option value="ST">ST</option>
+                                <option value="SC">SC</option>
+                                <option value="OBC">OBC</option>
+                                <option value="General">General</option>
                             </select>
 
                             <svg
-                                className="mt-3 pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                                className="mt-0.5 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -301,6 +311,7 @@ function Register() {
                                     d="M19 9l-7 7-7-7"
                                 />
                             </svg>
+
                         </div>
 
 
