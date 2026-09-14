@@ -28,6 +28,36 @@ function Register() {
 
         setError("");
 
+        if (!name.trim()) {
+    setError("Please enter your full name");
+    return;
+}
+
+if (!email.trim()) {
+    setError("Please enter your email");
+    return;
+}
+
+if (!password) {
+    setError("Please enter a password");
+    return;
+}
+
+if (password !== confirmPassword) {
+    setError("Passwords do not match");
+    return;
+}
+
+if (!scholarshipType) {
+    setError("Please select a scholarship category");
+    return;
+}
+
+if (password.length < 6) {
+    setError("Password must be at least 6 characters");
+    return;
+}
+
         try {
             const res = await api.post("/api/auth/register", {
                 name,
