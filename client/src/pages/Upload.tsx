@@ -192,21 +192,21 @@ function Upload() {
 
                     <button
                         onClick={() => navigate("/student")}
-                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black"
+                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
                     >
                         Dashboard
                     </button>
 
                     <button
                         onClick={() => navigate("/upload")}
-                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black "
+                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
                     >
                         Upload
                     </button>
 
                     <button
                         onClick={() => navigate("/documents")}
-                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black"
+                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
                     >
                         Documents
                     </button>

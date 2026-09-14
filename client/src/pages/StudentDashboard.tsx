@@ -191,7 +191,7 @@ function StudentDashboard() {
                 {/* Navigation */}
                 <div className="flex items-center gap-2">
 
-                    <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black ">
+                    <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out">
 
                         <h1>Dashboard</h1>
 
@@ -200,11 +200,20 @@ function StudentDashboard() {
 <p>Scholarship: {user.scholarshipType}</p> */}
                     </button>
 
-                    <button onClick={() => navigate("/upload")} className="hover:bg-purple-300 hover:text-black px-4 py-2 rounded-lg border border-gray-700 ">
+                    <button onClick={() => navigate("/upload")} className="hover:bg-purple-300 hover:text-black px-4 py-2 rounded-lg border border-gray-700 shadow-md transform transition active:scale-95 duration-100 ease-in-out">
                         Upload
-                    </button>
+                    </button> 
 
-                    <button onClick={() => navigate("/documents")} className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black">
+      
+
+
+
+          
+
+
+                    
+
+                    <button onClick={() => navigate("/documents")} className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out">
                         Documents
                     </button>
 

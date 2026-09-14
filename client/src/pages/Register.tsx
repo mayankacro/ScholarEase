@@ -1,10 +1,101 @@
+// import { useState } from "react";
+// import api from "../api/axios";
+// import { useNavigate } from "react-router-dom";
+// // import { execArgv } from "process";
+
+// function Register() {
+    
+//     const navigate = useNavigate();
+
+//     const [name, setName] = useState("");
+//     const [email, setEmail] = useState("");
+//     const [password, setPassword] = useState("");
+//     const [scholarshipType, setScholarshipType] = useState("");
+//     const [error, setError] = useState("");
+
+//     const handleRegister = async (e: any) => {
+//         e.preventDefault();
+
+//         setError("");
+
+//         try{
+//             const res = await api.post("/api/auth/register", {
+//                 name,
+//                 email,
+//                 password,
+//                 scholarshipType,
+//             });
+
+//             console.log("Register Response:", res.data);
+
+//             navigate("/login");
+
+//         } catch (error: any){
+//             setError(
+//                 error.response?.data?.message || "Resgistration failed"
+//             );
+//         }
+//     };
+
+//     return (
+//         <div>
+//             <h1>Create Account</h1>
+
+//                 {error && <p>{error}</p>}
+                
+
+//             <form onSubmit={handleRegister}>
+
+
+//                 <input
+//                     type="text"
+//                     placeholder="Name"
+//                     value={name}
+//                     onChange={(e) => setName(e.target.value)}
+//                 />
+
+//                 <input
+//                     type="email"
+//                     placeholder="Email"
+//                     value={email}
+//                     onChange={(e) => setEmail(e.target.value)}
+//                 />
+
+//                 <input
+//                     type="password"
+//                     placeholder="Password"
+//                     value={password}
+//                     onChange={(e) => setPassword(e.target.value)}
+//                 />
+
+//                 <select
+//                     value={scholarshipType}
+//                     onChange={(e) => setScholarshipType(e.target.value)}
+//                 >
+//                     <option value="">Select Category</option>
+//                     <option value="ST">ST</option>
+//                     <option value="SC">SC</option>
+//                     <option value="OBC">OBC</option>
+//                     <option value="General">General</option>
+//                 </select>
+
+//                 <button type="submit">
+//                     Create Account
+//                 </button>
+
+//             </form>
+//         </div>
+//     );
+// }
+
+// export default Register;
+
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-// import { execArgv } from "process";
 
 function Register() {
-    
+
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -13,12 +104,12 @@ function Register() {
     const [scholarshipType, setScholarshipType] = useState("");
     const [error, setError] = useState("");
 
-    const handleRegister = async (e: any) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
 
         setError("");
 
-        try{
+        try {
             const res = await api.post("/api/auth/register", {
                 name,
                 email,
@@ -30,60 +121,260 @@ function Register() {
 
             navigate("/login");
 
-        } catch (error: any){
+        } catch (error: any) {
             setError(
-                error.response?.data?.message || "Resgistration failed"
+                error.response?.data?.message || "Registration failed"
             );
         }
     };
 
     return (
-        <div>
-            <h1>Create Account</h1>
+        <div className="min-h-screen bg-linear-to-b from-[#0c0c0c] via-[#050505] to-[#020202] text-white flex">
 
-                {error && <p>{error}</p>}
-                
+            {/* ================= LOGO ================= */}
 
-            <form onSubmit={handleRegister}>
+            {/* <div className="w-1/2 min-h-screen border-r border-gray-800 px-12 py-8"> */}
+
+            <div className="w-1/2 min-h-screen border-r border-gray-800 px-6 lg:px-12 py-8">
+
+                {/* Logo */}
+                <div className="flex items-center gap-2">
+
+                    <div className="w-7 h-7 rounded-md bg-white flex items-center justify-center text-black font-bold">
+                        Λ
+                    </div>
+
+                    <span className="font-semibold text-lg">
+                        ScholarEase
+                    </span>
+
+                </div>
 
 
-                <input
-                    type="text"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
+                {/* Left Content */}
+                <div className="mt-12 lg:mt-20 max-w-xl">
 
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                    <p className="text-xs tracking-[0.2em] text-blue-400 mb-5">
+                        AI-POWERED DOCUMENT PLATFORM
+                    </p>
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                    <h1 className="text-6xl lg:text-7xl font-semibold leading-[1.05]">
 
-                <select
-                    value={scholarshipType}
-                    onChange={(e) => setScholarshipType(e.target.value)}
-                >
-                    <option value="">Select Category</option>
-                    <option value="ST">ST</option>
-                    <option value="SC">SC</option>
-                    <option value="OBC">OBC</option>
-                    <option value="General">General</option>
-                </select>
+                        Start your
+                        <br />
 
-                <button type="submit">
-                    Create Account
-                </button>
+                        Journey,
+                        <br />
 
-            </form>
+                        <span className="text-gray-700">
+                            with ScholarEase.
+                        </span>
+
+                    </h1>
+
+
+                    <p className="mt-6 text-gray-500 leading-6 max-w-md">
+
+                        Create an account and get started with AI-powered
+                        scholarhip document verification. Fast, simlpe, and secure.                        .
+
+                    </p>
+
+
+                    {/* Features */}
+                    <div className="mt-8 space-y-3 text-sm">
+
+                        <p className="text-gray-500">
+                            <span className="text-green-400 mr-2">
+                                •
+                            </span>
+
+                            Gemini Vision — images and PDFs
+                        </p>
+
+                        <p className="text-gray-500">
+                            <span className="text-green-400 mr-2">
+                                •
+                            </span>
+
+                            Auto fallback — never crashes
+                        </p>
+
+                        <p className="text-gray-500">
+                            <span className="text-green-400 mr-2">
+                                •
+                            </span>
+
+                            Email on admin decision
+                        </p>
+
+                        <p className="text-gray-500">
+                            <span className="text-green-400 mr-2">
+                                •
+                            </span>
+
+                            AI validation online
+                        </p>
+
+                        <p className="text-gray-700">
+                            <span className="mr-2">
+                                •
+                            </span>
+
+                            SC / ST / OBC / General
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {/* RIGHT SIDE */}
+            <div className="flex w-full lg:w-1/2 items-center justify-center px-12 lg:px-8 mt-6">
+
+                <div className="w-full max-w-md">
+
+                    {/* Heading */}
+                    <h2 className="text-2xl font-semibold">
+                        Create account
+                    </h2>
+
+                    <p className="mt-1 text-sm text-zinc-500">
+                        Start your journey with ScholarEase
+                    </p>
+
+
+                    {/* Error */}
+                    {error && (
+                        <div className="mt-5 rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm text-red-400">
+                            {error}
+                        </div>
+                    )}
+
+
+                    <form
+                        onSubmit={handleRegister}
+                        className="mt-7 space-y-5"
+                    >
+
+                        {/* Name */}
+                        <div>
+                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
+                                Full name
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Your full name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-700 focus:border-zinc-500"
+                            />
+                        </div>
+
+
+                        {/* Email */}
+                        <div>
+                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                placeholder="name@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-700 focus:border-zinc-500"
+                            />
+                        </div>
+
+
+                        {/* Password */}
+                        <div>
+                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-zinc-700 focus:border-zinc-500"
+                            />
+                        </div>
+
+
+                        {/* Scholarship Type */}
+                        <div>
+                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
+                                Scholarship category
+                            </label>
+
+                            <select
+                                value={scholarshipType}
+                                onChange={(e) => setScholarshipType(e.target.value)}
+                                required
+                                className="w-full appearance-none rounded-lg border border-zinc-800 bg-black px-4 py-3 text-sm text-white outline-none focus:border-zinc-500"
+                            >
+                                <option value="">
+                                    Select category
+                                </option>
+
+                                <option value="ST">
+                                    ST
+                                </option>
+
+                                <option value="SC">
+                                    SC
+                                </option>
+
+                                <option value="OBC">
+                                    OBC
+                                </option>
+
+                                <option value="General">
+                                    General
+                                </option>
+                            </select>
+                        </div>
+
+
+                        {/* Create Account */}
+                        <button
+                            type="submit"
+                            className="w-full rounded-lg border border-zinc-700 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+                        >
+                            Create account →
+                        </button>
+
+                    </form>
+
+
+                    {/* Login */}
+                    <div className="mt-7 text-center text-sm text-zinc-500">
+
+                        Already have an account?{" "}
+
+                        <button
+                            type="button"
+                            onClick={() => navigate("/login")}
+                            className="text-white hover:underline"
+                        >
+                            Sign in
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
     );
 }

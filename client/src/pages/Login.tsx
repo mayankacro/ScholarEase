@@ -164,8 +164,7 @@ function Login(){
 
             {/* ================= RIGHT SIDE ================= */}
 
-            <div className="mt-25 w-1/2 min-h-screen flex items-start justify-center px-12 lg:px-8 pt-9">
-
+<div className="flex w-full lg:w-1/2 items-center justify-center px-12 lg:px-8 py-10 mt-8">
                 <form
                     onSubmit={handleLogin}
                     className="w-full max-w-md">
