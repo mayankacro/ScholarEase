@@ -163,3 +163,24 @@ export const profile = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+export const getAllStudents = async (req: Request, res: Response) => {
+    try {
+        const students = await User.find({ role: "student" })
+            .select("-password");
+
+        return res.status(200).json({
+            success: true,
+            students,
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch students",
+        });
+    }
+};

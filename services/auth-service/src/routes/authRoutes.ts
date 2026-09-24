@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, profile } from "../controllers/authController";
+import { register, login, profile, getAllStudents } from "../controllers/authController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
 // import { register, login, profile } from "../controllers/authController";
@@ -13,12 +13,20 @@ router.post("/register", register); //ye ek traffic police ki tarah kaam krta h 
 router.post("/login", login);
 router.get("/profile", authMiddleware, profile);
 
+router.get(
+    "/students",
+    authMiddleware,
+    roleMiddleware(["admin"]),
+    getAllStudents
+);
+
 router.get("/admin", authMiddleware, roleMiddleware(["admin"]), (req, res) => {
     res.json({
         success: true,
-        message: "Welcome Admin",
+        message: "Welcome Admin to the admin dashboard",
     });
  }
 ); 
+
 
 export default router;

@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoutes";
 import Register from "./pages/Register";
 import Upload from "./pages/Upload";
 import Documents from "./pages/Documents";
+import AdminStudentDetails from "./pages/AdminStudentDetails";
 
 
 function App() {
@@ -39,23 +40,36 @@ function App() {
           path="/upload"
           element={
             <ProtectedRoute allowedRole="student">
-              <Upload/>
+              <Upload />
             </ProtectedRoute>
           }
 
-          
+
         />
 
         <Route
-    path="/documents"
-    element={
-        <ProtectedRoute allowedRole="student">
-            <Documents />
-        </ProtectedRoute>
-    }
-/>
+          path="/documents"
+          element={
+            <ProtectedRoute allowedRole="student">
+              <Documents />
+            </ProtectedRoute>
+          }
+        />
 
+      <Route
+        path="/admin/student/:studentId"
+        element={
+          <ProtectedRoute allowedRole="admin">
+            <AdminStudentDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      
       </Routes>
+
+
+
     </BrowserRouter>
   );
 }

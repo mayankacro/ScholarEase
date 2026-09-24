@@ -10,7 +10,7 @@ import {
     GraduationCap,
 } from "lucide-react";
 
-function Register() {
+function Register() { 
 
     const navigate = useNavigate();
 
