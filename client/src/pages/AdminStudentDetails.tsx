@@ -13,43 +13,75 @@ function AdminStudentDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [updatingDocument, setUpdatingDocument] = useState<string | null>(null);
+    const [validatingDocument, setValidatingDocument] = useState<string | null>(null);
+
+    const updateDocumentStatus = async (
+        documentId: string,
+        status: "approved" | "rejected"
+    ) => {
+        try {
+            setUpdatingDocument(documentId);
+
+            const res = await api.patch(
+                `/api/documents/${documentId}/status`,
+                { status }
+            );
+
+            console.log("Status updated:", res.data);
+
+            // UI me immediately updated document dikhao
+            setDocuments((prevDocuments) =>
+                prevDocuments.map((doc) =>
+                    doc._id === documentId
+                        ? { ...doc, status }
+                        : doc
+                )
+            );
+
+        } catch (error: any) {
+            console.error("Failed to update document status:", error);
+
+            alert(
+                error.response?.data?.message ||
+                "Failed to update document status"
+            );
+        } finally {
+            setUpdatingDocument(null);
+        }
+    };
+
+    const validateDocumentAI = async (documentId: string) => {
+        try {
+            setValidatingDocument(documentId);
+
+            const res = await api.patch(
+                `/api/documents/${documentId}/validate-ai`
+            );
+
+            console.log("AI validation result:", res.data);
+
+            setDocuments((prevDocuments) =>
+                prevDocuments.map((doc) =>
+                    doc._id === documentId
+                        ? res.data.document
+                        : doc
+                )
+            );
+
+        } catch (error: any) {
+            console.error("AI validation failed:", error);
+
+            alert(
+                error.response?.data?.message ||
+                "AI validation failed"
+            );
+        } finally {
+            setValidatingDocument(null);
+        }
+    };
 
     useEffect(() => {
 
-        const updateDocumentStatus = async (
-            documentId: string,
-            status: "approved" | "rejected"
-        ) => {
-            try {
-                setUpdatingDocument(documentId);
-
-                const res = await api.patch(
-                    `/api/documents/${documentId}/status`,
-                    { status }
-                );
-
-                console.log("Status updated:", res.data);
-
-                // UI me immediately updated document dikhao
-                setDocuments((prevDocuments) =>
-                    prevDocuments.map((doc) =>
-                        doc._id === documentId
-                            ? { ...doc, status }
-                            : doc
-                    )
-                );
-
-            } catch (error: any) {
-                console.error("Failed to update document status:", error);
-
-                alert(
-                    error.response?.data?.message ||
-                    "Failed to update document status"
-                );
-            } finally {
-                setUpdatingDocument(null);
-            }
-        };
 
         const fetchStudentDetails = async () => {
 
@@ -218,7 +250,7 @@ function AdminStudentDetails() {
 
                                 <div
                                     key={document._id}
-                                    className="px-5 py-4 flex items-center justify-between"
+                                    className="px-5 py-4 grid grid-cols-[1fr_80px_100px_260px] items-center gap-4"
                                 >
 
                                     <div>
@@ -231,6 +263,19 @@ function AdminStudentDetails() {
                                             AI: {document.aiStatus}
                                         </p>
 
+                                        <p className="text-xs text-zinc-500 mt-1 max-w-md truncate">
+                                            {document.aiRemarks || "No AI remarks available"}
+                                        </p>
+
+                                        {document.actionRequired && (
+                                            <p className="text-xs text-orange-400 mt-1">
+                                                Action:{" "}
+                                                {document.actionRequired === "reupload_clearer_image"
+                                                    ? "Re-upload a clearer image"
+                                                    : "Re-upload the correct document"}
+                                            </p>
+                                        )}
+
 
 
                                     </div>
@@ -241,36 +286,74 @@ function AdminStudentDetails() {
 
 
 
-
-
-                                        <span className="text-xs text-zinc-400 text-center">
+                                    <div className="text-center mr-15">
+                                        <span className="text-xs text-zinc-400">
                                             {document.aiConfidence}%
                                         </span>
+                                    </div>
 
-                                    <div className="flex items-center gap-5">
-                                    <a
-                                        href={document.fileUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition "
-                                    >
-                                        View
-                                        <ExternalLink className="h-3 w-3" />
-                                    </a>
-
-
+                                    <div className="flex justify-center mr-20">
                                         <span
                                             className={`px-3 py-1 rounded-md border text-xs ${document.status === "approved"
-                                                    ? "border-green-500/30 bg-green-500/10 text-green-400"
-                                                    : document.status === "rejected"
-                                                        ? "border-red-500/30 bg-red-500/10 text-red-400"
-                                                        : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
+                                                ? "border-green-500/30 bg-green-500/10 text-green-400"
+                                                : document.status === "rejected"
+                                                    ? "border-red-500/30 bg-red-500/10 text-red-400"
+                                                    : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
                                                 }`}
                                         >
                                             {document.status}
                                         </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-3.5">
+
+                                        <a
+                                            href={document.fileUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition"
+                                        >
+                                            View
+                                            <ExternalLink className="h-3 w-3" />
+                                        </a>
+
+                                        <button
+                                            onClick={() => validateDocumentAI(document._id)}
+                                            disabled={validatingDocument === document._id}
+                                            className="w-24 px-3 py-1.5 rounded-md border border-blue-500/30 text-blue-400 text-xs whitespace-nowrap hover:bg-blue-500/10 transition disabled:opacity-50"
+                                        >
+                                            {validatingDocument === document._id
+                                                ? "Validating..."
+                                                : "Re-run AI"}
+                                        </button>
+
+
+
+                                        <button
+                                            onClick={() =>
+                                                updateDocumentStatus(document._id, "approved")
+                                            }
+                                            disabled={updatingDocument === document._id}
+                                            className="px-3 py-1.5 rounded-md border border-green-500/30 text-green-400 text-xs hover:bg-green-500/10 transition disabled:opacity-50"
+                                        >
+                                            Approve
+                                        </button>
+
+
+
+                                        <button
+                                            onClick={() =>
+                                                updateDocumentStatus(document._id, "rejected")
+                                            }
+                                            disabled={updatingDocument === document._id}
+                                            className="px-3 py-1.5 rounded-md border border-red-500/30 text-red-400 text-xs hover:bg-red-500/10 transition disabled:opacity-50"
+                                        >
+                                            Reject
+                                        </button>
 
                                     </div>
+
+
 
                                 </div>
 
