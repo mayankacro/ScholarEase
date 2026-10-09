@@ -23,6 +23,8 @@ function StudentDashboard() {
     const [checklist, setChecklist] = useState<any>(null);
     // const [loading, setLoading] = useState(true);
     // const [error, setError] = useState("");
+    const [applicationStatus, setApplicationStatus] = useState("pending");
+const [applicationRemarks, setApplicationRemarks] = useState("");
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -62,6 +64,27 @@ function StudentDashboard() {
 
         fetchChecklist();
 
+        const fetchApplicationStatus = async () => {
+    try {
+        const res = await api.get("/api/auth/profile");
+
+        console.log("Profile:", res.data);
+        setApplicationStatus(
+    res.data.user.finalApplicationStatus || "pending"
+);
+
+setApplicationRemarks(
+    res.data.user.applicationRemarks || ""
+);
+
+        // Response structure verify karne ke baad
+        // yahan final application status set karenge.
+    } catch (error) {
+        console.error("Failed to fetch application status:", error);
+    }
+};
+
+fetchApplicationStatus();
 
     }, []);
 
@@ -86,10 +109,9 @@ function StudentDashboard() {
     //     </div>
     // );
 
-    const verifiedDocuments = documents.filter(
-        (doc) => doc.status === "verified"
-
-    );
+   const verifiedDocuments = documents.filter(
+    (doc) => doc.status === "approved"
+);
 
     console.log("verified doc:", verifiedDocuments);
     console.log("verified count:", verifiedDocuments.length);
@@ -302,6 +324,40 @@ function StudentDashboard() {
 
                 </div>
 
+                <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+    <p className="text-xs uppercase tracking-wider text-zinc-500">
+        Scholarship Application Status
+    </p>
+
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-semibold">
+            {applicationStatus === "approved"
+                ? "Application Approved"
+                : applicationStatus === "rejected"
+                ? "Application Rejected"
+                : "Application Under Review"}
+        </h2>
+
+        <span
+            className={`rounded-full border px-3 py-1 text-xs ${
+                applicationStatus === "approved"
+                    ? "border-green-500/30 bg-green-500/10 text-green-400"
+                    : applicationStatus === "rejected"
+                    ? "border-red-500/30 bg-red-500/10 text-red-400"
+                    : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
+            }`}
+        >
+            {applicationStatus.toUpperCase()}
+        </span>
+    </div>
+
+    {applicationRemarks && (
+        <p className="mt-3 text-sm text-zinc-400">
+            Admin remarks: {applicationRemarks}
+        </p>
+    )}
+</div>
+
                 <div>
 
                     <div className="stats-container">
@@ -313,12 +369,11 @@ function StudentDashboard() {
 
                         </div>
 
-                        <div className="stat-card verified-card" >
-                            <p>VERIFIED</p>
-                            <h2>{verifiedDocuments.length}</h2>
-                            <p>Done</p>
-
-                        </div>
+                        <div className="stat-card verified-card">
+    <p>APPROVED</p>
+    <h2>{verifiedDocuments.length}</h2>
+    <p>Documents approved by admin</p>
+</div>
 
                         <div className="stat-card pending-card" >
                             <p>PENDING</p>
