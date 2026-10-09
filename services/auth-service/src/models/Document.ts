@@ -25,6 +25,16 @@ const documentSchema = new mongoose.Schema(
             required: true,
         },
 
+        publicId: {
+    type: String,
+    
+},
+
+resourceType: {
+    type: String,
+    enum: ["image", "raw", "video"],
+},
+
         status: { // admin ke lie 
             type: String,
             enum: ["pending", "approved", "rejected"],

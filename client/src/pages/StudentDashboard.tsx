@@ -164,6 +164,23 @@ fetchApplicationStatus();
         (doc: { name: String; uploaded: Boolean; }) => doc.uploaded
     ).length;
 
+    const allRequiredUploaded =
+    documentStatus.length > 0 &&
+    documentStatus.every((doc: any) => doc.uploaded);
+
+const allAIValidated =
+    documents.length > 0 &&
+    documents.every(
+        (doc) => doc.aiStatus !== "pending"
+    );
+
+const allDocumentsReviewed =
+    documents.length > 0 &&
+    documents.every(
+        (doc) =>
+            doc.status === "approved" ||
+            doc.status === "rejected"
+    );
 
     //     const requiredDocuments = [
     //     "Aadhaar card",
@@ -456,54 +473,130 @@ fetchApplicationStatus();
 
                         <div className="progress-step">
 
-                            <span className="step-icon">✓</span>
+                            
+<span className="step-icon">
+  {allRequiredUploaded ? "✓" : "→"}
+</span>
 
-                            <div>
-                                <h3>Documents uploaded</h3>
+<div>
+  <h3>Documents uploaded</h3>
 
-                                <p>{uploadedRequiredCount} of {documentStatus.length} completed</p>
+  <p>
+    {uploadedRequiredCount} of {documentStatus.length} completed
+  </p>
 
-                                <span className="step-status done">Done</span>
-                            </div>
+  <span
+    className={`step-status ${
+      allRequiredUploaded ? "done" : "progress"
+    }`}
+  >
+    {allRequiredUploaded ? "Done" : "In progress"}
+  </span>
+</div>
 
-                        </div>
-
-                        <div className="progress-step">
-
-                            <span className="step-icon">✓</span>
-
-                            <div>
-                                <h3>AI validation</h3>
-
-                                <p>Documents are being validated</p>
-
-                                <span className="step-status done">Done</span>
-                            </div>
 
                         </div>
 
                         <div className="progress-step">
-                            <span className="step-icon">→</span>
 
-                            <div>
-                                <h3>Admin review</h3>
+                            
+<span className="step-icon">
+  {allAIValidated ? "✓" : "→"}
+</span>
 
-                                <p>Waiting for admin approval</p>
+<div>
+  <h3>AI Validation</h3>
 
-                                <span className="step-status progress">In progress</span>
-                            </div>
+  <p>
+    {allAIValidated
+      ? "All uploaded documents have been checked"
+      : "AI is checking your uploaded documents"}
+  </p>
+
+  <span
+    className={`step-status ${
+      allAIValidated ? "done" : "progress"
+    }`}
+  >
+    {allAIValidated ? "Done" : "In progress"}
+  </span>
+</div>
+
+
                         </div>
 
                         <div className="progress-step">
-                            <span className="step-icon">○</span>
+                            
+<span className="step-icon">
+  {allDocumentsReviewed ? "✓" : "→"}
+</span>
 
-                            <div>
-                                <h3>Scholarship approved</h3>
+<div>
+  <h3>Admin Review</h3>
 
-                                <p>Final decision pending</p>
+  <p>
+    {allDocumentsReviewed
+      ? "All uploaded documents have been reviewed"
+      : allAIValidated
+        ? "Waiting for admin to review documents"
+        : "Review will progress after AI validation"}
+  </p>
 
-                                <span className="step-status pending">Pending</span>
-                            </div>
+  <span
+    className={`step-status ${
+      allDocumentsReviewed ? "done" : "progress"
+    }`}
+  >
+    {allDocumentsReviewed ? "Done" : "In progress"}
+  </span>
+</div>
+
+                        </div>
+
+                        <div className="progress-step">
+                            
+<span className="step-icon">
+  {applicationStatus === "approved"
+    ? "✓"
+    : applicationStatus === "rejected"
+      ? "✕"
+      : "○"}
+</span>
+
+<div>
+  <h3>
+    {applicationStatus === "approved"
+      ? "Scholarship Approved"
+      : applicationStatus === "rejected"
+        ? "Application Rejected"
+        : "Final Decision"}
+  </h3>
+
+  <p>
+    {applicationStatus === "approved"
+      ? "Congratulations! Your application has been approved."
+      : applicationStatus === "rejected"
+        ? applicationRemarks || "Your application was rejected."
+        : "Your final application decision is pending."}
+  </p>
+
+  <span
+    className={`step-status ${
+      applicationStatus === "approved"
+        ? "done"
+        : applicationStatus === "rejected"
+          ? "rejected"
+          : "pending"
+    }`}
+  >
+    {applicationStatus === "approved"
+      ? "Approved"
+      : applicationStatus === "rejected"
+        ? "Rejected"
+        : "Pending"}
+  </span>
+</div>
+
                         </div>
                     </div>
                 </div>

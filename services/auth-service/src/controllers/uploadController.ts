@@ -42,14 +42,39 @@ export const uploadDocument = async (req: Request, res: Response) => {
         const studentId = (req as any).user.userId;
 
         const { documentType, scholarshipType } = req.body;
+const existingDocument = await Document.findOne({
+    studentId,
+    documentType,
+    scholarshipType,
+});
 
-        const document = await Document.create({
-            studentId,
-            documentType,
-            scholarshipType,
-            fileUrl: result.secure_url,
-        })
+const oldPublicId = existingDocument?.publicId;
+const oldResourceType = existingDocument?.resourceType;
 
+let document;
+
+if (existingDocument) {
+    existingDocument.fileUrl = result.secure_url;
+    existingDocument.publicId = result.public_id;
+    existingDocument.resourceType = result.resource_type;    existingDocument.status = "pending";
+    existingDocument.aiStatus = "pending";
+    existingDocument.aiRemarks = "";
+    existingDocument.aiConfidence = 0;
+    existingDocument.actionRequired = null;
+
+    document = existingDocument;
+} else {
+    document = new Document({
+    studentId,
+    documentType,
+    scholarshipType,
+    fileUrl: result.secure_url,
+    publicId: result.public_id,
+    resourceType: result.resource_type,
+});
+}
+
+await document.save();
 
         try {
             console.log("Auto-triggering AI validation...");
@@ -91,6 +116,29 @@ export const uploadDocument = async (req: Request, res: Response) => {
         }
         // ============================================
 
+        // Delete the old Cloudinary file after the replacement is saved
+if (
+    oldPublicId &&
+    oldResourceType &&
+    oldPublicId !== result.public_id
+) {
+    try {
+        const deletionResult = await cloudinary.uploader.destroy(
+            oldPublicId,
+            {
+                resource_type: oldResourceType,
+            }
+        );
+
+        console.log("Old Cloudinary file deletion:", deletionResult);
+    } catch (cleanupError) {
+        console.error(
+            "Failed to delete old Cloudinary file:",
+            cleanupError
+        );
+    }
+}
+        
         return res.status(200).json({
             success: true,
             message: "Document uploaded and validated",
