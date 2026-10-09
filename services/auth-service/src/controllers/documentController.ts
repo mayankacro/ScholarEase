@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import Document from "../models/Document";
 import User from "../models/User";
 import { sendStatusEmail } from "../services/notificationService";
+import { sendFinalApplicationEmail } from "../services/notificationService";
 
 
 
@@ -105,6 +106,91 @@ export const updateDocumentStatus = async (req: Request, res: Response) => {
         return res.status(500).json({
             success: false,
             message: "Failed to update status",
+        });
+    }
+};
+
+
+export const updateFinalApplicationStatus = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const { studentId } = req.params;
+        const { status, remarks } = req.body;
+
+        if (!["approved", "rejected"].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Status must be approved or rejected",
+            });
+        }
+
+        if (status === "rejected" && !remarks?.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a rejection reason",
+            });
+        }
+
+        const student = await User.findOne({
+            _id: studentId,
+            role: "student",
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        const requiredDocuments = await Document.find({ studentId: student._id }); //why direct studentId use nahi kiya? kyuki studentId string h aur Document.find() ko ObjectId chahiye, isliye student._id use kiya
+
+        if (requiredDocuments.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Student has not uploaded any documents",
+            });
+        }
+
+        if (
+            status === "approved" &&
+            requiredDocuments.some((doc) => doc.status !== "approved")
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Approve all uploaded documents before final approval",
+            });
+        }
+
+        student.finalApplicationStatus = status;
+        student.applicationRemarks = remarks?.trim() || "";
+
+        await student.save();
+
+        await sendFinalApplicationEmail(
+    student.email,
+    student.name,
+    status,
+    student.applicationRemarks
+);
+
+        return res.status(200).json({
+            success: true,
+            message: `Application ${status} successfully`,
+            student: {
+                _id: student._id,
+                finalApplicationStatus: student.finalApplicationStatus,
+                applicationRemarks: student.applicationRemarks,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update final application status",
         });
     }
 };

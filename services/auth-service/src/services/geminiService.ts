@@ -30,15 +30,15 @@ Carefully look at the attached image and evaluate:
 
 Respond ONLY with valid JSON, no markdown formatting, no extra text:
 {
-  "status": "valid" | "invalid" | "manual_review",
+  "status": "Valid" | "Invalid" | "Manual_review",
   "remarks": "short clear explanation, max 2 sentences, simple English",
   "confidence": number between 0-100
 }
 
 Rules for status:
-- "valid" if confidence >= 85 and document type matches and image is clear
-- "manual_review" if confidence is between 50-84
-- "invalid" if confidence < 50, OR image too blurry to read, OR document type clearly doesn't match
+- "Valid" if confidence >= 85 and document type matches and image is clear
+- "Manual_review" if confidence is between 50-84
+- "Invalid" if confidence < 50, OR image too blurry to read, OR document type clearly doesn't match
 `;
 
     // Step 3 — Gemini ko image + text dono bhejo

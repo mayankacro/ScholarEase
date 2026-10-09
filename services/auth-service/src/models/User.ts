@@ -24,11 +24,21 @@ const userschema = new mongoose.Schema(
             enum: ["student", "admin", "officer"],
             default: "student",
         },
-        
+
         scholarshipType: {
             type: String,
             enum: ["ST", "SC", "OBC", "General"],
             required: true,
+        },
+
+        finalApplicationStatus: {
+            type: String,
+            enum: ["pending", "approved", "rejected"],
+            default: "pending",
+        },
+        applicationRemarks: {
+            type: String,
+            default: "",
         },
     },
 

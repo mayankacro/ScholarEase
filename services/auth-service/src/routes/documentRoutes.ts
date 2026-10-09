@@ -6,6 +6,7 @@ import { roleMiddleware } from "../middleware/roleMiddleware";
 import { updateDocumentStatus } from "../controllers/documentController";
 import { getDocumentStats } from "../controllers/documentController";
 import { validateDocumentAI } from "../controllers/documentController";
+import { updateFinalApplicationStatus } from "../controllers/documentController";
 
 const router = express.Router();
 
@@ -21,5 +22,11 @@ router.get("/stats", authMiddleware, roleMiddleware(["admin"]), getDocumentStats
 
 router.patch("/:id/validate-ai", authMiddleware, roleMiddleware(["admin"]), validateDocumentAI);
 
+router.patch(
+    "/students/:studentId/final-status",
+    authMiddleware,
+    roleMiddleware(["admin"]),
+    updateFinalApplicationStatus
+);
 
 export default router;

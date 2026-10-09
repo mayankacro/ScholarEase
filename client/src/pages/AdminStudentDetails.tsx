@@ -14,6 +14,8 @@ function AdminStudentDetails() {
     const [error, setError] = useState("");
     const [updatingDocument, setUpdatingDocument] = useState<string | null>(null);
     const [validatingDocument, setValidatingDocument] = useState<string | null>(null);
+    const [finalRemarks, setFinalRemarks] = useState("");
+    const [finalizingApplication, setFinalizingApplication] = useState(false);
 
     const updateDocumentStatus = async (
         documentId: string,
@@ -49,6 +51,54 @@ function AdminStudentDetails() {
             setUpdatingDocument(null);
         }
     };
+
+    
+const handleFinalDecision = async (
+    status: "approved" | "rejected"
+) => {
+    if (status === "rejected" && !finalRemarks.trim()) {
+        alert("Please enter a rejection reason.");
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `Are you sure you want to ${status} this entire application?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        setFinalizingApplication(true);
+
+        const res = await api.patch(
+            `/api/documents/students/${studentId}/final-status`,
+            {
+                status,
+                remarks: finalRemarks,
+            }
+        );
+
+        setStudent((prevStudent: any) => ({
+            ...prevStudent,
+            finalApplicationStatus:
+                res.data.student.finalApplicationStatus,
+            applicationRemarks:
+                res.data.student.applicationRemarks,
+        }));
+
+        alert(res.data.message);
+
+    } catch (error: any) {
+        console.error("Final decision failed:", error);
+
+        alert(
+            error.response?.data?.message ||
+            "Failed to update application status"
+        );
+    } finally {
+        setFinalizingApplication(false);
+    }
+};
 
     const validateDocumentAI = async (documentId: string) => {
         try {
@@ -351,7 +401,11 @@ function AdminStudentDetails() {
                                             Reject
                                         </button>
 
+                                        
+
                                     </div>
+
+                                    
 
 
 
@@ -365,7 +419,86 @@ function AdminStudentDetails() {
 
                 </div>
 
+                
+{/* Final Application Decision */}
+<div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+
+    <h2 className="text-lg font-semibold">
+        Final Application Decision
+    </h2>
+
+    <p className="text-sm text-zinc-500 mt-1">
+        Review all documents before making the final decision.
+    </p>
+
+    <div className="mt-4">
+        <p className="text-sm text-zinc-400 mb-2">
+            Current Application Status
+        </p>
+
+        <span
+            className={`inline-flex px-3 py-1 rounded-md border text-xs ${
+                student.finalApplicationStatus === "approved"
+                    ? "border-green-500/30 bg-green-500/10 text-green-400"
+                    : student.finalApplicationStatus === "rejected"
+                    ? "border-red-500/30 bg-red-500/10 text-red-400"
+                    : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
+            }`}
+        >
+            {student.finalApplicationStatus || "pending"}
+        </span>
+    </div>
+
+    <div className="mt-5">
+        <label className="block text-sm text-zinc-300 mb-2">
+            Final Remarks
+        </label>
+
+        <textarea
+            value={finalRemarks}
+            onChange={(e) => setFinalRemarks(e.target.value)}
+            placeholder="Enter approval remarks or rejection reason..."
+            rows={3}
+            className="w-full rounded-lg border border-zinc-800 bg-black px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
+        />
+    </div>
+
+    <div className="mt-5 flex flex-wrap gap-3">
+
+        <button
+            onClick={() => handleFinalDecision("approved")}
+            disabled={
+                finalizingApplication ||
+                student.finalApplicationStatus === "approved"
+            }
+            className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-500 transition disabled:opacity-50"
+        >
+            {finalizingApplication
+                ? "Processing..."
+                : "Approve Application"}
+        </button>
+
+        <button
+            onClick={() => handleFinalDecision("rejected")}
+            disabled={
+                finalizingApplication ||
+                student.finalApplicationStatus === "rejected"
+            }
+            className="px-4 py-2 rounded-lg border border-red-500/40 text-red-400 text-sm hover:bg-red-500/10 transition disabled:opacity-50"
+        >
+            {finalizingApplication
+                ? "Processing..."
+                : "Reject Application"}
+        </button>
+
+    </div>
+
+</div>
+
+
             </main>
+
+            
 
         </div>
     );
