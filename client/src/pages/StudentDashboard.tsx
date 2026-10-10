@@ -11,7 +11,12 @@ function StudentDashboard() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     const nameParts = user.name.split(" ");
-    const initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+    const initials = nameParts
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part: string) => part.charAt(0))
+  .join("")
+  .toUpperCase() || "S";
     // console.log("Name Parts:", nameParts);
     // console.log("First Initial:", nameParts[0].charAt(0));
     // console.log("Second Initial:", nameParts[1].charAt(0));

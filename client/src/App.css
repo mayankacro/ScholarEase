@@ -464,10 +464,23 @@
     color: #8b5cf6;
 }
 
-.progress-step:nth-child(5) .step-icon {
-    border-color: #27272a;
-    color: #52525b;
+
+/* Final application decision states */
+.progress-step:last-child .step-icon {
+  border-color: #3f3f46;
+  color: #a1a1aa;
 }
+
+.progress-step:last-child .step-icon:has(+ div .step-status.done) {
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.progress-step:last-child .step-icon:has(+ div .step-status.rejected) {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
 
 .step-status {
     display: inline-block;
@@ -507,4 +520,233 @@
 
 html {
     overflow-y: scroll;
+}
+
+
+
+/* ScholarEase dashboard UI refinements */
+
+.dashboard-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+  box-sizing: border-box;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  min-width: 0;
+  height: auto;
+  min-height: 145px;
+  padding: 22px;
+  background: linear-gradient(145deg, #141414, #0d0d0d);
+  border: 1px solid #292929;
+  border-radius: 14px;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.stat-card:hover {
+  border-color: #444;
+  transform: translateY(-2px);
+}
+
+.dashboard-container > .mb-6 {
+  background: linear-gradient(110deg, #121212, #0c0c0c);
+  border-color: #303030;
+  padding: 24px;
+}
+
+.dashboard-container .grid.grid-cols-1.lg\:grid-cols-2 {
+  align-items: stretch;
+  gap: 20px;
+}
+
+.dashboard-container .grid.grid-cols-1.lg\:grid-cols-2 > div {
+  min-width: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.checklist-item {
+  gap: 12px;
+  padding: 14px 0;
+  transition: background 180ms ease;
+}
+
+.document-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.document-confidence,
+.document-status {
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  height: 5px;
+  overflow: hidden;
+  background: #27272a;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.progress-step {
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.progress-step:not(:last-child)::after {
+  height: calc(100% + 4px);
+  min-height: 30px;
+}
+
+.application-progress {
+  min-height: 100%;
+}
+
+@media (max-width: 900px) {
+  .dashboard-container {
+    padding: 24px 20px 32px;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-container {
+    padding: 20px 14px 28px;
+  }
+
+  .stats-container {
+    gap: 10px;
+  }
+
+  .stat-card {
+    min-height: 125px;
+    padding: 16px;
+  }
+
+  .stat-card h2 {
+    font-size: 28px;
+  }
+
+  nav {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    gap: 8px;
+  }
+
+  nav > div:nth-child(2) {
+    gap: 6px;
+  }
+
+  nav > div:nth-child(2) button {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+
+  .dashboard-container .mb-6 {
+    padding: 18px;
+  }
+
+  .checklist-item {
+    gap: 8px;
+    padding: 12px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .progress-fill {
+    transition: none;
+  }
+}
+
+
+/* Compact single-screen dashboard */
+@media (min-width: 1100px) and (min-height: 750px) {
+  .dashboard-container {
+    padding: 16px 24px 20px;
+  }
+
+  .dashboard-container > div:first-child {
+    margin-bottom: 0;
+  }
+
+  .dashboard-container > div:first-child h1 {
+    font-size: 20px;
+  }
+
+  .dashboard-container > div:first-child p {
+    margin-top: 2px;
+  }
+
+  .dashboard-container > div:first-child br {
+    display: none;
+  }
+
+  .dashboard-container > .mb-6 {
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .dashboard-container .stats-container {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .dashboard-container .stat-card {
+    min-height: 112px;
+    padding: 14px 18px;
+  }
+
+  .dashboard-container .stat-card h2 {
+    font-size: 26px;
+    margin: 6px 0;
+  }
+
+  .dashboard-container .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 16px;
+  }
+
+  .dashboard-container .grid.grid-cols-1.lg\:grid-cols-2 > div {
+    padding: 16px;
+  }
+
+  .checklist-item {
+    padding: 9px 0;
+  }
+
+  .application-progress h2 {
+    margin-bottom: 14px;
+  }
+
+  .progress-step {
+    padding-bottom: 12px;
+  }
+
+  .progress-step p {
+    margin: 3px 0 6px;
+  }
+
+  .progress-step:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
 }
