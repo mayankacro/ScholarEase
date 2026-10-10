@@ -53,6 +53,23 @@ const oldResourceType = existingDocument?.resourceType;
 
 let document;
 
+if (
+    existingDocument &&
+    existingDocument.status !== "rejected"
+) {
+    // Newly uploaded Cloudinary file ko delete karo,
+    // kyunki existing document replace nahi kar sakte.
+    await cloudinary.uploader.destroy(result.public_id, {
+        resource_type: result.resource_type,
+    });
+
+    return res.status(409).json({
+        success: false,
+        message:
+            "This document already exists and is not rejected. Only rejected documents can be replaced.",
+    });
+}
+
 if (existingDocument) {
     existingDocument.fileUrl = result.secure_url;
     existingDocument.publicId = result.public_id;

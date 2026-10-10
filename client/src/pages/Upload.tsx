@@ -22,6 +22,7 @@ function Upload() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
     const [uploadedDocument, setUploadedDocument] = useState<any>(null);
+    const [existingDocuments, setExistingDocuments] = useState<any[]>([]);
 
 
 
@@ -115,6 +116,9 @@ function Upload() {
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
 
         e.preventDefault();
+        if (isExistingDocument && !isRejectedDocument) {
+    return;
+}
         setIsDragging(false);
 
         const file = e.dataTransfer.files?.[0];
@@ -163,7 +167,41 @@ function Upload() {
 
         fetchChecklist();
 
+        const fetchExistingDocuments = async () => {
+    try {
+        const res = await api.get("/api/documents/my-documents");
+        setExistingDocuments(res.data.documents || []);
+    } catch (error) {
+        console.error("Failed to fetch existing documents:", error);
+    }
+};
+
+fetchExistingDocuments();
+
     }, []);
+
+    
+const selectedExistingDocument = existingDocuments.find(
+    (doc) =>
+        doc.documentType === selectedDocument &&
+        doc.scholarshipType === user.scholarshipType
+);
+
+const isRejectedDocument =
+    selectedExistingDocument?.status?.toLowerCase() === "rejected";
+
+    
+const existingStatus = String(
+    selectedExistingDocument?.status ?? ""
+).toLowerCase();
+
+const isApprovedDocument = existingStatus === "approved";
+
+const isPendingDocument = existingStatus === "pending";
+
+const isExistingDocument = Boolean(selectedExistingDocument);
+
+
 
     const aiStatus = String(uploadedDocument?.aiStatus ?? "")
         .trim()
@@ -347,12 +385,43 @@ function Upload() {
                     </div>
                 </div>
 
+                
+{selectedExistingDocument && (
+    <div
+        className={`mb-5 rounded-xl border p-4 ${
+            isRejectedDocument
+                ? "border-red-500/30 bg-red-500/5"
+                : isApprovedDocument
+                ? "border-green-500/30 bg-green-500/5"
+                : "border-yellow-500/30 bg-yellow-500/5"
+        }`}
+    >
+        <p className="text-sm font-medium">
+            {isRejectedDocument
+                ? "Document Rejected — Replacement Allowed"
+                : isApprovedDocument
+                ? "Document Already Approved"
+                : "Document Awaiting Review"}
+        </p>
+
+        <p className="mt-1 text-xs text-zinc-400">
+            {isRejectedDocument
+                ? "Upload a corrected document to replace the rejected file."
+                : isApprovedDocument
+                ? "This document is already approved and cannot be replaced."
+                : "Please wait for admin review before uploading this document again."}
+        </p>
+    </div>
+)}
+
+
 
                 {/* Upload Area */}
                 <div
-                    onClick={() =>
-                        document.getElementById("fileInput")?.click()
-                    }
+                    onClick={() => {
+    if (isExistingDocument && !isRejectedDocument) return;
+    document.getElementById("fileInput")?.click();
+}}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -443,8 +512,13 @@ function Upload() {
                 <button
                     type="button"
                     onClick={handleUpload}
-                    disabled={isUploading || !selectedFile || !selectedDocument}
-                    className="mt-6 w-full rounded-xl bg-purple-400 px-6 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+disabled={
+    isUploading ||
+    !selectedFile ||
+    !selectedDocument ||
+    (isExistingDocument && !isRejectedDocument)
+}              
+      className="mt-6 w-full rounded-xl bg-purple-400 px-6 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                    
 {isUploading ? (
@@ -452,9 +526,13 @@ function Upload() {
     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
     Uploading & Validating...
   </span>
+
 ) : (
-  "Upload Document"
+  isRejectedDocument
+    ? "Replace Rejected Document"
+    : "Upload Document"
 )}
+
 
                 </button>
 

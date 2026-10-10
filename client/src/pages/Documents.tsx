@@ -11,6 +11,32 @@ function Documents() {
     const initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
 
     const [documents, setDocuments] = useState<any[]>([]);
+
+    
+const [searchTerm, setSearchTerm] = useState("");
+const [aiFilter, setAiFilter] = useState("all");
+const [adminFilter, setAdminFilter] = useState("all");
+
+const filteredDocuments = documents.filter((document) => {
+    const matchesSearch = String(document.documentType || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const aiStatus = String(document.aiStatus || "pending").toLowerCase();
+    const adminStatus = String(document.status || "pending").toLowerCase();
+
+    const matchesAI =
+        aiFilter === "all" ||
+        aiStatus === aiFilter;
+
+    const matchesAdmin =
+        adminFilter === "all" ||
+        adminStatus === adminFilter;
+
+    return matchesSearch && matchesAI && matchesAdmin;
+});
+
+
     const [loading, setLoading] = useState(true);
     const [showProfile, setShowProfile] = useState(false);
 
@@ -39,7 +65,10 @@ function Documents() {
         };
 
         fetchDocuments();
+
     }, []);
+
+    
 
 
     return (
@@ -158,30 +187,76 @@ function Documents() {
                             Total documents: {documents.length}
                         </p>
 
+                        
+<div className="mt-4 flex flex-col gap-3 md:flex-row">
+    <div className="relative flex-1">
+        <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search documents..."
+            className="w-full rounded-lg border border-zinc-800 bg-[#111] px-4 py-3 pl-10 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
+        />
+        <span className="absolute left-3 top-3 text-zinc-500">
+            ⌕
+        </span>
+    </div>
+
+    <select
+        value={aiFilter}
+        onChange={(e) => setAiFilter(e.target.value)}
+        className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
+    >
+        <option value="all">All AI statuses</option>
+        <option value="valid">AI Valid</option>
+        <option value="invalid">AI Invalid</option>
+        <option value="manual_review">Manual Review</option>
+        <option value="pending">AI Pending</option>
+    </select>
+
+    <select
+        value={adminFilter}
+        onChange={(e) => setAdminFilter(e.target.value)}
+        className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
+    >
+        <option value="all">All admin statuses</option>
+        <option value="approved">Approved</option>
+        <option value="pending">Admin Pending</option>
+        <option value="rejected">Rejected</option>
+    </select>
+</div>
+
+<p className="mt-3 text-xs text-zinc-500">
+    Showing {filteredDocuments.length} of {documents.length} documents
+</p>
+
+
                         <div className="mt-6 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
 
                             {/* Table Header */}
                             
-                            <div className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr] border-b border-zinc-800 px-4 py-3 text-[11px] uppercase tracking-wider text-zinc-500">
+                            <div className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_0.5fr] border-b border-zinc-800 px-4 py-3 text-[11px] uppercase tracking-wider text-zinc-500">
 
                                 <span>Document</span>
                                 <span className="text-center">AI Status</span>
                                 <span className="text-center">Confidence</span>
                                 <span className="text-center">Remarks</span>
                                 <span className="text-center">Admin</span>
+                                <span className="text-center">Action</span>
+
                                
 
                             </div>
 
                             {/* Documents */}
-                            {documents.map((document) => (
+                            {filteredDocuments.map((document) => (
                                 
 
                                 <div
 
                                 
                                     key={document._id}
-                                    className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
+                                    className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_0.5fr] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
                                 >
 
                                     {/* Document */}
@@ -245,6 +320,24 @@ function Documents() {
                                                     : "Pending"}
                                         </span>
                                     </div>
+
+                                    
+<div className="flex items-center justify-center">
+  <button
+    onClick={() =>
+      window.open(
+        document.fileUrl,
+        "_blank",
+        "noopener,noreferrer"
+      )
+    }
+    disabled={!document.fileUrl}
+    className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-white transition hover:border-purple-500 hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    View
+  </button>
+</div>
+
 
                                 </div>
 
