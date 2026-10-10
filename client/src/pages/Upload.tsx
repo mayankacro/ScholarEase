@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useSearchParams } from "react-router-dom";
 
 function Upload() {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+const documentTypeFromUrl = searchParams.get("documentType");
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -52,6 +55,8 @@ function Upload() {
             console.log("Upload Response:", res.data);
 
             setUploadedDocument(res.data.document);
+
+            
 
         } catch (error: any) {
             console.error("Upload failed:", error);
@@ -179,6 +184,17 @@ function Upload() {
 fetchExistingDocuments();
 
     }, []);
+
+    
+useEffect(() => {
+    if (!documentTypeFromUrl || documents.length === 0) {
+        return;
+    }
+
+    if (documents.includes(documentTypeFromUrl)) {
+        setSelectedDocument(documentTypeFromUrl);
+    }
+}, [documentTypeFromUrl, documents]);
 
     
 const selectedExistingDocument = existingDocuments.find(

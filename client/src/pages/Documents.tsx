@@ -1,46 +1,50 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { useLocation } from "react-router-dom";
+import { Eye, RefreshCw, Replace } from "lucide-react";
 
 function Documents() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const user = JSON.parse(localStorage.getItem("user") || "null");
 
-     const nameParts = user.name.split(" ");
+    const nameParts = user.name.split(" ");
     const initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
 
     const [documents, setDocuments] = useState<any[]>([]);
 
-    
-const [searchTerm, setSearchTerm] = useState("");
-const [aiFilter, setAiFilter] = useState("all");
-const [adminFilter, setAdminFilter] = useState("all");
 
-const filteredDocuments = documents.filter((document) => {
-    const matchesSearch = String(document.documentType || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+    const [searchTerm, setSearchTerm] = useState("");
+    const [aiFilter, setAiFilter] = useState("all");
+    const [adminFilter, setAdminFilter] = useState("all");
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const aiStatus = String(document.aiStatus || "pending").toLowerCase();
-    const adminStatus = String(document.status || "pending").toLowerCase();
+    const filteredDocuments = documents.filter((document) => {
+        const matchesSearch = String(document.documentType || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
 
-    const matchesAI =
-        aiFilter === "all" ||
-        aiStatus === aiFilter;
+        const aiStatus = String(document.aiStatus || "pending").toLowerCase();
+        const adminStatus = String(document.status || "pending").toLowerCase();
 
-    const matchesAdmin =
-        adminFilter === "all" ||
-        adminStatus === adminFilter;
+        const matchesAI =
+            aiFilter === "all" ||
+            aiStatus === aiFilter;
 
-    return matchesSearch && matchesAI && matchesAdmin;
-});
+        const matchesAdmin =
+            adminFilter === "all" ||
+            adminStatus === adminFilter;
+
+        return matchesSearch && matchesAI && matchesAdmin;
+    });
 
 
     const [loading, setLoading] = useState(true);
     const [showProfile, setShowProfile] = useState(false);
 
-     const handleLogout = () => {
+    const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
 
@@ -49,26 +53,25 @@ const filteredDocuments = documents.filter((document) => {
         navigate("/login");
     }
 
-    useEffect(() => {
-        const fetchDocuments = async () => {
-            try {
-                const res = await api.get("/api/documents/my-documents");
+   const fetchDocuments = async () => {
+    try {
+        setIsRefreshing(true);
 
-                console.log("Documents Response:", res.data);
+        const res = await api.get("/api/documents/my-documents");
+        setDocuments(res.data.documents || []);
+    } catch (error) {
+        console.error("Failed to fetch documents:", error);
+    } finally {
+        setLoading(false);
+        setIsRefreshing(false);
+    }
+};
 
-                setDocuments(res.data.documents || []);
-            } catch (error) {
-                console.error("Failed to fetch documents:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+useEffect(() => {
+    fetchDocuments();
+}, []);
 
-        fetchDocuments();
 
-    }, []);
-
-    
 
 
     return (
@@ -119,7 +122,7 @@ const filteredDocuments = documents.filter((document) => {
                         {user.scholarshipType} Scholarship
                     </span>
 
-                  {/* Profile */}
+                    {/* Profile */}
                     <div className="relative">
 
                         <button
@@ -169,13 +172,29 @@ const filteredDocuments = documents.filter((document) => {
             {/* Page */}
             <main className="px-5 py-7">
 
-                <h1 className="text-xl font-semibold">
-                    Documents
-                </h1>
+               <div className="mb-8">
+    <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">
+            Documents
+        </h1>
 
-                <p className="mt-1 text-sm text-zinc-500">
-                    Your uploaded scholarship documents
-                </p>
+        <button
+            onClick={fetchDocuments}
+            disabled={isRefreshing}
+            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-white transition hover:bg-zinc-800 disabled:opacity-50"
+>
+            <RefreshCw
+        size={16}
+        className={isRefreshing ? "animate-spin" : ""}
+    />
+            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+        </button>
+    </div>
+
+    <p className="text-sm text-gray-500 mt-2">
+        Your uploaded scholarship documents
+    </p>
+</div>
 
                 {loading ? (
                     <p className="mt-6 text-zinc-400">
@@ -187,55 +206,55 @@ const filteredDocuments = documents.filter((document) => {
                             Total documents: {documents.length}
                         </p>
 
-                        
-<div className="mt-4 flex flex-col gap-3 md:flex-row">
-    <div className="relative flex-1">
-        <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search documents..."
-            className="w-full rounded-lg border border-zinc-800 bg-[#111] px-4 py-3 pl-10 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
-        />
-        <span className="absolute left-3 top-3 text-zinc-500">
-            ⌕
-        </span>
-    </div>
 
-    <select
-        value={aiFilter}
-        onChange={(e) => setAiFilter(e.target.value)}
-        className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
-    >
-        <option value="all">All AI statuses</option>
-        <option value="valid">AI Valid</option>
-        <option value="invalid">AI Invalid</option>
-        <option value="manual_review">Manual Review</option>
-        <option value="pending">AI Pending</option>
-    </select>
+                        <div className="mt-4 flex flex-col gap-3 md:flex-row">
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search documents..."
+                                    className="w-full rounded-lg border border-zinc-800 bg-[#111] px-4 py-3 pl-10 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
+                                />
+                                <span className="absolute left-3 top-3 text-zinc-500">
+                                    ⌕
+                                </span>
+                            </div>
 
-    <select
-        value={adminFilter}
-        onChange={(e) => setAdminFilter(e.target.value)}
-        className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
-    >
-        <option value="all">All admin statuses</option>
-        <option value="approved">Approved</option>
-        <option value="pending">Admin Pending</option>
-        <option value="rejected">Rejected</option>
-    </select>
-</div>
+                            <select
+                                value={aiFilter}
+                                onChange={(e) => setAiFilter(e.target.value)}
+                                className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
+                            >
+                                <option value="all">All AI statuses</option>
+                                <option value="valid">AI Valid</option>
+                                <option value="invalid">AI Invalid</option>
+                                <option value="manual_review">Manual Review</option>
+                                <option value="pending">AI Pending</option>
+                            </select>
 
-<p className="mt-3 text-xs text-zinc-500">
-    Showing {filteredDocuments.length} of {documents.length} documents
-</p>
+                            <select
+                                value={adminFilter}
+                                onChange={(e) => setAdminFilter(e.target.value)}
+                                className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
+                            >
+                                <option value="all">All admin statuses</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Admin Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+
+                        <p className="mt-3 text-xs text-zinc-500">
+                            Showing {filteredDocuments.length} of {documents.length} documents
+                        </p>
 
 
                         <div className="mt-6 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
 
                             {/* Table Header */}
-                            
-                            <div className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_0.5fr] border-b border-zinc-800 px-4 py-3 text-[11px] uppercase tracking-wider text-zinc-500">
+
+                            <div className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_120px] border-b border-zinc-800 px-4 py-3 text-[11px] uppercase tracking-wider text-zinc-500">
 
                                 <span>Document</span>
                                 <span className="text-center">AI Status</span>
@@ -244,19 +263,19 @@ const filteredDocuments = documents.filter((document) => {
                                 <span className="text-center">Admin</span>
                                 <span className="text-center">Action</span>
 
-                               
+
 
                             </div>
 
                             {/* Documents */}
                             {filteredDocuments.map((document) => (
-                                
+
 
                                 <div
 
-                                
+
                                     key={document._id}
-                                    className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_0.5fr] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
+                                    className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_120px] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
                                 >
 
                                     {/* Document */}
@@ -268,10 +287,10 @@ const filteredDocuments = documents.filter((document) => {
                                     <div className="text-center">
                                         <span
                                             className={`rounded border px-2 py-1 text-xs ${document.aiStatus === "Valid"
-                                                    ? "border-green-500/40 bg-green-500/5 text-green-400"
-                                                    : document.aiStatus === "Invalid"
-                                                        ? "border-red-500/40 bg-red-500/5 text-red-400"
-                                                        : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
+                                                ? "border-green-500/40 bg-green-500/5 text-green-400"
+                                                : document.aiStatus === "Invalid"
+                                                    ? "border-red-500/40 bg-red-500/5 text-red-400"
+                                                    : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
                                                 }`}
                                         >
                                             {document.aiStatus === "Valid"
@@ -285,10 +304,10 @@ const filteredDocuments = documents.filter((document) => {
                                     {/* Confidence */}
                                     <div
                                         className={`text-center text-sm font-medium ${document.aiConfidence >= 70
-                                                ? "text-green-400"
-                                                : document.aiConfidence >= 40
-                                                    ? "text-yellow-400"
-                                                    : "text-red-400"
+                                            ? "text-green-400"
+                                            : document.aiConfidence >= 40
+                                                ? "text-yellow-400"
+                                                : "text-red-400"
                                             }`}
                                     >
                                         {document.aiConfidence}%
@@ -296,7 +315,7 @@ const filteredDocuments = documents.filter((document) => {
 
                                     {/* Remarks */}
                                     <div
-                                    
+
                                         className="text-center w-full truncate text-sm text-zinc-500"
                                         title={document.aiRemarks}
                                     >
@@ -307,10 +326,10 @@ const filteredDocuments = documents.filter((document) => {
                                     <div className="text-center">
                                         <span
                                             className={`rounded border px-2 py-1 text-xs ${document.status === "approved"
-                                                    ? "border-green-500/40 bg-green-500/5 text-green-400"
-                                                    : document.status === "rejected"
-                                                        ? "border-red-500/40 bg-red-500/5 text-red-400"
-                                                        : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
+                                                ? "border-green-500/40 bg-green-500/5 text-green-400"
+                                                : document.status === "rejected"
+                                                    ? "border-red-500/40 bg-red-500/5 text-red-400"
+                                                    : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
                                                 }`}
                                         >
                                             {document.status === "approved"
@@ -321,22 +340,40 @@ const filteredDocuments = documents.filter((document) => {
                                         </span>
                                     </div>
 
-                                    
-<div className="flex items-center justify-center">
-  <button
-    onClick={() =>
-      window.open(
-        document.fileUrl,
-        "_blank",
-        "noopener,noreferrer"
-      )
-    }
-    disabled={!document.fileUrl}
-    className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-white transition hover:border-purple-500 hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-40"
-  >
-    View
-  </button>
-</div>
+
+                                    <div className="flex items-center justify-center gap-2 pr-4">
+
+
+                                        {document.status === "rejected" && (
+                                            <button
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/upload?documentType=${encodeURIComponent(
+                                                            document.documentType
+                                                        )}`
+                                                    )
+                                                }
+                                                className="rounded-lg border border-red-500/40 px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
+                                            >
+                                                Replace
+                                            </button>
+                                        )}
+
+                                        <button
+                                            onClick={() =>
+                                                window.open(
+                                                    document.fileUrl,
+                                                    "_blank",
+                                                    "noopener,noreferrer"
+                                                )
+                                            }
+                                            disabled={!document.fileUrl}
+                                            className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-white transition hover:border-purple-500 hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+                                        >
+                                            
+                                            View
+                                        </button>
+                                    </div>
 
 
                                 </div>
