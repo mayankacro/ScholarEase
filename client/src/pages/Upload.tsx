@@ -356,10 +356,14 @@ function Upload() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    className={`border border-dashed rounded-xl bg-[#111111] p-12 text-center cursor-pointer transition ${isDragging
-                        ? "border-purple-400 bg-purple-400/5"
-                        : "border-[#3f3f46] hover:border-gray-500"
+
+                    className={`group border-2 border-dashed rounded-2xl bg-gradient-to-b from-[#141218] to-[#101010] p-10 sm:p-12 text-center cursor-pointer transition-all duration-200 ${isDragging
+                            ? "border-purple-400 bg-purple-400/10 scale-[1.01]"
+                            : selectedFile
+                                ? "border-green-500/50 hover:border-green-400"
+                                : "border-[#38343f] hover:border-purple-400/70 hover:bg-purple-400/[0.03]"
                         }`}
+
                 >
 
                     <input
@@ -376,15 +380,39 @@ function Upload() {
 
                     {selectedFile ? (
 
+
                         <>
-                            <h2 className="text-base font-medium">
+                            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-green-500/30 bg-green-500/10 text-2xl text-green-400">
+                                ✓
+                            </div>
+
+                            <h2 className="break-all text-base font-medium">
                                 {selectedFile.name}
                             </h2>
 
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="mt-2 text-sm text-gray-400">
                                 {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                             </p>
+
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedFile(null);
+                                    setFileError("");
+
+                                    const input = document.getElementById(
+                                        "fileInput"
+                                    ) as HTMLInputElement | null;
+
+                                    if (input) input.value = "";
+                                }}
+                                className="mt-4 rounded-lg border border-red-500/30 px-3 py-1.5 text-xs text-red-400 transition hover:bg-red-500/10"
+                            >
+                                Remove file
+                            </button>
                         </>
+
 
                     ) : (
 
@@ -398,7 +426,7 @@ function Upload() {
                             </p>
 
                             <p className="text-xs text-gray-600 mt-4">
-                                JPG, PNG, PDF
+                                JPG, PNG or PDF · Maximum file size: 5 MB
                             </p>
                         </>
 
@@ -418,7 +446,16 @@ function Upload() {
                     disabled={isUploading || !selectedFile || !selectedDocument}
                     className="mt-6 w-full rounded-xl bg-purple-400 px-6 py-3 font-medium text-white transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    {isUploading ? "Uploading & Validating..." : "Upload Document"}
+                   
+{isUploading ? (
+  <span className="inline-flex items-center justify-center gap-2">
+    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+    Uploading & Validating...
+  </span>
+) : (
+  "Upload Document"
+)}
+
                 </button>
 
 
@@ -445,9 +482,9 @@ function Upload() {
                                 <span
                                     className={`select-none text-sm font-medium ${isValid
                                         ? "text-green-300"
-: isManualReview
-    ? "text-yellow-300"
-    : "text-red-300"
+                                        : isManualReview
+                                            ? "text-yellow-300"
+                                            : "text-red-300"
                                         }`}
                                 >
                                     {isValid
