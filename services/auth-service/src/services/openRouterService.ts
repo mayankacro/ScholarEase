@@ -23,7 +23,7 @@ Look at this image and respond ONLY with valid JSON, no markdown:
     const response = await axios.post(
         "https://openrouter.ai/api/v1/chat/completions",
         {
-            model: "openai/gpt-image-1", // CHANGE: vision-capable model zaroori hai
+            model: "openrouter/free", // CHANGE: vision-capable model zaroori hai
             messages: [
                 {  
                     role: "user",
@@ -42,10 +42,26 @@ Look at this image and respond ONLY with valid JSON, no markdown:
         }
     );
 
-    const rawText = response.data.choices[0].message.content;
-    const cleanedText = rawText.replace(/```json|```/g, "").trim();
+    
+const rawText = response.data?.choices?.[0]?.message?.content;
 
-    JSON.parse(cleanedText); // validate, warna throw hoga aur fallback chalega
+if (typeof rawText !== "string" || !rawText.trim()) {
+    console.error(
+        "OpenRouter returned unexpected response:",
+        JSON.stringify(response.data, null, 2)
+    );
+    throw new Error("OpenRouter returned no text response");
+}
 
-    return cleanedText;
+const cleanedText = rawText
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+console.log("OpenRouter raw response:", JSON.stringify(rawText));
+console.log("OpenRouter cleaned response:", JSON.stringify(cleanedText));
+
+JSON.parse(cleanedText);
+
+return cleanedText;
+
 };

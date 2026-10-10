@@ -43,8 +43,8 @@ resourceType: {
 
         aiStatus: { //Ai validation ke lie 
             type: String,
-            enum: ["pending", "valid", "invalid", "manual_review"],
-            default: "pending",
+            enum: ["Pending", "Valid", "Invalid", "Manual_review"],
+            default: "Pending",
         },
 
         aiRemarks:{ //ex: like photo blur, Signature missing

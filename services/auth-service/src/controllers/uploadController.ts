@@ -57,7 +57,7 @@ if (existingDocument) {
     existingDocument.fileUrl = result.secure_url;
     existingDocument.publicId = result.public_id;
     existingDocument.resourceType = result.resource_type;    existingDocument.status = "pending";
-    existingDocument.aiStatus = "pending";
+    existingDocument.aiStatus = "Pending";
     existingDocument.aiRemarks = "";
     existingDocument.aiConfidence = 0;
     existingDocument.actionRequired = null;
@@ -89,11 +89,46 @@ await document.save();
 
             const parsedResponse = JSON.parse(aiResponse);
 
-            document.aiStatus = parsedResponse.status;
+
+const normalizedStatus = String(parsedResponse.status)
+    .trim()
+    .toLowerCase();
+
+const statusMap: Record<
+    string,
+    "Pending" | "Valid" | "Invalid" | "Manual_review"
+> = {
+    pending: "Pending",
+    valid: "Valid",
+    invalid: "Invalid",
+    manual_review: "Manual_review",
+};
+
+const mappedStatus = statusMap[normalizedStatus];
+
+if (!mappedStatus) {
+    throw new Error(`Unexpected AI status: ${parsedResponse.status}`);
+}
+
+document.aiStatus = mappedStatus;
+document.aiRemarks = parsedResponse.remarks;
+document.aiConfidence = parsedResponse.confidence;
+
+if (mappedStatus === "Invalid") {
+    document.actionRequired =
+        parsedResponse.remarks.toLowerCase().includes("blur") ||
+        parsedResponse.remarks.toLowerCase().includes("clear")
+            ? "reupload_clearer_image"
+            : "reupload_correct_document";
+} else {
+    document.actionRequired = null;
+}
+
+            document.aiStatus = mappedStatus;
             document.aiRemarks = parsedResponse.remarks;
             document.aiConfidence = parsedResponse.confidence;
 
-            if (parsedResponse.status === "invalid") {
+            if (mappedStatus === "Invalid") {
                 document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") ||
                     parsedResponse.remarks.toLowerCase().includes("clear")
                     ? "reupload_clearer_image"
@@ -110,7 +145,7 @@ await document.save();
         } catch (aiError) { //Error fixing
             // AI fail ho gaya — document already upload ho gaya hai, sirf validation pending rahegi
             console.error("AI validation failed during upload:", aiError);
-            document.aiStatus = "pending";
+            document.aiStatus = "Pending";
             document.aiRemarks = "AI validation pending — please wait or contact admin.";
             await document.save();
         }

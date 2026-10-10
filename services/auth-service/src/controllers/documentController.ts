@@ -261,14 +261,39 @@ export const validateDocumentAI = async (req: Request, res: Response) => {
 
         console.log("AI Response:", aiResponse); //response string m ata h
 
-        const parsedResponse = JSON.parse(aiResponse); //us string response ko parse krke object m convert krta h
+      
+const parsedResponse = JSON.parse(aiResponse);
 
-        document.aiStatus = parsedResponse.status; //ai ka result database m save
-        document.aiRemarks = parsedResponse.remarks;
-        document.aiConfidence = parsedResponse.confidence; // NAYA — confidence bhi save karo
+const normalizedStatus = String(parsedResponse.status)
+    .trim()
+    .toLowerCase();
+
+
+const statusMap: Record<
+    string,
+    "Pending" | "Valid" | "Invalid" | "Manual_review"
+> = {
+    pending: "Pending",
+    valid: "Valid",
+    invalid: "Invalid",
+    manual_review: "Manual_review",
+};
+
+const mappedStatus = statusMap[normalizedStatus];
+
+if (!mappedStatus) {
+    throw new Error(`Unexpected AI status: ${parsedResponse.status}`);
+}
+
+document.aiStatus = mappedStatus;
+
+
+document.aiRemarks = parsedResponse.remarks;
+document.aiConfidence = parsedResponse.confidence;
+
 
         // NAYA — agar invalid hai, action required set karo
-        if (parsedResponse.status === "invalid") { //img agr blur h 
+        if (mappedStatus === "Invalid") { //img agr blur h 
             document.actionRequired = parsedResponse.remarks.toLowerCase().includes("blur") || parsedResponse.remarks.toLowerCase().includes("clear")
                 ? "reupload_clearer_image"
                 : "reupload_correct_document";

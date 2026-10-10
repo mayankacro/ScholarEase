@@ -189,16 +189,16 @@ function Documents() {
                                     {/* AI Status */}
                                     <div className="text-center">
                                         <span
-                                            className={`rounded border px-2 py-1 text-xs ${document.aiStatus === "valid"
+                                            className={`rounded border px-2 py-1 text-xs ${document.aiStatus === "Valid"
                                                     ? "border-green-500/40 bg-green-500/5 text-green-400"
-                                                    : document.aiStatus === "invalid"
+                                                    : document.aiStatus === "Invalid"
                                                         ? "border-red-500/40 bg-red-500/5 text-red-400"
                                                         : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
                                                 }`}
                                         >
-                                            {document.aiStatus === "valid"
+                                            {document.aiStatus === "Valid"
                                                 ? "Valid"
-                                                : document.aiStatus === "invalid"
+                                                : document.aiStatus === "Invalid"
                                                     ? "Invalid"
                                                     : "Pending"}
                                         </span>

@@ -165,6 +165,13 @@ function Upload() {
 
     }, []);
 
+    const aiStatus = String(uploadedDocument?.aiStatus ?? "")
+        .trim()
+        .toLowerCase();
+
+    const isValid = aiStatus === "valid";
+    const isManualReview = aiStatus === "manual_review";
+
 
     return (
 
@@ -417,41 +424,49 @@ function Upload() {
 
                 {uploadedDocument && (
                     <div
-                        className={`mt-3 rounded-xl border p-4 ${uploadedDocument.aiStatus === "valid"
-                                ? "border-green-500/40 bg-green-500/5"
+                        className={`mt-3 rounded-xl border p-4 ${isValid
+                            ? "border-green-500/40 bg-green-500/5"
+                            : isManualReview
+                                ? "border-yellow-500/40 bg-yellow-500/5"
                                 : "border-red-500/40 bg-red-500/5"
                             }`}
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span
-                                    className={`h-1.5 w-1.5 rounded-full ${uploadedDocument.aiStatus === "valid"
-                                            ? "bg-green-400"
+                                    className={`h-1.5 w-1.5 rounded-full ${isValid
+                                        ? "bg-green-400"
+                                        : isManualReview
+                                            ? "bg-yellow-400"
                                             : "bg-red-400"
                                         }`}
                                 />
 
                                 <span
-                                    className={`text-sm font-medium ${uploadedDocument.aiStatus === "valid"
-                                            ? "text-green-300"
-                                            : "text-red-300"
+                                    className={`select-none text-sm font-medium ${isValid
+                                        ? "text-green-300"
+: isManualReview
+    ? "text-yellow-300"
+    : "text-red-300"
                                         }`}
                                 >
-                                    {uploadedDocument.aiStatus === "valid"
-                                        ? "Verified by Gemini Vision"
-                                        : "Gemini Verification Failed"}
+                                    {isValid
+                                        ? "AI Verification Successful"
+                                        : isManualReview
+                                            ? "Manual Review Required"
+                                            : "AI Verification Failed"}
                                 </span>
                             </div>
 
                             <span
-                                className={`rounded border px-2 py-0.5 text-xs ${uploadedDocument.aiStatus === "valid"
-                                        ? "border-green-500/40 text-green-400"
-                                        : "border-red-500/40 text-red-400"
+                                className={`rounded border px-2 py-0.5 text-xs ${isValid
+                                    ? "border-green-500/40 bg-green-500/5"
+                                    : isManualReview
+                                        ? "border-yellow-500/40 bg-yellow-500/5"
+                                        : "border-red-500/40 bg-red-500/5"
                                     }`}
                             >
-                                {uploadedDocument.aiStatus === "valid"
-                                    ? "Valid"
-                                    : "Invalid"}
+                                {isValid ? "Valid" : isManualReview ? "Manual Review" : "Invalid"}
                             </span>
                         </div>
 
@@ -466,8 +481,10 @@ function Upload() {
 
                             <div className="h-0.5 flex-1 bg-zinc-800">
                                 <div
-                                    className={`h-full ${uploadedDocument.aiStatus === "valid"
-                                            ? "bg-green-400"
+                                    className={`h-full ${isValid
+                                        ? "bg-green-400"
+                                        : isManualReview
+                                            ? "bg-yellow-400"
                                             : "bg-red-400"
                                         }`}
                                     style={{
@@ -476,7 +493,14 @@ function Upload() {
                                 />
                             </div>
 
-                            <span className="text-xs font-semibold text-green-400">
+                            <span
+                                className={`text-xs font-semibold ${isValid
+                                    ? "text-green-400"
+                                    : isManualReview
+                                        ? "text-yellow-400"
+                                        : "text-red-400"
+                                    }`}
+                            >
                                 {uploadedDocument.aiConfidence}%
                             </span>
                         </div>
