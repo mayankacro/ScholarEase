@@ -22,7 +22,9 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -30,16 +32,56 @@ function Register() {
 
         if (!name.trim()) {
     setError("Please enter your full name");
+
+
     return;
 }
+
+
+if (!name.trim()) {
+    setError("Please enter your full name");
+    return;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 if (!email.trim()) {
     setError("Please enter your email");
     return;
 }
 
+if (!emailRegex.test(email.trim())) {
+    setError("Please enter a valid email address");
+    return;
+}
+
 if (!password) {
     setError("Please enter a password");
+    return;
+}
+
+if (password.length < 8) {
+    setError("Password must be at least 8 characters long");
+    return;
+}
+
+if (!/[A-Z]/.test(password)) {
+    setError("Password must contain at least one uppercase letter");
+    return;
+}
+
+if (!/[a-z]/.test(password)) {
+    setError("Password must contain at least one lowercase letter");
+    return;
+}
+
+if (!/[0-9]/.test(password)) {
+    setError("Password must contain at least one number");
+    return;
+}
+
+if (!/[^A-Za-z0-9]/.test(password)) {
+    setError("Password must contain at least one special character");
     return;
 }
 
@@ -53,12 +95,12 @@ if (!scholarshipType) {
     return;
 }
 
-if (password.length < 6) {
-    setError("Password must be at least 6 characters");
-    return;
-}
+
 
         try {
+
+            setIsSubmitting(true);
+
             const res = await api.post("/api/auth/register", {
                 name,
                 email,
@@ -73,8 +115,10 @@ if (password.length < 6) {
         } catch (error: any) {
             setError(
                 error.response?.data?.message || "Registration failed"
-            );
-        }
+            ) ;
+        } finally {
+    setIsSubmitting(false);
+}
     };
 
     return (
@@ -263,10 +307,36 @@ if (password.length < 6) {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Create a password"
+                                onFocus={() => setIsPasswordFocused(true)}
+onBlur={() => setIsPasswordFocused(false)}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full rounded-lg border border-zinc-800 bg-black py-3 pl-10 pr-12 text-sm text-white outline-none placeholder:text-zinc-700"
                             />
+
+                            
+{isPasswordFocused && (
+    <div className="mt-3 space-y-2 text-xs">
+        {[
+            { label: "At least 8 characters", valid: password.length >= 8 },
+            { label: "One lowercase letter", valid: /[a-z]/.test(password) },
+            { label: "One uppercase letter", valid: /[A-Z]/.test(password) },
+            { label: "One number", valid: /[0-9]/.test(password) },
+            { label: "One special character", valid: /[^A-Za-z0-9]/.test(password) },
+        ].map((rule) => (
+            <div
+                key={rule.label}
+                className={`flex items-center gap-2 ${
+                    rule.valid ? "text-white" : "text-zinc-500"
+                }`}
+            >
+                <span>{rule.valid ? "✓" : "✕"}</span>
+                <span>{rule.label}</span>
+            </div>
+        ))}
+    </div>
+)}
+
 
                             <button
                                 type="button"
@@ -280,7 +350,7 @@ if (password.length < 6) {
                         <div className="relative">
 
                             <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
-                                Password
+                                Confirm Password
                             </label>
 
 
@@ -311,10 +381,16 @@ if (password.length < 6) {
 
                         {/* Scholarship Type */}
                         <div className="relative">
+                            <label className="mb-2 block text-xs uppercase tracking-wider text-zinc-500">
+                                Category
+                            </label>
+
                             <GraduationCap
                                 size={16}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                                className="absolute left-3 top-2/3 -translate-y-1/2 text-zinc-500"
                             />
+
+                            
 
                             <select
                                 value={scholarshipType}
@@ -329,7 +405,7 @@ if (password.length < 6) {
                             </select>
 
                             <svg
-                                className="mt-0.5 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                                className="mt-3 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -346,12 +422,13 @@ if (password.length < 6) {
 
 
                         {/* Create Account */}
-                        <button
-                            type="submit"
-                            className=" w-full rounded-lg border border-zinc-700 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-zinc-300"
-                        >
-                            Create account →
-                        </button>
+                       <button
+    type="submit"
+    disabled={isSubmitting}
+    className="w-full rounded-lg border border-zinc-700 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-zinc-300 disabled:cursor-not-allowed disabled:opacity-60"
+>
+    {isSubmitting ? "Creating account..." : "Create account →"}
+</button>
 
                     </form>
 

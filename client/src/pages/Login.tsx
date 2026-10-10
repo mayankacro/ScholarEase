@@ -1,62 +1,79 @@
-import { useState } from "react"
+import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
-function Login(){
+function Login() {
     // useSate() --> React ka ek Hook hai jo component ke andar data ko remember/state mein rakhne deta hai.
     const navigate = useNavigate();
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const handleLogin = async (e: any) => {
-        e.preventDefault(); //Email likho Password likho Login click karo Console check karo Page reload nahi hona chahiye
-        
-        setError("");// supose wrong password fir invalid credential phir user password correct karta hai. To purana error screen se hatna chahiye.
 
-        try{
-        const res = await api.post("/api/auth/login", {
-            email,
-            password,
-        });
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setError("");
 
-        const {token, user} = res.data;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        console.log("Token:", token);
-        console.log("User:", user);
-        console.log("Role:", user.role);
-
-        if(user.role === "admin"){
-            navigate("/admin");
-        } else if(user.role === "student"){
-            navigate("/student");
+        if (!email.trim()) {
+            setError("Please enter your email");
+            return;
         }
 
+        if (!emailRegex.test(email.trim())) {
+            setError("Please enter a valid email address");
+            return;
+        }
 
-        // localStorage.setItem("token", res.data.token);
-        // localStorage.setItem("user", JSON.stringify(res.data.user));
+        if (!password) {
+            setError("Please enter your password");
+            return;
+        }
 
-    } catch (error: any){
-        setError(
-            error.response?.data?.message || "Login failed"
-        );
+        try {
+            setIsSubmitting(true);
 
-    }
-};
+            const res = await api.post("/api/auth/login", {
+                email: email.trim(),
+                password,
+            });
 
-// const getProfile = async () => {
-//     try {
-//         const res = await api.get("/api/auth/profile");
-//         console.log("Profile:", res.data)
-//     } catch(error: any){
-//         console.log("Profile failed:",
-//             error.response?.data?.message || "Profile failed"
-//         );
-//     }
-// };
+            const { token, user } = res.data;
+
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            if (user.role === "admin") {
+                navigate("/admin");
+            } else if (user.role === "student") {
+                navigate("/student");
+            } else {
+                setError("Unrecognized user role");
+            }
+        } catch (error: any) {
+            setError(
+                error.response?.data?.message || "Invalid email or password"
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+
+    // const getProfile = async () => {
+    //     try {
+    //         const res = await api.get("/api/auth/profile");
+    //         console.log("Profile:", res.data)
+    //     } catch(error: any){
+    //         console.log("Profile failed:",
+    //             error.response?.data?.message || "Profile failed"
+    //         );
+    //     }
+    // };
 
     return (
         <div className="min-h-screen bg-linear-to-b from-[#0c0c0c] via-[#050505] to-[#020202] text-white flex">
@@ -164,12 +181,12 @@ function Login(){
 
             {/* ================= RIGHT SIDE ================= */}
 
-<div className="flex w-full lg:w-1/2 items-center justify-center px-12 lg:px-8 py-10 mt-8">
+            <div className="flex w-full lg:w-1/2 items-center justify-center px-12 lg:px-8 py-10 mt-8">
                 <form
                     onSubmit={handleLogin}
                     className="w-full max-w-md">
 
-                
+
                     {/* Heading */}
                     <h2 className="text-2xl font-semibold mb-1">
                         Sign in
@@ -226,30 +243,42 @@ function Login(){
 
 
                     {/* Password */}
-                    <div className="mb-5">
 
+                    <div className="mb-5">
                         <label className="block text-xs tracking-wider text-gray-600 mb-2">
                             PASSWORD
                         </label>
 
-                        <input
-                            type="password"
-                            required
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-800 text-white placeholder-gray-700 outline-none focus:border-gray-500 transition"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-4 py-3 pr-12 rounded-lg bg-transparent border border-gray-800 text-white placeholder-gray-700 outline-none focus:border-gray-500 transition"
+                            />
 
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                            </button>
+                        </div>
                     </div>
+
 
 
                     {/* Continue */}
                     <button
                         type="submit"
-                        className="w-full py-3 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium"
+                        disabled={isSubmitting}
+                        className="w-full py-3 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        Continue →
+                        {isSubmitting ? "Signing in..." : "Continue →"}
                     </button>
 
 
