@@ -175,8 +175,11 @@ function Documents() {
 
                             {/* Documents */}
                             {documents.map((document) => (
+                                
 
                                 <div
+
+                                
                                     key={document._id}
                                     className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
                                 >
