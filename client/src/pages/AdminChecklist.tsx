@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import {
     ClipboardList,
     GraduationCap,
@@ -31,9 +31,9 @@ function AdminChecklist() {
 
         const fetchChecklist = async () => {
             try {
-                const response = await axios.get(
-                    `http://localhost:5000/api/checklist/${encodeURIComponent(scholarshipType)}`
-                );
+                const response = await api.get(
+    `/api/checklist/${encodeURIComponent(scholarshipType)}`
+);
 
                 setDocuments(response.data.rule.requiredDocuments || []);
             } catch (error: any) {
@@ -83,10 +83,11 @@ function AdminChecklist() {
             let checklistExists = false;
 
             try {
-                await axios.get(
-                    `http://localhost:5000/api/checklist/${encodeURIComponent(scholarshipType)}`
-                );
-                checklistExists = true;
+    await api.get(
+        `/api/checklist/${encodeURIComponent(scholarshipType)}`
+    );
+    checklistExists = true;
+
             } catch (error: any) {
                 if (error.response?.status !== 404) {
                     throw error;
@@ -100,19 +101,19 @@ function AdminChecklist() {
             };
 
             const response = checklistExists
-                ? await axios.put(
-                    `http://localhost:5000/api/checklist/${encodeURIComponent(scholarshipType)}`,
-                    { requiredDocuments: documents },
-                    config
-                )
-                : await axios.post(
-                    "http://localhost:5000/api/checklist",
-                    {
-                        scholarshipType,
-                        requiredDocuments: documents,
-                    },
-                    config
-                );
+    ? await api.put(
+        `/api/checklist/${encodeURIComponent(scholarshipType)}`,
+        { requiredDocuments: documents },
+        config
+    )
+    : await api.post(
+        "/api/checklist",
+        {
+            scholarshipType,
+            requiredDocuments: documents,
+        },
+        config
+    );
 
             alert(
                 response.data.message ||

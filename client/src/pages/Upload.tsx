@@ -233,7 +233,7 @@ const existingStatus = String(
 
 const isApprovedDocument = existingStatus === "approved";
 
-const isPendingDocument = existingStatus === "pending";
+
 
 const isExistingDocument = Boolean(selectedExistingDocument);
 

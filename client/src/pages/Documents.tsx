@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { useLocation } from "react-router-dom";
-import { Eye, RefreshCw, Replace } from "lucide-react";
-import { ChevronDown } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import CustomDropdown from "../components/CustomDropdown";
 
 function Documents() {
     const navigate = useNavigate();
-    const location = useLocation();
+   
 
     const user = JSON.parse(localStorage.getItem("user") || "null");
 
@@ -224,21 +222,21 @@ function Documents() {
                             </div>
 
                             <div className="relative">
-                               
-<CustomDropdown
-    value={aiFilter}
-    onChange={setAiFilter}
-   className="w-full lg:w-50"
-buttonClassName="!h-[46px] !py-0 !text-sm"
-buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
-    options={[
-        { label: "All AI statuses", value: "all" },
-        { label: "AI Valid", value: "valid" },
-        { label: "AI Invalid", value: "invalid" },
-        { label: "Manual Review", value: "manual_review" },
-        { label: "AI Pending", value: "pending" },
-    ]}
-/>
+
+                                <CustomDropdown
+                                    value={aiFilter}
+                                    onChange={setAiFilter}
+                                    className="w-full lg:w-50"
+                                    buttonClassName="!h-[46px] !py-0 !text-sm"
+                                    buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
+                                    options={[
+                                        { label: "All AI statuses", value: "all" },
+                                        { label: "AI Valid", value: "valid" },
+                                        { label: "AI Invalid", value: "invalid" },
+                                        { label: "Manual Review", value: "manual_review" },
+                                        { label: "AI Pending", value: "pending" },
+                                    ]}
+                                />
 
                             </div>
 
@@ -247,22 +245,22 @@ buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700
 
                             <div className="relative">
                                 <CustomDropdown
-    value={adminFilter}
-    onChange={setAdminFilter}
-    placeholder="All admin statuses"
-    className="w-full lg:w-44"
-buttonClassName="!h-[46px] !py-0 !text-sm"
-buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
-    options={[
-        { label: "All admin statuses", value: "all" },
-        { label: "Approved", value: "approved" },
-        { label: "Admin Pending", value: "pending" },
-        { label: "Rejected", value: "rejected" },
-    ]}
-/>
+                                    value={adminFilter}
+                                    onChange={setAdminFilter}
+                                    placeholder="All admin statuses"
+                                    className="w-full lg:w-44"
+                                    buttonClassName="!h-[46px] !py-0 !text-sm"
+                                    buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
+                                    options={[
+                                        { label: "All admin statuses", value: "all" },
+                                        { label: "Approved", value: "approved" },
+                                        { label: "Admin Pending", value: "pending" },
+                                        { label: "Rejected", value: "rejected" },
+                                    ]}
+                                />
 
 
-                                
+
                             </div>
                         </div>
 

@@ -147,8 +147,11 @@ function StudentDashboard() {
 
 
 
-    const documentStatus = checklistDocuments.map((requiredDoc: string) => {
-
+const documentStatus: {
+    name: string;
+    uploaded: boolean;
+    aiConfidence: number | null;
+}[] = checklistDocuments.map((requiredDoc: string) => {
         const uploadedDocument = documents.find(
             (doc) =>
                 doc.documentType.toLowerCase() ===
