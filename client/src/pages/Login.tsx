@@ -197,27 +197,12 @@ function Login() {
                     </p>
 
 
-                    {/* Role Selection */}
-                    <div className="flex border border-gray-800 rounded-lg p-1 mb-6">
-
-                        <button
-                            type="button"
-                            className="w-1/2 py-2 rounded-md border border-gray-700 text-sm font-medium">
-                            Student
-                        </button>
-
-                        <button
-                            type="button"
-                            className="w-1/2 py-2 rounded-md text-sm font-medium text-gray-400">
-                            Admin
-                        </button>
-
-                    </div>
+                    
 
 
                     {/* Error */}
                     {error && (
-                        <p className="text-red-400 text-sm mb-4">
+                        <p className="w-full px-3 py-1 pr-12 mb-3 rounded-lg bg-red-500/10 border border-red-400 text-red-500  outline-none transition">
                             {error}
                         </p>
                     )}

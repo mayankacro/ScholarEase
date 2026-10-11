@@ -31,7 +31,7 @@ function AdminDashboard() {
     const [documentsData, setDocumentsData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    
+
 
 
     const students = studentsData.map((student) => {
@@ -146,24 +146,24 @@ function AdminDashboard() {
 
 
     if (loading) {
-    return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-            <p className="text-zinc-400 text-sm">
-                Loading admin dashboard...
-            </p>
-        </div>
-    );
-}
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <p className="text-zinc-400 text-sm">
+                    Loading admin dashboard...
+                </p>
+            </div>
+        );
+    }
 
-if (error) {
-    return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-            <p className="text-red-400 text-sm">
-                {error}
-            </p>
-        </div>
-    );
-}
+    if (error) {
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <p className="text-red-400 text-sm">
+                    {error}
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -185,20 +185,19 @@ if (error) {
 
                 <div className="flex items-center gap-2">
 
-                    <button className="px-4 py-2 rounded-lg border border-blue-400/40 bg-blue-500/10 text-sm text-white">
+                    <button
+                        onClick={() => navigate("/student")}
+                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
+                    >
                         Dashboard
                     </button>
 
-                    <button className="px-4 py-2 rounded-lg border border-zinc-800 text-sm text-white hover:border-zinc-700">
-                        Students
-                    </button>
+                    <button
+                        onClick={() => navigate("/admin/checklist")}
 
-                    <button className="px-4 py-2 rounded-lg border border-zinc-800 text-sm text-white hover:border-zinc-700">
-                        Documents
-                    </button>
-
-                    <button className="px-4 py-2 rounded-lg border border-zinc-800 text-sm text-white hover:border-zinc-700">
-                        Analytics
+                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
+                    >
+                        Create Checklist
                     </button>
 
                 </div>
@@ -220,7 +219,7 @@ if (error) {
 
             </nav>
 
-            
+
 
 
             {/* Main */}
@@ -440,7 +439,7 @@ if (error) {
                                 >
 
                                     <span className="text-zinc-500 ">
-                                        {index+1}
+                                        {index + 1}
                                     </span>
 
                                     <span className="text-zinc-200">
@@ -462,42 +461,42 @@ if (error) {
                                     <div className=" flex justify-center">
 
 
-                                    <span>
-                                        <span
-                                            className={`text-center inline-flex px-3 py-1 rounded-md border text-xs ${getStatusClass(
-                                                student.status
-                                            )}`}
-                                        >
-                                            {student.status}
+                                        <span>
+                                            <span
+                                                className={`text-center inline-flex px-3 py-1 rounded-md border text-xs ${getStatusClass(
+                                                    student.status
+                                                )}`}
+                                            >
+                                                {student.status}
+                                            </span>
                                         </span>
-                                    </span>
                                     </div>
 
 
-                           
+
                                     <div className=" flex justify-center">
 
 
-                                    <button
+                                        <button
 
-                                        onClick={() => navigate(`/admin/student/${student.id}`)}
-                                        
-                                        className="w-fit inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition"
-                                    >
-                                        View
-                                        <ArrowRight className="h-3 w-3" />
-                                    </button>
+                                            onClick={() => navigate(`/admin/student/${student.id}`)}
 
-                                  </div>
-                                  </div>
-                                  
+                                            className="w-fit inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition"
+                                        >
+                                            View
+                                            <ArrowRight className="h-3 w-3" />
+                                        </button>
+
+                                    </div>
+                                </div>
+
 
                             ))}
 
                         </div>
 
                     </div>
-                  
+
 
 
                     {/* Pagination */}

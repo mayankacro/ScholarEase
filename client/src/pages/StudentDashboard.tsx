@@ -12,11 +12,11 @@ function StudentDashboard() {
 
     const nameParts = user.name.split(" ");
     const initials = nameParts
-  .filter(Boolean)
-  .slice(0, 2)
-  .map((part: string) => part.charAt(0))
-  .join("")
-  .toUpperCase() || "S";
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part: string) => part.charAt(0))
+        .join("")
+        .toUpperCase() || "S";
     // console.log("Name Parts:", nameParts);
     // console.log("First Initial:", nameParts[0].charAt(0));
     // console.log("Second Initial:", nameParts[1].charAt(0));
@@ -29,7 +29,7 @@ function StudentDashboard() {
     // const [loading, setLoading] = useState(true);
     // const [error, setError] = useState("");
     const [applicationStatus, setApplicationStatus] = useState("pending");
-const [applicationRemarks, setApplicationRemarks] = useState("");
+    const [applicationRemarks, setApplicationRemarks] = useState("");
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -70,26 +70,26 @@ const [applicationRemarks, setApplicationRemarks] = useState("");
         fetchChecklist();
 
         const fetchApplicationStatus = async () => {
-    try {
-        const res = await api.get("/api/auth/profile");
+            try {
+                const res = await api.get("/api/auth/profile");
 
-        console.log("Profile:", res.data);
-        setApplicationStatus(
-    res.data.user.finalApplicationStatus || "pending"
-);
+                console.log("Profile:", res.data);
+                setApplicationStatus(
+                    res.data.user.finalApplicationStatus || "pending"
+                );
 
-setApplicationRemarks(
-    res.data.user.applicationRemarks || ""
-);
+                setApplicationRemarks(
+                    res.data.user.applicationRemarks || ""
+                );
 
-        // Response structure verify karne ke baad
-        // yahan final application status set karenge.
-    } catch (error) {
-        console.error("Failed to fetch application status:", error);
-    }
-};
+                // Response structure verify karne ke baad
+                // yahan final application status set karenge.
+            } catch (error) {
+                console.error("Failed to fetch application status:", error);
+            }
+        };
 
-fetchApplicationStatus();
+        fetchApplicationStatus();
 
     }, []);
 
@@ -114,9 +114,9 @@ fetchApplicationStatus();
     //     </div>
     // );
 
-   const verifiedDocuments = documents.filter(
-    (doc) => doc.status === "approved"
-);
+    const verifiedDocuments = documents.filter(
+        (doc) => doc.status === "approved"
+    );
 
     console.log("verified doc:", verifiedDocuments);
     console.log("verified count:", verifiedDocuments.length);
@@ -170,22 +170,22 @@ fetchApplicationStatus();
     ).length;
 
     const allRequiredUploaded =
-    documentStatus.length > 0 &&
-    documentStatus.every((doc: any) => doc.uploaded);
+        documentStatus.length > 0 &&
+        documentStatus.every((doc: any) => doc.uploaded);
 
-const allAIValidated =
-    documents.length > 0 &&
-    documents.every(
-        (doc) => doc.aiStatus !== "pending"
-    );
+    const allAIValidated =
+        documents.length > 0 &&
+        documents.every(
+            (doc) => doc.aiStatus !== "pending"
+        );
 
-const allDocumentsReviewed =
-    documents.length > 0 &&
-    documents.every(
-        (doc) =>
-            doc.status === "approved" ||
-            doc.status === "rejected"
-    );
+    const allDocumentsReviewed =
+        documents.length > 0 &&
+        documents.every(
+            (doc) =>
+                doc.status === "approved" ||
+                doc.status === "rejected"
+        );
 
     //     const requiredDocuments = [
     //     "Aadhaar card",
@@ -246,16 +246,16 @@ const allDocumentsReviewed =
 
                     <button onClick={() => navigate("/upload")} className="hover:bg-purple-300 hover:text-black px-4 py-2 rounded-lg border border-gray-700 shadow-md transform transition active:scale-95 duration-100 ease-in-out">
                         Upload
-                    </button> 
-
-      
+                    </button>
 
 
 
-          
 
 
-                    
+
+
+
+
 
                     <button onClick={() => navigate("/documents")} className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out">
                         Documents
@@ -271,7 +271,7 @@ const allDocumentsReviewed =
                         {user.scholarshipType} Scholarship
                     </span>
 
-                  {/* Profile */}
+                    {/* Profile */}
                     <div className="relative">
 
                         <button
@@ -347,38 +347,37 @@ const allDocumentsReviewed =
                 </div>
 
                 <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-950 p-5">
-    <p className="text-xs uppercase tracking-wider text-zinc-500">
-        Scholarship Application Status
-    </p>
+                    <p className="text-xs uppercase tracking-wider text-zinc-500">
+                        Scholarship Application Status
+                    </p>
 
-    <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">
-            {applicationStatus === "approved"
-                ? "Application Approved"
-                : applicationStatus === "rejected"
-                ? "Application Rejected"
-                : "Application Under Review"}
-        </h2>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+                        <h2 className="text-xl font-semibold">
+                            {applicationStatus === "approved"
+                                ? "Application Approved"
+                                : applicationStatus === "rejected"
+                                    ? "Application Rejected"
+                                    : "Application Under Review"}
+                        </h2>
 
-        <span
-            className={`rounded-full border px-3 py-1 text-xs ${
-                applicationStatus === "approved"
-                    ? "border-green-500/30 bg-green-500/10 text-green-400"
-                    : applicationStatus === "rejected"
-                    ? "border-red-500/30 bg-red-500/10 text-red-400"
-                    : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
-            }`}
-        >
-            {applicationStatus.toUpperCase()}
-        </span>
-    </div>
+                        <span
+                            className={`rounded-full border px-3 py-1 text-xs ${applicationStatus === "approved"
+                                    ? "border-green-500/30 bg-green-500/10 text-green-400"
+                                    : applicationStatus === "rejected"
+                                        ? "border-red-500/30 bg-red-500/10 text-red-400"
+                                        : "border-yellow-500/30 bg-yellow-500/10 text-yellow-400"
+                                }`}
+                        >
+                            {applicationStatus.toUpperCase()}
+                        </span>
+                    </div>
 
-    {applicationRemarks && (
-        <p className="mt-3 text-sm text-zinc-400">
-            Admin remarks: {applicationRemarks}
-        </p>
-    )}
-</div>
+                    {applicationRemarks && (
+                        <p className="mt-3 text-sm text-zinc-400">
+                            Admin remarks: {applicationRemarks}
+                        </p>
+                    )}
+                </div>
 
                 <div>
 
@@ -392,10 +391,10 @@ const allDocumentsReviewed =
                         </div>
 
                         <div className="stat-card verified-card">
-    <p>APPROVED</p>
-    <h2>{verifiedDocuments.length}</h2>
-    <p>Documents approved by admin</p>
-</div>
+                            <p>APPROVED</p>
+                            <h2>{verifiedDocuments.length}</h2>
+                            <p>Documents approved by admin</p>
+                        </div>
 
                         <div className="stat-card pending-card" >
                             <p>PENDING</p>
@@ -412,201 +411,197 @@ const allDocumentsReviewed =
                         </div>
                     </div>
 
-                        
 
 
 
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-                    <div className="bg-[#111] border border-[#27272a] rounded-xl p-5 box-border mt-5 lg:mb-20">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-                        <div className="checklist-header">
-                            <h2>Document checklist</h2>
+                        <div className="bg-[#111] border border-[#27272a] rounded-xl p-5 box-border mt-5 lg:mb-20">
 
-                            <span>
-                                {user.scholarshipType} Scholarship
-                            </span>
-                        </div>
+                            <div className="checklist-header">
+                                <h2>Document checklist</h2>
 
-                        <div className="completion-header">
-                            <span>COMPLETION</span>
-                            <span>{uploadedRequiredCount} / {documentStatus.length}</span>
-                        </div>
+                                <span>
+                                    {user.scholarshipType} Scholarship
+                                </span>
+                            </div>
 
-                        <div className="progress-bar">
-                            <div
-                                className="progress-fill"
-                                style={{
-                                    width: `${(uploadedRequiredCount / documentStatus.length) * 100}%`
-                                }}
-                            ></div>
-                        </div>
-                        <div className="checklist-items">
+                            <div className="completion-header">
+                                <span>COMPLETION</span>
+                                <span>{uploadedRequiredCount} / {documentStatus.length}</span>
+                            </div>
 
-                            {documentStatus.map(
-                                (doc) => (
+                            <div className="progress-bar">
+                                <div
+                                    className="progress-fill"
+                                    style={{
+                                        width: `${(uploadedRequiredCount / documentStatus.length) * 100}%`
+                                    }}
+                                ></div>
+                            </div>
+                            <div className="checklist-items">
 
-                                    <div className="checklist-item" key={doc.name}>
+                                {documentStatus.map(
+                                    (doc) => (
 
-                                        <span className={doc.uploaded ? "status-icon uploaded" : "status-icon"}>
-                                            {doc.uploaded ? "✓" : "◦"}
-                                        </span>
+                                        <div className="checklist-item" key={doc.name}>
 
-                                        <span className="document-name">
-                                            {doc.name}
-                                        </span>
+                                            <span className={doc.uploaded ? "status-icon uploaded" : "status-icon"}>
+                                                {doc.uploaded ? "✓" : "◦"}
+                                            </span>
 
-                                        <span className={doc.uploaded ? "document-confidence" : "document-status"}>
-                                            {doc.uploaded ? `${doc.aiConfidence}%` : "Not uploaded"}
-                                        </span>
+                                            <span className="document-name">
+                                                {doc.name}
+                                            </span>
 
-                                    </div>
-                                )
-                            )}
+                                            <span className={doc.uploaded ? "document-confidence" : "document-status"}>
+                                                {doc.uploaded ? `${doc.aiConfidence}%` : "Not uploaded"}
+                                            </span>
 
-                        </div>
+                                        </div>
+                                    )
+                                )}
 
-                        
+                            </div>
 
 
-                    </div>
-
-                    
-                    <div className="bg-[#111111] border border-[#27272a] rounded-xl p-5 flex-1 max-w-none box-border lg:mt-5 mb-5 lg:text-">
-                        <h2>Application progress</h2>
-
-                        <div className="progress-step">
-
-                            
-<span className="step-icon">
-  {allRequiredUploaded ? "✓" : "→"}
-</span>
-
-<div>
-  <h3>Documents uploaded</h3>
-
-  <p>
-    {uploadedRequiredCount} of {documentStatus.length} completed
-  </p>
-
-  <span
-    className={`step-status ${
-      allRequiredUploaded ? "done" : "progress"
-    }`}
-  >
-    {allRequiredUploaded ? "Done" : "In progress"}
-  </span>
-</div>
 
 
                         </div>
 
-                        <div className="progress-step">
 
-                            
-<span className="step-icon">
-  {allAIValidated ? "✓" : "→"}
-</span>
+                        <div className="bg-[#111111] border border-[#27272a] rounded-xl p-5 flex-1 max-w-none box-border lg:mt-5 mb-5 lg:text-">
+                            <h2>Application progress</h2>
 
-<div>
-  <h3>AI Validation</h3>
-
-  <p>
-    {allAIValidated
-      ? "All uploaded documents have been checked"
-      : "AI is checking your uploaded documents"}
-  </p>
-
-  <span
-    className={`step-status ${
-      allAIValidated ? "done" : "progress"
-    }`}
-  >
-    {allAIValidated ? "Done" : "In progress"}
-  </span>
-</div>
+                            <div className="progress-step">
 
 
-                        </div>
+                                <span className="step-icon">
+                                    {allRequiredUploaded ? "✓" : "→"}
+                                </span>
 
-                        <div className="progress-step">
-                            
-<span className="step-icon">
-  {allDocumentsReviewed ? "✓" : "→"}
-</span>
+                                <div>
+                                    <h3>Documents uploaded</h3>
 
-<div>
-  <h3>Admin Review</h3>
+                                    <p>
+                                        {uploadedRequiredCount} of {documentStatus.length} completed
+                                    </p>
 
-  <p>
-    {allDocumentsReviewed
-      ? "All uploaded documents have been reviewed"
-      : allAIValidated
-        ? "Waiting for admin to review documents"
-        : "Review will progress after AI validation"}
-  </p>
+                                    <span
+                                        className={`step-status ${allRequiredUploaded ? "done" : "progress"
+                                            }`}
+                                    >
+                                        {allRequiredUploaded ? "Done" : "In progress"}
+                                    </span>
+                                </div>
 
-  <span
-    className={`step-status ${
-      allDocumentsReviewed ? "done" : "progress"
-    }`}
-  >
-    {allDocumentsReviewed ? "Done" : "In progress"}
-  </span>
-</div>
 
-                        </div>
+                            </div>
 
-                        <div className="progress-step">
-                            
-<span className="step-icon">
-  {applicationStatus === "approved"
-    ? "✓"
-    : applicationStatus === "rejected"
-      ? "✕"
-      : "○"}
-</span>
+                            <div className="progress-step">
 
-<div>
-  <h3>
-    {applicationStatus === "approved"
-      ? "Scholarship Approved"
-      : applicationStatus === "rejected"
-        ? "Application Rejected"
-        : "Final Decision"}
-  </h3>
 
-  <p>
-    {applicationStatus === "approved"
-      ? "Congratulations! Your application has been approved."
-      : applicationStatus === "rejected"
-        ? applicationRemarks || "Your application was rejected."
-        : "Your final application decision is pending."}
-  </p>
+                                <span className="step-icon">
+                                    {allAIValidated ? "✓" : "→"}
+                                </span>
 
-  <span
-    className={`step-status ${
-      applicationStatus === "approved"
-        ? "done"
-        : applicationStatus === "rejected"
-          ? "rejected"
-          : "pending"
-    }`}
-  >
-    {applicationStatus === "approved"
-      ? "Approved"
-      : applicationStatus === "rejected"
-        ? "Rejected"
-        : "Pending"}
-  </span>
-</div>
+                                <div>
+                                    <h3>AI Validation</h3>
 
+                                    <p>
+                                        {allAIValidated
+                                            ? "All uploaded documents have been checked"
+                                            : "AI is checking your uploaded documents"}
+                                    </p>
+
+                                    <span
+                                        className={`step-status ${allAIValidated ? "done" : "progress"
+                                            }`}
+                                    >
+                                        {allAIValidated ? "Done" : "In progress"}
+                                    </span>
+                                </div>
+
+
+                            </div>
+
+                            <div className="progress-step">
+
+                                <span className="step-icon">
+                                    {allDocumentsReviewed ? "✓" : "→"}
+                                </span>
+
+                                <div>
+                                    <h3>Admin Review</h3>
+
+                                    <p>
+                                        {allDocumentsReviewed
+                                            ? "All uploaded documents have been reviewed"
+                                            : allAIValidated
+                                                ? "Waiting for admin to review documents"
+                                                : "Review will progress after AI validation"}
+                                    </p>
+
+                                    <span
+                                        className={`step-status ${allDocumentsReviewed ? "done" : "progress"
+                                            }`}
+                                    >
+                                        {allDocumentsReviewed ? "Done" : "In progress"}
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div className="progress-step">
+
+                                <span className="step-icon">
+                                    {applicationStatus === "approved"
+                                        ? "✓"
+                                        : applicationStatus === "rejected"
+                                            ? "✕"
+                                            : "○"}
+                                </span>
+
+                                <div>
+                                    <h3>
+                                        {applicationStatus === "approved"
+                                            ? "Scholarship Approved"
+                                            : applicationStatus === "rejected"
+                                                ? "Application Rejected"
+                                                : "Final Decision"}
+                                    </h3>
+
+                                    <p>
+                                        {applicationStatus === "approved"
+                                            ? "Congratulations! Your application has been approved."
+                                            : applicationStatus === "rejected"
+                                                ? applicationRemarks || "Your application was rejected."
+                                                : "Your final application decision is pending."}
+                                    </p>
+
+                                    <span
+                                        className={`step-status ${applicationStatus === "approved"
+                                                ? "done"
+                                                : applicationStatus === "rejected"
+                                                    ? "rejected"
+                                                    : "pending"
+                                            }`}
+                                    >
+                                        {applicationStatus === "approved"
+                                            ? "Approved"
+                                            : applicationStatus === "rejected"
+                                                ? "Rejected"
+                                                : "Pending"}
+                                    </span>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
+
                 </div>
-
-                    </div>
 
             </div>
 

@@ -74,3 +74,54 @@ export const getChecklistRule = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const updateChecklistRule = async (req: Request, res: Response) => {
+  try {
+    const scholarshipType = req.params.scholarshipType as string;
+    const { requiredDocuments } = req.body;
+
+    if (
+      !Array.isArray(requiredDocuments) ||
+      requiredDocuments.length === 0 ||
+      requiredDocuments.some(
+        (doc) => typeof doc !== "string" || !doc.trim()
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide valid required documents",
+      });
+    }
+
+    const rule = await ChecklistRule.findOneAndUpdate(
+      { scholarshipType },
+      {
+        $set: {
+          requiredDocuments: requiredDocuments.map((doc: string) =>
+            doc.trim()
+          ),
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!rule) {
+      return res.status(404).json({
+        success: false,
+        message: "Checklist not found. Create it first.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Checklist updated successfully",
+      rule,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};

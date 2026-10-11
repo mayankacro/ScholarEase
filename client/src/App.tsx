@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import Upload from "./pages/Upload";
 import Documents from "./pages/Documents";
 import AdminStudentDetails from "./pages/AdminStudentDetails";
-
+import AdminChecklist from "./pages/AdminChecklist";
 
 function App() {
   // return <Login/>
@@ -56,19 +56,27 @@ function App() {
           }
         />
 
+        <Route
+          path="/admin/student/:studentId"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminStudentDetails />
+            </ProtectedRoute>
+          }
+        />
+
+
+
       <Route
-        path="/admin/student/:studentId"
+        path="/admin/checklist"
         element={
           <ProtectedRoute allowedRole="admin">
-            <AdminStudentDetails />
+            <AdminChecklist />
           </ProtectedRoute>
         }
-      />
+        />
 
-      
-      </Routes>
-
-
+        </Routes>
 
     </BrowserRouter>
   );
