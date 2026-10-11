@@ -42,25 +42,23 @@ function AdminDashboard() {
                 document.studentId._id === student._id
         );
 
+
+
+
+        const finalStatus = student.finalApplicationStatus || "pending";
+
         let status = "Not Started";
 
         if (studentDocuments.length > 0) {
-            const hasRejected = studentDocuments.some(
-                (document) => document.status === "rejected"
-            );
-
-            const allApproved = studentDocuments.every(
-                (document) => document.status === "approved"
-            );
-
-            if (hasRejected) {
-                status = "Rejected";
-            } else if (allApproved) {
+            if (finalStatus === "approved") {
                 status = "Approved";
+            } else if (finalStatus === "rejected") {
+                status = "Rejected";
             } else {
                 status = "Pending";
             }
         }
+
 
         return {
             id: student._id,
@@ -83,6 +81,13 @@ function AdminDashboard() {
                 ]);
 
                 console.log("Students:", studentsResponse.data);
+                console.log(
+                    "Final application statuses:",
+                    studentsResponse.data.students.map((student: any) => ({
+                        name: student.name,
+                        finalApplicationStatus: student.finalApplicationStatus,
+                    }))
+                );
                 console.log("Documents:", documentsResponse.data);
 
                 setStudentsData(studentsResponse.data.students);
@@ -130,18 +135,19 @@ function AdminDashboard() {
         return "border-yellow-500/30 bg-yellow-500/10 text-yellow-400";
     };
 
-    const approvedDocuments = documentsData.filter(
-        (doc) => doc.status === "approved"
+   
+const pendingApplications = studentsData.filter(
+    (student) => student.finalApplicationStatus === "pending"
+).length;
 
-    );
+const approvedApplications = studentsData.filter(
+    (student) => student.finalApplicationStatus === "approved"
+).length;
 
-    const pendingDocuments = documentsData.filter(
-        (doc) => doc.status === "pending"
-    );
+const rejectedApplications = studentsData.filter(
+    (student) => student.finalApplicationStatus === "rejected"
+).length;
 
-    const rejectedDocuments = documentsData.filter(
-        (doc) => doc.status === "rejected"
-    );
 
 
 
@@ -186,9 +192,9 @@ function AdminDashboard() {
 
                 <div className="flex items-center gap-2">
 
-                    
 
-                   
+
+
 
                 </div>
 
@@ -215,37 +221,37 @@ function AdminDashboard() {
             {/* Main */}
             <main className="px-6 py-7">
 
-                
-{/* Heading */}
-<div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-        <h1 className="text-xl font-semibold">
-            Admin Dashboard
-        </h1>
 
-        <p className="text-sm text-zinc-500 mt-1">
-            Review and manage student scholarship documents
-        </p>
-    </div>
+                {/* Heading */}
+                <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-xl font-semibold">
+                            Admin Dashboard
+                        </h1>
 
-    <button
-        onClick={() => navigate("/admin/checklist")}
-        className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-300 transition hover:bg-blue-500/20 hover:border-blue-400 active:scale-95"
-    >
-        <ClipboardList className="h-4 w-4" />
-        Create Checklist
-    </button>
-</div>
+                        <p className="text-sm text-zinc-500 mt-1">
+                            Review and manage student scholarship documents
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={() => navigate("/admin/checklist")}
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-300 transition hover:bg-blue-500/20 hover:border-blue-400 active:scale-95"
+                    >
+                        <ClipboardList className="h-4 w-4" />
+                        Create Checklist
+                    </button>
+                </div>
 
 
-               
+
 
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
 
                     {/* Total */}
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+                    <div className="group rounded-xl border border-zinc-800 bg-zinc-950 p-5 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/60">
                         <div className="flex items-start justify-between">
 
                             <div>
@@ -266,9 +272,30 @@ function AdminDashboard() {
                         </div>
                     </div>
 
+                    {/* Approved */}
+                    <div className="group rounded-xl border border-zinc-800 bg-zinc-950 p-5 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/60">
+                        <div className="flex items-start justify-between">
+
+                            <div>
+                                <p className="text-xs text-zinc-500">
+                                    APPROVED
+                                </p>
+
+                                <p className="text-3xl mt-3 font-medium">
+                                    {approvedApplications}
+                                </p>
+
+                                <p className="text-xs text-zinc-500 mt-3">
+                                    Documents approved
+                                </p>
+                            </div>
+
+                            <CheckCircle2 className="h-6 w-6 text-green-400" />
+                        </div>
+                    </div>
 
                     {/* Pending */}
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+                    <div className="group rounded-xl border border-zinc-800 bg-zinc-950 p-5 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/60">
                         <div className="flex items-start justify-between">
 
                             <div>
@@ -277,7 +304,7 @@ function AdminDashboard() {
                                 </p>
 
                                 <p className="text-3xl mt-3 font-medium">
-                                    {pendingDocuments.length}
+                                    {pendingApplications}
                                 </p>
 
                                 <p className="text-xs text-zinc-500 mt-3">
@@ -290,31 +317,10 @@ function AdminDashboard() {
                     </div>
 
 
-                    {/* Approved */}
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
-                        <div className="flex items-start justify-between">
-
-                            <div>
-                                <p className="text-xs text-zinc-500">
-                                    APPROVED
-                                </p>
-
-                                <p className="text-3xl mt-3 font-medium">
-                                    {approvedDocuments.length}
-                                </p>
-
-                                <p className="text-xs text-zinc-500 mt-3">
-                                    Documents approved
-                                </p>
-                            </div>
-
-                            <CheckCircle2 className="h-6 w-6 text-green-400" />
-                        </div>
-                    </div>
 
 
                     {/* Rejected */}
-                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5">
+                    <div className="group rounded-xl border border-zinc-800 bg-zinc-950 p-5 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/60">
                         <div className="flex items-start justify-between">
 
                             <div>
@@ -323,7 +329,7 @@ function AdminDashboard() {
                                 </p>
 
                                 <p className="text-3xl mt-3 font-medium">
-                                    {rejectedDocuments.length}
+                                    {rejectedApplications}
                                 </p>
 
                                 <p className="text-xs text-zinc-500 mt-3">
@@ -336,6 +342,8 @@ function AdminDashboard() {
                     </div>
 
                 </div>
+
+                
 
 
                 {/* Students Card */}
@@ -423,7 +431,7 @@ function AdminDashboard() {
                             {/* Table Header */}
                             <div className="grid grid-cols-[50px_1.5fr_1.5fr_1.2fr_100px_110px_100px] bg-zinc-900/60 px-3 py-3 text-xs text-zinc-500">
 
-                                <span >#</span>
+                                <span >Std.</span>
                                 <span>Student Name</span>
                                 <span>Email</span>
                                 <span>Scholarship Type</span>
