@@ -13,6 +13,7 @@ import {
     ArrowRight,
     ClipboardList
 } from "lucide-react";
+import CustomDropdown from "../components/CustomDropdown";
 
 function AdminDashboard() {
 
@@ -34,6 +35,14 @@ function AdminDashboard() {
     const [error, setError] = useState("");
 
 
+      const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        console.log("User Logged out");
+
+        navigate("/login");
+    }
 
     const students = studentsData.map((student) => {
         const studentDocuments = documentsData.filter(
@@ -135,18 +144,18 @@ function AdminDashboard() {
         return "border-yellow-500/30 bg-yellow-500/10 text-yellow-400";
     };
 
-   
-const pendingApplications = studentsData.filter(
-    (student) => student.finalApplicationStatus === "pending"
-).length;
 
-const approvedApplications = studentsData.filter(
-    (student) => student.finalApplicationStatus === "approved"
-).length;
+    const pendingApplications = studentsData.filter(
+        (student) => student.finalApplicationStatus === "pending"
+    ).length;
 
-const rejectedApplications = studentsData.filter(
-    (student) => student.finalApplicationStatus === "rejected"
-).length;
+    const approvedApplications = studentsData.filter(
+        (student) => student.finalApplicationStatus === "approved"
+    ).length;
+
+    const rejectedApplications = studentsData.filter(
+        (student) => student.finalApplicationStatus === "rejected"
+    ).length;
 
 
 
@@ -173,7 +182,7 @@ const rejectedApplications = studentsData.filter(
     }
 
     return (
-<div className="h-screen overflow-hidden bg-black text-white flex flex-col">
+        <div className="h-screen overflow-hidden bg-black text-white flex flex-col">
             {/* Navbar */}
             <nav className="h-16 border-b border-zinc-900 px-6 flex items-center justify-between">
 
@@ -202,14 +211,47 @@ const rejectedApplications = studentsData.filter(
                         Admin
                     </span>
 
-                    <button
-                        onClick={() =>
-                            setShowProfile(!showProfile)
-                        }
-                        className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs uppercase"
-                    >
-                        {initials}
-                    </button>
+                    {/* Profile */}
+                    <div className="relative">
+
+                        <button
+                            onClick={() =>
+                                setShowProfile(!showProfile)
+                            }
+                            className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs uppercase"
+                        >
+                            {initials}
+                        </button>
+
+
+                        {showProfile && (
+
+                            <div className="absolute right-0 top-10 w-56 bg-[#111111] border border-[#27272a] rounded-xl p-4 z-50">
+
+                                <p className="font-medium">
+                                    {user.name}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {user.email}
+                                </p>
+
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Admin
+                                </p>
+
+                                <button
+                                    onClick={handleLogout}
+                                    className="mt-4 w-full text-left text-sm text-red-400 hover:text-red-300"
+                                >
+                                    Logout
+                                </button>
+
+                            </div>
+
+                        )}
+
+                    </div>
                 </div>
 
             </nav>
@@ -342,11 +384,11 @@ const rejectedApplications = studentsData.filter(
 
                 </div>
 
-                
+
 
 
                 {/* Students Card */}
-<div className="flex-1 min-h-0 flex flex-col rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden">
+                <div className="flex-1 min-h-0 flex flex-col rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden">
                     {/* Header */}
                     <div className="px-5 pt-5">
 
@@ -379,123 +421,121 @@ const rejectedApplications = studentsData.filter(
                         </div>
 
 
-                        {/* Scholarship */}
-                        <div className="relative lg:w-52">
+                       
+<CustomDropdown
+    value={scholarshipFilter}
+    onChange={setScholarshipFilter}
+    placeholder="All Scholarship Types"
+    className="lg:w-52 "
+    buttonClassName="!h-10 !py-0 "
+        buttonColorClassName="border-zinc-800 bg-black text-zinc-0 hover:border-zinc-700"
 
-                            <select
-                                value={scholarshipFilter}
-                                onChange={(e) => setScholarshipFilter(e.target.value)}
-                                className="appearance-none w-full h-10 rounded-lg border border-zinc-800 bg-black px-3 pr-9 text-sm text-zinc-300 outline-none"
-                            >
-                                <option>All Scholarship Types</option>
-                                <option>ST Scholarship</option>
-                                <option>SC Scholarship</option>
-                                <option>OBC Scholarship</option>
-                                <option>General Scholarship</option>
-                            </select>
+    options={[
+        { label: "All Scholarship Types", value: "All Scholarship Types" },
+        { label: "ST Scholarship", value: "ST Scholarship" },
+        { label: "SC Scholarship", value: "SC Scholarship" },
+        { label: "OBC Scholarship", value: "OBC Scholarship" },
+        { label: "General Scholarship", value: "General Scholarship" },
+    ]}
+/>
 
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
 
+
+                       {/* Status */}
+<CustomDropdown
+    value={statusFilter}
+    onChange={setStatusFilter}
+    placeholder="All Status"
+    className="lg:w-44"
+    buttonClassName="!h-10 !py-0"
+    buttonColorClassName="border-zinc-800 bg-black text-zinc-300 hover:border-zinc-700"
+    options={[
+        { label: "All Status", value: "All Status" },
+        { label: "Not Started", value: "Not Started" },
+        { label: "Pending", value: "Pending" },
+        { label: "Approved", value: "Approved" },
+        { label: "Rejected", value: "Rejected" },
+    ]}
+/>
+
+                    </div>
+
+
+
+                    {/* Table Area */}
+                    <div className="flex-1 min-h-0 px-5 pb-1">
+                        <div className="h-full min-w-[850px] rounded-lg border border-zinc-800 flex flex-col overflow-hidden">
+
+                            {/* Fixed Table Header */}
+                            <div className="shrink-0 grid grid-cols-[50px_1.5fr_1.5fr_1.2fr_100px_110px_100px] bg-zinc-900 px-3 py-3 text-xs text-zinc-400 border-b border-zinc-800">
+                                <span>Std.</span>
+                                <span>Student Name</span>
+                                <span>Email</span>
+                                <span>Scholarship Type</span>
+                                <span className="text-center">Documents</span>
+                                <span className="text-center">Status</span>
+                                <span className="text-center">Action</span>
+                            </div>
+
+                            {/* Only Student Rows Scroll */}
+                            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+                                {filteredStudents.map((student, index) => (
+                                    <div
+                                        key={student.id}
+                                        className="grid grid-cols-[50px_1.5fr_1.5fr_1.2fr_100px_110px_100px] items-center px-3 py-3 border-b border-zinc-900 text-sm hover:bg-zinc-900/30 transition"
+                                    >
+                                        <span className="text-zinc-500">
+                                            {index + 1}
+                                        </span>
+
+                                        <span className="text-zinc-200 truncate pr-2">
+                                            {student.name}
+                                        </span>
+
+                                        <span className="text-zinc-500 truncate pr-2">
+                                            {student.email}
+                                        </span>
+
+                                        <span className="text-zinc-300 truncate pr-2">
+                                            {student.scholarship}
+                                        </span>
+
+                                        <span className="text-zinc-400 text-center">
+                                            {student.documents}
+                                        </span>
+
+                                        <div className="flex justify-center">
+                                            <span
+                                                className={`text-center inline-flex px-3 py-1 rounded-md border text-xs whitespace-nowrap ${getStatusClass(
+                                                    student.status
+                                                )}`}
+                                            >
+                                                {student.status}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-center">
+                                            <button
+                                                onClick={() =>
+                                                    navigate(`/admin/student/${student.id}`)
+                                                }
+                                                className="w-fit inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition"
+                                            >
+                                                View
+                                                <ArrowRight className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-
-
-                        {/* Status */}
-                        <div className="relative lg:w-44">
-
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="appearance-none w-full h-10 rounded-lg border border-zinc-800 bg-black px-3 pr-9 text-sm text-zinc-300 outline-none"
-                            >
-                                <option>All Status</option>
-                                <option>Not Started</option>
-                                <option>Pending</option>
-                                <option>Approved</option>
-                                <option>Rejected</option>
-                            </select>
-
-                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-
-                        </div>
-
                     </div>
-
-
-                   
-{/* Table Area */}
-<div className="flex-1 min-h-0 px-5 pb-1">
-    <div className="h-full min-w-[850px] rounded-lg border border-zinc-800 flex flex-col overflow-hidden">
-
-        {/* Fixed Table Header */}
-        <div className="shrink-0 grid grid-cols-[50px_1.5fr_1.5fr_1.2fr_100px_110px_100px] bg-zinc-900 px-3 py-3 text-xs text-zinc-400 border-b border-zinc-800">
-            <span>Std.</span>
-            <span>Student Name</span>
-            <span>Email</span>
-            <span>Scholarship Type</span>
-            <span className="text-center">Documents</span>
-            <span className="text-center">Status</span>
-            <span className="text-center">Action</span>
-        </div>
-
-        {/* Only Student Rows Scroll */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-            {filteredStudents.map((student, index) => (
-                <div
-                    key={student.id}
-                    className="grid grid-cols-[50px_1.5fr_1.5fr_1.2fr_100px_110px_100px] items-center px-3 py-3 border-b border-zinc-900 text-sm hover:bg-zinc-900/30 transition"
-                >
-                    <span className="text-zinc-500">
-                        {index + 1}
-                    </span>
-
-                    <span className="text-zinc-200 truncate pr-2">
-                        {student.name}
-                    </span>
-
-                    <span className="text-zinc-500 truncate pr-2">
-                        {student.email}
-                    </span>
-
-                    <span className="text-zinc-300 truncate pr-2">
-                        {student.scholarship}
-                    </span>
-
-                    <span className="text-zinc-400 text-center">
-                        {student.documents}
-                    </span>
-
-                    <div className="flex justify-center">
-                        <span
-                            className={`text-center inline-flex px-3 py-1 rounded-md border text-xs whitespace-nowrap ${getStatusClass(
-                                student.status
-                            )}`}
-                        >
-                            {student.status}
-                        </span>
-                    </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            onClick={() =>
-                                navigate(`/admin/student/${student.id}`)
-                            }
-                            className="w-fit inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-zinc-700 text-xs text-zinc-300 hover:border-blue-400/50 hover:text-white transition"
-                        >
-                            View
-                            <ArrowRight className="h-3 w-3" />
-                        </button>
-                    </div>
-                </div>
-            ))}
-        </div>
-    </div>
-</div>
 
 
 
 
                     {/* Pagination */}
-<div className="shrink-0 px-5 py-3 flex items-center justify-between">
+                    <div className="shrink-0 px-5 py-3 flex items-center justify-between">
                         <p className="text-xs text-zinc-500">
                             Showing 1 to {filteredStudents.length} of {students.length} students
                         </p>

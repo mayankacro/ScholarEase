@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useSearchParams } from "react-router-dom";
+import { ChevronDown, Check } from "lucide-react";
 
 function Upload() {
 
@@ -27,6 +28,25 @@ const documentTypeFromUrl = searchParams.get("documentType");
     const [uploadedDocument, setUploadedDocument] = useState<any>(null);
     const [existingDocuments, setExistingDocuments] = useState<any[]>([]);
 
+    const [isDocumentDropdownOpen, setIsDocumentDropdownOpen] = useState(false);
+const documentDropdownRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (
+            documentDropdownRef.current &&
+            !documentDropdownRef.current.contains(event.target as Node)
+        ) {
+            setIsDocumentDropdownOpen(false);
+        }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    };
+}, []);
 
 
     const handleUpload = async () => {
@@ -346,60 +366,98 @@ const isExistingDocument = Boolean(selectedExistingDocument);
                 </div>
 
 
-                {/* Document Type */}
+                {/* Document Type
                 <div className="mb-6">
 
                     <label className="block text-sm text-gray-400 mb-2">
                         Document type
-                    </label>
+                    </label> */}
 
 
-                    <div className="relative">
+                  
+{/* Document Type */}
+<div className="mb-6">
+    <label className="mb-2 block text-sm text-gray-400">
+        Document type
+    </label>
 
-                        <select
-                            value={selectedDocument}
-                            onChange={(e) =>
-                                setSelectedDocument(e.target.value)
-                            }
-                            // className="w-full bg-[#111111] border border-[#27272a] rounded-lg px-4 py-3 text-white outline-none"
-                            // className="appearance-none w-full bg-[#111111] border border-[#27272a] rounded-lg px-4 py-3 pr-10 text-white outline-none focus:border-gray-500 cursor-pointer"
-                            className="appearance-none w-full bg-[#111111] border border-[#27272a] rounded-lg px-4 py-3 pr-10 text-white outline-none focus:border-gray-500 cursor-pointer"
-                        >
+    <div className="relative" ref={documentDropdownRef}>
+        <button
+            type="button"
+            onClick={() =>
+                setIsDocumentDropdownOpen((prev) => !prev)
+            }
+            aria-haspopup="listbox"
+            aria-expanded={isDocumentDropdownOpen}
+            className={`flex w-full items-center justify-between rounded-lg border bg-[#111111] px-4 py-3 text-left text-sm outline-none transition-colors ${
+                isDocumentDropdownOpen
+                    ? "border-purple-500"
+                    : "border-zinc-700 hover:border-zinc-600"
+            }`}
+        >
+            <span className={selectedDocument ? "text-white" : "text-gray-400"}>
+                {selectedDocument || "Select document type"}
+            </span>
 
+            <ChevronDown
+                size={16}
+                className={`shrink-0 text-zinc-400 transition-transform duration-200 ${
+                    isDocumentDropdownOpen ? "rotate-180" : ""
+                }`}
+            />
+        </button>
 
-                            <option value="">
-                                Select document type
-                            </option>
+        {isDocumentDropdownOpen && (
+            <div
+                role="listbox"
+                className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-lg border border-zinc-800 bg-[#111111] p-1 shadow-xl shadow-black/40"
+            >
+                <button
+                    type="button"
+                    role="option"
+                    aria-selected={!selectedDocument}
+                    onClick={() => {
+                        setSelectedDocument("");
+                        setIsDocumentDropdownOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
+                        !selectedDocument
+                            ? "bg-purple-600/20 text-purple-300"
+                            : "text-zinc-300 hover:bg-zinc-800"
+                    }`}
+                >
+                    <span>Select document type</span>
+                    {!selectedDocument && <Check size={16} />}
+                </button>
 
-                            {documents.map((document) => (
+                {documents.map((document) => (
+                    <button
+                        key={document}
+                        type="button"
+                        role="option"
+                        aria-selected={selectedDocument === document}
+                        onClick={() => {
+                            setSelectedDocument(document);
+                            setIsDocumentDropdownOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
+                            selectedDocument === document
+                                ? "bg-purple-600/20 text-purple-300"
+                                : "text-zinc-200 hover:bg-zinc-800"
+                        }`}
+                    >
+                        <span>{document}</span>
 
-                                <option
-                                    key={document}
-                                    value={document}
-                                >
-                                    {document}
-                                </option>
+                        {selectedDocument === document && (
+                            <Check size={16} className="text-purple-400" />
+                        )}
+                    </button>
+                ))}
+            </div>
+        )}
+    </div>
+</div>
 
-                            ))}
-
-                        </select>
-                        {/* Custom arrow, jitna chaho utna left kar sakte ho */}
-                        <svg
-                            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                            />
-                        </svg>
-
-                    </div>
-                </div>
 
                 
 {selectedExistingDocument && (

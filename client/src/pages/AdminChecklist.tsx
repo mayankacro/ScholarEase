@@ -13,6 +13,7 @@ import {
     ArrowLeft
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import CustomDropdown from "../components/CustomDropdown";
 
 function AdminChecklist() {
     const navigate = useNavigate();
@@ -191,28 +192,30 @@ function AdminChecklist() {
 
                     <div className="space-y-7 p-5 md:p-7">
 
-                        {/* Scholarship Category */}
                         <div>
-                            <label className="mb-2.5 block text-sm font-medium text-zinc-300">
-                                Scholarship Category
-                            </label>
+    <label className="mb-2.5 block text-sm font-medium text-zinc-300">
+        Scholarship Category
+    </label>
 
-                            <select
-                                value={scholarshipType}
-                                onChange={(e) => setScholarshipType(e.target.value)}
-                                className="w-full cursor-pointer rounded-xl border border-zinc-700/80 bg-[#09090b] px-4 py-3.5 text-sm text-white outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
-                            >
-                                <option value="">Select scholarship category</option>
-                                <option value="SC">SC</option>
-                                <option value="ST">ST</option>
-                                <option value="OBC">OBC</option>
-                                <option value="General">General</option>
-                            </select>
+    <CustomDropdown
+        value={scholarshipType}
+        onChange={setScholarshipType}
+        placeholder="Select scholarship category"
+        buttonClassName="!rounded-xl !px-4 !py-3.5 focus:!border-blue-500"
+        buttonColorClassName="border-zinc-700/80 bg-[#09090b] text-white hover:border-zinc-600"
+        options={[
+            { label: "Select Scholarship Category", value: "Select Scholarship Category"},
+            { label: "SC", value: "SC" },
+            { label: "ST", value: "ST" },
+            { label: "OBC", value: "OBC" },
+            { label: "General", value: "General" },
+        ]}
+    />
 
-                            <p className="mt-2 text-xs text-zinc-500">
-                                Each category has its own document requirements.
-                            </p>
-                        </div>
+    <p className="mt-2 text-xs text-zinc-500">
+        Each category has its own document requirements.
+    </p>
+</div>
 
                         {/* Add Document */}
                         <div>

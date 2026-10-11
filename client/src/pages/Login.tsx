@@ -1,36 +1,50 @@
+
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import {
+    Eye,
+    EyeOff,
+    FileCheck2,
+    ShieldCheck,
+    MailCheck,
+    Sparkles,
+} from "lucide-react";
 
 function Login() {
-    // useSate() --> React ka ek Hook hai jo component ke andar data ko remember/state mein rakhne deta hai.
     const navigate = useNavigate();
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState("")
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
-        setError("");
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setError("");
+        setEmailError("");
+        setPasswordError("");
+
+            const emailRegex =/^[a-zA-Z0-9._%+-]+@gmail\.(com|in)+$/;
 
         if (!email.trim()) {
-            setError("Please enter your email");
+            setEmailError("Email address is required.");
             return;
         }
 
         if (!emailRegex.test(email.trim())) {
-            setError("Please enter a valid email address");
+            setEmailError("Enter a valid email address.");
             return;
         }
 
         if (!password) {
-            setError("Please enter your password");
+            setPasswordError("Password is required.");
             return;
         }
 
@@ -44,258 +58,308 @@ function Login() {
 
             const { token, user } = res.data;
 
+            if (!token || !user) {
+                setError("Invalid response from server. Please try again.");
+                return;
+            }
+
+            if (user.role !== "admin" && user.role !== "student") {
+                setError("Unrecognized user role.");
+                return;
+            }
+
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user));
 
             if (user.role === "admin") {
                 navigate("/admin");
-            } else if (user.role === "student") {
-                navigate("/student");
             } else {
-                setError("Unrecognized user role");
+                navigate("/student");
             }
         } catch (error: any) {
             setError(
-                error.response?.data?.message || "Invalid email or password"
+                error.response?.data?.message ||
+                    "Invalid email or password. Please try again."
             );
         } finally {
             setIsSubmitting(false);
         }
     };
 
-
-    // const getProfile = async () => {
-    //     try {
-    //         const res = await api.get("/api/auth/profile");
-    //         console.log("Profile:", res.data)
-    //     } catch(error: any){
-    //         console.log("Profile failed:",
-    //             error.response?.data?.message || "Profile failed"
-    //         );
-    //     }
-    // };
+    const features = [
+        { icon: FileCheck2, text: "AI-powered document validation" },
+        { icon: ShieldCheck, text: "Smart document verification" },
+        { icon: MailCheck, text: "Email updates on admin decisions" },
+        { icon: Sparkles, text: "AI-assisted scholarship workflow" },
+    ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-[#0c0c0c] via-[#050505] to-[#020202] text-white flex">
+        <div className="relative flex min-h-screen w-full flex-col bg-[#050507] text-white lg:h-screen lg:min-h-0 lg:flex-row lg:overflow-hidden">
+            {/* Background glow */}
+            <div className="pointer-events-none absolute -left-32 top-32 h-96 w-96 rounded-full bg-blue-600/[0.08] blur-[120px]" />
+            <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-indigo-600/[0.06] blur-[120px]" />
 
-            {/* ================= LOGO ================= */}
-
-            {/* <div className="w-1/2 min-h-screen border-r border-gray-800 px-12 py-8"> */}
-
-            <div className="w-1/2 min-h-screen border-r border-gray-800 px-6 lg:px-12 py-8">
-
+            {/* Left Hero Section */}
+            <section className="relative flex w-full min-w-0 flex-col border-b border-white/[0.08] px-5 py-6 sm:px-8 lg:h-full lg:w-1/2 lg:flex-none lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-8 lg:py-5 xl:px-12">
                 {/* Logo */}
-                <div className="flex items-center gap-2">
-
-                    <div className="w-7 h-7 rounded-md bg-white flex items-center justify-center text-black font-bold">
+                <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="flex w-fit items-center gap-2.5"
+                    aria-label="ScholarEase home"
+                >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-lg font-bold text-black shadow-lg shadow-white/[0.05]">
                         Λ
-                    </div>
-
-                    <span className="font-semibold text-lg">
+                    </span>
+                    <span className="text-lg font-semibold tracking-tight">
                         ScholarEase
                     </span>
+                </button>
 
-                </div>
-
-
-                {/* Left Content */}
-                <div className="mt-20 lg:mt-20 max-w-xl">
-
-                    <p className="text-xs tracking-[0.2em] text-gray-500 mb-5">
+                {/* Hero Content */}
+                <div className="relative z-10 my-8 max-w-xl sm:my-10 lg:my-auto lg:py-5">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/[0.06] px-3 py-1.5 text-[10px] font-medium tracking-[0.18em] text-blue-300 sm:text-xs">
+                        <Sparkles size={13} />
                         AI-POWERED DOCUMENT PLATFORM
-                    </p>
-
-                    <h1 className="text-6xl lg:text-7xl font-semibold leading-[1.05]">
-
-                        Scholarship
-                        <br />
-
-                        docs,
-                        <br />
-
-                        <span className="text-gray-700">
-                            done right.
-                        </span>
-
-                    </h1>
-
-
-                    <p className="mt-6 text-gray-500 leading-6 max-w-md">
-
-                        Upload from home. Gemini Vision validates
-                        instantly. No queues, no counter rejections,
-                        no wasted trips.
-
-                    </p>
-
-
-                    {/* Features */}
-                    <div className="mt-8 space-y-3 text-sm">
-
-                        <p className="text-gray-500">
-                            <span className="text-green-400 mr-2">
-                                •
-                            </span>
-
-                            Gemini Vision — images and PDFs
-                        </p>
-
-                        <p className="text-gray-500">
-                            <span className="text-green-400 mr-2">
-                                •
-                            </span>
-
-                            Auto fallback — never crashes
-                        </p>
-
-                        <p className="text-gray-500">
-                            <span className="text-green-400 mr-2">
-                                •
-                            </span>
-
-                            Email on admin decision
-                        </p>
-
-                        <p className="text-gray-500">
-                            <span className="text-green-400 mr-2">
-                                •
-                            </span>
-
-                            AI validation online
-                        </p>
-
-                        <p className="text-gray-700">
-                            <span className="mr-2">
-                                •
-                            </span>
-
-                            SC / ST / OBC / General
-                        </p>
-
                     </div>
 
-                </div>
+                    <h1 className="text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl xl:text-6xl">
+                        Scholarship
+                        <br />
+                        docs,
+                        <br />
+                        <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-zinc-500 bg-clip-text text-transparent">
+                            done right.
+                        </span>
+                    </h1>
 
-            </div>
-
-
-            {/* ================= RIGHT SIDE ================= */}
-
-            <div className="flex w-full lg:w-1/2 items-center justify-center px-12 lg:px-8 py-10 mt-8">
-                <form
-                    onSubmit={handleLogin}
-                    className="w-full max-w-md">
-
-
-                    {/* Heading */}
-                    <h2 className="text-2xl font-semibold mb-1">
-                        Sign in
-                    </h2>
-
-                    <p className="text-sm text-gray-600 mb-6">
-                        Continue to ScholarEase
+                    <p className="mt-5 max-w-md text-sm leading-7 text-zinc-400 sm:text-base">
+                        Upload from home. Get your scholarship documents
+                        checked with AI. Less paperwork, fewer delays,
+                        and a simpler application experience.
                     </p>
 
+                    {/* Features */}
+                    <div className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                        {features.map(({ icon: Icon, text }) => (
+                            <div
+                                key={text}
+                                className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3.5 py-3 transition duration-200 hover:border-blue-400/20 hover:bg-blue-400/[0.04]"
+                            >
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-400/10 bg-emerald-400/[0.07]">
+                                    <Icon
+                                        size={16}
+                                        className="text-emerald-400"
+                                    />
+                                </span>
+                                <span className="text-xs leading-5 text-zinc-400">
+                                    {text}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
 
-                    
+                    {/* Scholarship categories */}
+                    <div className="mt-6 flex flex-wrap items-center gap-2">
+                        <span className="mr-1 text-xs text-zinc-500">
+                            Categories
+                        </span>
+                        {["SC", "ST", "OBC", "General"].map((category) => (
+                            <span
+                                key={category}
+                                className="rounded-md border border-white/[0.08] bg-white/[0.025] px-2.5 py-1 text-xs text-zinc-400"
+                            >
+                                {category}
+                            </span>
+                        ))}
+                    </div>
+                </div>
 
+                <p className="relative z-10 hidden text-xs text-zinc-600 lg:block">
+                    A simpler way to manage your scholarship documents.
+                </p>
+            </section>
 
-                    {/* Error */}
-                    {error && (
-                        <p className="w-full px-3 py-1 pr-12 mb-3 rounded-lg bg-red-500/10 border border-red-400 text-red-500  outline-none transition">
-                            {error}
+            {/* Right Login Section */}
+            <section className="relative flex w-full min-w-0 flex-1 items-center justify-center px-5 py-8 sm:px-8 lg:h-full lg:w-1/2 lg:flex-none lg:overflow-y-auto lg:px-8 lg:py-6 xl:px-12">
+                <form
+                    noValidate
+                    onSubmit={handleLogin}
+                    className="relative w-full max-w-md min-w-0 rounded-2xl border border-white/[0.09] bg-[#0a0a0d]/90 p-5 shadow-2xl shadow-black/40 sm:p-8 lg:p-7 xl:p-9"
+                >
+                    {/* Form heading */}
+                    <div className="mb-8">
+                        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-400/[0.08]">
+                            <ShieldCheck
+                                size={21}
+                                className="text-blue-400"
+                            />
+                        </div>
+
+                        <h2 className="text-3xl font-semibold tracking-tight">
+                            Welcome back
+                            <span className="text-blue-400">.</span>
+                        </h2>
+
+                        <p className="mt-2 text-sm text-zinc-500">
+                            Sign in to continue to ScholarEase
                         </p>
-                    )}
+                    </div>
 
+                    {/* Backend / login error */}
+                    {error && (
+                        <div
+                            role="alert"
+                            className="mb-5 flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-sm leading-5 text-red-400"
+                        >
+                            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-400/50 text-[10px]">
+                                !
+                            </span>
+                            <span>{error}</span>
+                        </div>
+                    )}
 
                     {/* Email */}
                     <div className="mb-5">
-
-                        <label className="block text-xs tracking-wider text-gray-600 mb-2">
-                            EMAIL
+                        <label
+                            htmlFor="email"
+                            className="mb-2 block text-xs font-medium tracking-wider text-zinc-400"
+                        >
+                            EMAIL ADDRESS
                         </label>
 
                         <input
+                            id="email"
                             type="email"
-                            required
+                            autoComplete="email"
+                            aria-invalid={Boolean(emailError)}
+                            aria-describedby={emailError ? "email-error" : undefined}
                             placeholder="name@email.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-800 text-white placeholder-gray-700 outline-none focus:border-gray-500 transition"
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setEmailError("");
+                                setError("");
+                            }}
+                            className={`w-full rounded-xl border bg-black/50 px-4 py-3.5 text-sm text-white outline-none transition duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-blue-400/10 ${
+                                emailError
+                                    ? "border-red-400/70 focus:border-red-400"
+                                    : "border-white/[0.10] focus:border-blue-400/70"
+                            }`}
                         />
 
+                        {emailError && (
+                            <p
+                                id="email-error"
+                                role="alert"
+                                className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-red-400"
+                            >
+                                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-400/50 text-[10px] ">
+                                    !
+                                </span>
+                                <span>{emailError}</span>
+                            </p>
+                        )}
                     </div>
 
-
                     {/* Password */}
-
-                    <div className="mb-5">
-                        <label className="block text-xs tracking-wider text-gray-600 mb-2">
+                    <div className="mb-6">
+                        <label
+                            htmlFor="password"
+                            className="mb-2 block text-xs font-medium tracking-wider text-zinc-400"
+                        >
                             PASSWORD
                         </label>
 
                         <div className="relative">
                             <input
+                                id="password"
                                 type={showPassword ? "text" : "password"}
-                                required
+                                autoComplete="current-password"
+                                aria-invalid={Boolean(passwordError)}
+                                aria-describedby={
+                                    passwordError ? "password-error" : undefined
+                                }
                                 placeholder="Enter your password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 pr-12 rounded-lg bg-transparent border border-gray-800 text-white placeholder-gray-700 outline-none focus:border-gray-500 transition"
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setPasswordError("");
+                                    setError("");
+                                }}
+                                className={`w-full rounded-xl border bg-black/50 px-4 py-3.5 pr-12 text-sm text-white outline-none transition duration-200 placeholder:text-zinc-600 focus:ring-2 focus:ring-blue-400/10 ${
+                                    passwordError
+                                        ? "border-red-400/70 focus:border-red-400"
+                                        : "border-white/[0.10] focus:border-blue-400/70"
+                                }`}
                             />
 
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-500 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+                                aria-label={
+                                    showPassword ? "Hide password" : "Show password"
+                                }
                             >
-                                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                                {showPassword ? (
+                                    <EyeOff size={17} />
+                                ) : (
+                                    <Eye size={17} />
+                                )}
                             </button>
                         </div>
+
+                        {passwordError && (
+                            <p
+                                id="password-error"
+                                role="alert"
+                                className="mt-2 flex items-start gap-1.5 text-xs leading-5 text-red-400"
+                            >
+                                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-400/50 text-[10px]">
+                                    !
+                                </span>
+                                <span>{passwordError}</span>
+                            </p>
+                        )}
                     </div>
 
-
-
-                    {/* Continue */}
+                    {/* Submit */}
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full py-3 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black transition font-medium disabled:cursor-not-allowed disabled:opacity-60"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/10 transition duration-200 hover:bg-blue-400 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {isSubmitting ? "Signing in..." : "Continue →"}
+                        {isSubmitting ? "Signing in..." : "Continue"}
+                        {!isSubmitting && <span aria-hidden="true">→</span>}
                     </button>
 
-
-                    {/* OR */}
-                    <div className="flex items-center gap-4 my-7">
-
-                        <div className="flex-1 h-px bg-gray-900"></div>
-
-                        <span className="text-xs text-gray-600">
+                    {/* Divider */}
+                    <div className="my-7 flex items-center gap-4">
+                        <div className="h-px flex-1 bg-white/[0.08]" />
+                        <span className="text-[10px] font-medium tracking-[0.2em] text-zinc-600">
                             OR
                         </span>
-
-                        <div className="flex-1 h-px bg-gray-900"></div>
-
+                        <div className="h-px flex-1 bg-white/[0.08]" />
                     </div>
 
-
                     {/* Register */}
-                    <p className="text-center text-sm text-gray-600">
-
+                    <p className="text-center text-sm text-zinc-500">
                         No account?
-
-                        <button onClick={() => navigate("/register")} className="text-gray-300 ml-1 cursor-pointer hover:text-white">
+                        <button
+                            type="button"
+                            onClick={() => navigate("/register")}
+                            className="ml-1 font-medium text-blue-400 transition hover:text-blue-300"
+                        >
                             Create one
                         </button>
-
                     </p>
 
+                    <p className="mt-8 text-center text-[11px] leading-5 text-zinc-600">
+                        Your scholarship journey, simplified.
+                    </p>
                 </form>
-
-            </div>
-
+            </section>
         </div>
     );
 }

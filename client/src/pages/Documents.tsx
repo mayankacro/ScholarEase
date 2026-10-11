@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useLocation } from "react-router-dom";
 import { Eye, RefreshCw, Replace } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import CustomDropdown from "../components/CustomDropdown";
 
 function Documents() {
     const navigate = useNavigate();
@@ -53,23 +55,23 @@ function Documents() {
         navigate("/login");
     }
 
-   const fetchDocuments = async () => {
-    try {
-        setIsRefreshing(true);
+    const fetchDocuments = async () => {
+        try {
+            setIsRefreshing(true);
 
-        const res = await api.get("/api/documents/my-documents");
-        setDocuments(res.data.documents || []);
-    } catch (error) {
-        console.error("Failed to fetch documents:", error);
-    } finally {
-        setLoading(false);
-        setIsRefreshing(false);
-    }
-};
+            const res = await api.get("/api/documents/my-documents");
+            setDocuments(res.data.documents || []);
+        } catch (error) {
+            console.error("Failed to fetch documents:", error);
+        } finally {
+            setLoading(false);
+            setIsRefreshing(false);
+        }
+    };
 
-useEffect(() => {
-    fetchDocuments();
-}, []);
+    useEffect(() => {
+        fetchDocuments();
+    }, []);
 
 
 
@@ -172,29 +174,29 @@ useEffect(() => {
             {/* Page */}
             <main className="px-5 py-7">
 
-               <div className="mb-8">
-    <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
-            Documents
-        </h1>
+                <div className="mb-8">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-semibold">
+                            Documents
+                        </h1>
 
-        <button
-            onClick={fetchDocuments}
-            disabled={isRefreshing}
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-white transition hover:bg-zinc-800 disabled:opacity-50"
->
-            <RefreshCw
-        size={16}
-        className={isRefreshing ? "animate-spin" : ""}
-    />
-            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
-        </button>
-    </div>
+                        <button
+                            onClick={fetchDocuments}
+                            disabled={isRefreshing}
+                            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-white transition hover:bg-zinc-800 disabled:opacity-50"
+                        >
+                            <RefreshCw
+                                size={16}
+                                className={isRefreshing ? "animate-spin" : ""}
+                            />
+                            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+                        </button>
+                    </div>
 
-    <p className="text-sm text-gray-500 mt-2">
-        Your uploaded scholarship documents
-    </p>
-</div>
+                    <p className="text-sm text-gray-500 mt-2">
+                        Your uploaded scholarship documents
+                    </p>
+                </div>
 
                 {loading ? (
                     <p className="mt-6 text-zinc-400">
@@ -221,28 +223,47 @@ useEffect(() => {
                                 </span>
                             </div>
 
-                            <select
-                                value={aiFilter}
-                                onChange={(e) => setAiFilter(e.target.value)}
-                                className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
-                            >
-                                <option value="all">All AI statuses</option>
-                                <option value="valid">AI Valid</option>
-                                <option value="invalid">AI Invalid</option>
-                                <option value="manual_review">Manual Review</option>
-                                <option value="pending">AI Pending</option>
-                            </select>
+                            <div className="relative">
+                               
+<CustomDropdown
+    value={aiFilter}
+    onChange={setAiFilter}
+   className="w-full lg:w-50"
+buttonClassName="!h-[46px] !py-0 !text-sm"
+buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
+    options={[
+        { label: "All AI statuses", value: "all" },
+        { label: "AI Valid", value: "valid" },
+        { label: "AI Invalid", value: "invalid" },
+        { label: "Manual Review", value: "manual_review" },
+        { label: "AI Pending", value: "pending" },
+    ]}
+/>
 
-                            <select
-                                value={adminFilter}
-                                onChange={(e) => setAdminFilter(e.target.value)}
-                                className="rounded-lg border border-zinc-800 bg-[#111] px-3 py-3 text-sm text-white outline-none focus:border-purple-500"
-                            >
-                                <option value="all">All admin statuses</option>
-                                <option value="approved">Approved</option>
-                                <option value="pending">Admin Pending</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
+                            </div>
+
+
+
+
+                            <div className="relative">
+                                <CustomDropdown
+    value={adminFilter}
+    onChange={setAdminFilter}
+    placeholder="All admin statuses"
+    className="w-full lg:w-44"
+buttonClassName="!h-[46px] !py-0 !text-sm"
+buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
+    options={[
+        { label: "All admin statuses", value: "all" },
+        { label: "Approved", value: "approved" },
+        { label: "Admin Pending", value: "pending" },
+        { label: "Rejected", value: "rejected" },
+    ]}
+/>
+
+
+                                
+                            </div>
                         </div>
 
                         <p className="mt-3 text-xs text-zinc-500">
@@ -370,7 +391,7 @@ useEffect(() => {
                                             disabled={!document.fileUrl}
                                             className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-white transition hover:border-purple-500 hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-40"
                                         >
-                                            
+
                                             View
                                         </button>
                                     </div>
