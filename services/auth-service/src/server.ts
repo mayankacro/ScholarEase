@@ -23,8 +23,11 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());  //ye line express ko bolti h JSON ko samajh
 
-app.use(cors({  //5173 wale frontend ko meri API access karne ki permission hai.
-    origin: "http://localhost:5173"
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://scholarease-frontend-dpr3.onrender.com"
+    ]
 }));
  
 app.use("/api/auth", authRoutes); // mtlb /api/auth wali request authROutes ko bhejo
