@@ -750,3 +750,17 @@ html {
     margin-bottom: 0;
   }
 }
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  background-color: #09090b;
+}
+
+html {
+  overscroll-behavior-y: none;
+}
+
+

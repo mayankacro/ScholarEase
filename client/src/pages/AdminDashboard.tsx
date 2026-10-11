@@ -11,6 +11,7 @@ import {
     CheckCircle2,
     XCircle,
     ArrowRight,
+    ClipboardList
 } from "lucide-react";
 
 function AdminDashboard() {
@@ -185,20 +186,9 @@ function AdminDashboard() {
 
                 <div className="flex items-center gap-2">
 
-                    <button
-                        onClick={() => navigate("/student")}
-                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
-                    >
-                        Dashboard
-                    </button>
+                    
 
-                    <button
-                        onClick={() => navigate("/admin/checklist")}
-
-                        className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out"
-                    >
-                        Create Checklist
-                    </button>
+                   
 
                 </div>
 
@@ -225,16 +215,30 @@ function AdminDashboard() {
             {/* Main */}
             <main className="px-6 py-7">
 
-                {/* Heading */}
-                <div className="mb-5">
-                    <h1 className="text-xl font-semibold">
-                        Admin Dashboard
-                    </h1>
+                
+{/* Heading */}
+<div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+        <h1 className="text-xl font-semibold">
+            Admin Dashboard
+        </h1>
 
-                    <p className="text-sm text-zinc-500 mt-1">
-                        Review and manage student scholarship documents
-                    </p>
-                </div>
+        <p className="text-sm text-zinc-500 mt-1">
+            Review and manage student scholarship documents
+        </p>
+    </div>
+
+    <button
+        onClick={() => navigate("/admin/checklist")}
+        className="inline-flex items-center justify-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-300 transition hover:bg-blue-500/20 hover:border-blue-400 active:scale-95"
+    >
+        <ClipboardList className="h-4 w-4" />
+        Create Checklist
+    </button>
+</div>
+
+
+               
 
 
                 {/* Stats */}
