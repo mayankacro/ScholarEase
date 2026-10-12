@@ -1,9 +1,45 @@
 
-import { Resend } from "resend";
+import axios from "axios";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
-const FROM_EMAIL = "ScholarEase <onboarding@resend.dev>";
+const sendEmail = async (
+    toEmail: string,
+    subject: string,
+    textContent: string
+) => {
+    const apiKey = process.env.BREVO_API_KEY;
+    const senderEmail = process.env.BREVO_SENDER_EMAIL;
+    const senderName = process.env.BREVO_SENDER_NAME || "ScholarEase";
+
+    if (!apiKey || !senderEmail) {
+        throw new Error("Brevo email configuration is missing");
+    }
+
+    const response = await axios.post(
+        BREVO_API_URL,
+        {
+            sender: {
+                name: senderName,
+                email: senderEmail,
+            },
+            to: [{ email: toEmail }],
+            subject,
+            textContent,
+        },
+        {
+            headers: {
+                "api-key": apiKey,
+                "Content-Type": "application/json",
+                accept: "application/json",
+            },
+            timeout: 15000,
+        }
+    );
+
+    console.log("Brevo accepted email:", response.data.messageId);
+    return response.data;
+};
 
 export const sendStatusEmail = async (
     toEmail: string,
@@ -12,21 +48,20 @@ export const sendStatusEmail = async (
     aiRemarks: string
 ) => {
     try {
-        const { data, error } = await resend.emails.send({
-            from: FROM_EMAIL,
-            to: [toEmail],
-            subject: `Document Status: ${documentType}`,
-            text: `Status: ${aiStatus}\nRemarks: ${aiRemarks}`,
-        });
-
-        if (error) {
-            console.error("Email failed:", error);
-            return;
-        }
-
-        console.log("Document status email accepted:", data?.id);
+        await sendEmail(
+            toEmail,
+            `Document Status: ${documentType}`,
+            `Status: ${aiStatus}\nRemarks: ${aiRemarks}`
+        );
     } catch (error) {
-        console.error("Email failed:", error);
+        if (axios.isAxiosError(error)) {
+            console.error(
+                "Document status email failed:",
+                error.response?.data || error.message
+            );
+        } else {
+            console.error("Document status email failed:", error);
+        }
     }
 };
 
@@ -36,11 +71,11 @@ export const sendFinalApplicationEmail = async (
     status: string,
     remarks: string
 ) => {
-    const { data, error } = await resend.emails.send({
-        from: FROM_EMAIL,
-        to: [toEmail],
-        subject: `ScholarEase: Application ${status}`,
-        text: `Hello ${studentName},
+    try {
+        await sendEmail(
+            toEmail,
+            `ScholarEase: Application ${status}`,
+            `Hello ${studentName},
 
 Your scholarship application has been ${status}.
 
@@ -49,13 +84,18 @@ Admin Remarks: ${remarks || "No additional remarks provided."}
 Please log in to your ScholarEase dashboard to check your application status.
 
 Regards,
-ScholarEase Team`,
-    });
+ScholarEase Team`
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error(
+                "Final application email failed:",
+                error.response?.data || error.message
+            );
+        } else {
+            console.error("Final application email failed:", error);
+        }
 
-    if (error) {
-        console.error("Final application email failed:", error);
         throw error;
     }
-
-    console.log("Final application email accepted:", data?.id);
 };
