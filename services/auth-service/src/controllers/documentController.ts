@@ -84,14 +84,20 @@ export const updateDocumentStatus = async (req: Request, res: Response) => {
 
         const student = await User.findById(document.studentId);
 
-        if(student) {
-            await sendStatusEmail(
-                student.email,
-                document.documentType,
-             status,
-             status === "approved" ? "Your Documents Approved by Admin." : "Your document is rejected by admin. please reupload."
-            )
-        }
+        // const student = await User.findById(document.studentId);
+
+if (student) {
+    sendStatusEmail(
+        student.email,
+        document.documentType,
+        status,
+        status === "approved"
+            ? "Your Documents Approved by Admin."
+            : "Your document is rejected by admin. please reupload."
+    ).catch((error) => {
+        console.error("Status email failed:", error);
+    });
+}
 
         return res.status(200).json({
             success: true,
