@@ -175,7 +175,7 @@ export const updateFinalApplicationStatus = async (
 
         await student.save();
 
-       sendFinalApplicationEmail(
+       await sendFinalApplicationEmail(
     student.email,
     student.name,
     status,
