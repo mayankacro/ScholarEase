@@ -15,7 +15,8 @@ function AdminStudentDetails() {
     const [updatingDocument, setUpdatingDocument] = useState<string | null>(null);
     const [validatingDocument, setValidatingDocument] = useState<string | null>(null);
     const [finalRemarks, setFinalRemarks] = useState("");
-    const [finalizingApplication, setFinalizingApplication] = useState(false);
+const [finalizingApplication, setFinalizingApplication] =
+    useState<"approved" | "rejected" | null>(null);
 
     const updateDocumentStatus = async (
         documentId: string,
@@ -68,7 +69,7 @@ const handleFinalDecision = async (
     if (!confirmed) return;
 
     try {
-        setFinalizingApplication(true);
+        setFinalizingApplication(status);
 
         const res = await api.patch(
             `/api/documents/students/${studentId}/final-status`,
@@ -96,7 +97,7 @@ const handleFinalDecision = async (
             "Failed to update application status"
         );
     } finally {
-        setFinalizingApplication(false);
+        setFinalizingApplication(null);
     }
 };
 
@@ -464,32 +465,31 @@ const handleFinalDecision = async (
     </div>
 
     <div className="mt-5 flex flex-wrap gap-3">
+<button
+    onClick={() => handleFinalDecision("approved")}
+    disabled={
+        finalizingApplication === "approved" ||
+        student.finalApplicationStatus === "approved"
+    }
+    className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-500 transition disabled:opacity-50"
+>
+    {finalizingApplication === "approved"
+        ? "Processing..."
+        : "Approve Application"}
+</button>
 
         <button
-            onClick={() => handleFinalDecision("approved")}
-            disabled={
-                finalizingApplication ||
-                student.finalApplicationStatus === "approved"
-            }
-            className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm hover:bg-green-500 transition disabled:opacity-50"
-        >
-            {finalizingApplication
-                ? "Processing..."
-                : "Approve Application"}
-        </button>
-
-        <button
-            onClick={() => handleFinalDecision("rejected")}
-            disabled={
-                finalizingApplication ||
-                student.finalApplicationStatus === "rejected"
-            }
-            className="px-4 py-2 rounded-lg border border-red-500/40 text-red-400 text-sm hover:bg-red-500/10 transition disabled:opacity-50"
-        >
-            {finalizingApplication
-                ? "Processing..."
-                : "Reject Application"}
-        </button>
+    onClick={() => handleFinalDecision("rejected")}
+    disabled={
+        finalizingApplication === "rejected" ||
+        student.finalApplicationStatus === "rejected"
+    }
+    className="px-4 py-2 rounded-lg border border-red-500/40 text-red-400 text-sm hover:bg-red-500/10 transition disabled:opacity-50"
+>
+    {finalizingApplication === "rejected"
+        ? "Processing..."
+        : "Reject Application"}
+</button>
 
     </div>
 

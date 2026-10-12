@@ -175,12 +175,14 @@ export const updateFinalApplicationStatus = async (
 
         await student.save();
 
-        await sendFinalApplicationEmail(
+       sendFinalApplicationEmail(
     student.email,
     student.name,
     status,
     student.applicationRemarks
-);
+).catch((error) => {
+    console.error("Final application email failed:", error);
+});
 
         return res.status(200).json({
             success: true,
