@@ -26,7 +26,7 @@ app.use(express.json());  //ye line express ko bolti h JSON ko samajh
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://scholarease.onrender.com", // tumhara deployed frontend URL
+    "https://scholarease-frontend-dpr3.onrender.com", // tumhara deployed frontend URL
 ];
 
 app.use(cors({
