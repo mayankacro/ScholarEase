@@ -1,19 +1,18 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import {
-    ClipboardList,
-    GraduationCap,
     FilePlus2,
     FileText,
     Trash2,
     Save,
-    CheckCircle2,
     FolderOpen,
     Sparkles,
-    ArrowLeft
+    ArrowLeft,
+    Shield,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CustomDropdown from "../components/CustomDropdown";
+import { toast } from "../components/Toast";
 
 function AdminChecklist() {
     const navigate = useNavigate();
@@ -32,16 +31,14 @@ function AdminChecklist() {
         const fetchChecklist = async () => {
             try {
                 const response = await api.get(
-    `/api/checklist/${encodeURIComponent(scholarshipType)}`
-);
-
-                setDocuments(response.data.rule.requiredDocuments || []);
+                    `/api/checklist/${encodeURIComponent(scholarshipType)}`
+                );
+                setDocuments(response.data.rule?.requiredDocuments || []);
             } catch (error: any) {
                 if (error.response?.status === 404) {
                     setDocuments([]);
                 } else {
                     console.error("Fetch checklist error:", error);
-                    alert("Could not load checklist.");
                     setDocuments([]);
                 }
             }
@@ -52,11 +49,10 @@ function AdminChecklist() {
 
     const addDocument = () => {
         const name = documentName.trim();
-
         if (!name) return;
 
         if (documents.some((doc) => doc.toLowerCase() === name.toLowerCase())) {
-            alert("Document already added!");
+            toast("Document rule already exists in this list!");
             return;
         }
 
@@ -70,295 +66,229 @@ function AdminChecklist() {
 
     const saveChecklist = async () => {
         if (!scholarshipType || documents.length === 0) {
-            alert("Please select a scholarship and add documents.");
+            toast("Please select a scholarship category and add at least one required document.");
             return;
         }
 
         try {
             setSaving(true);
-
             const token = localStorage.getItem("token");
 
-            // Check whether this category's checklist already exists
             let checklistExists = false;
-
             try {
-    await api.get(
-        `/api/checklist/${encodeURIComponent(scholarshipType)}`
-    );
-    checklistExists = true;
-
+                await api.get(`/api/checklist/${encodeURIComponent(scholarshipType)}`);
+                checklistExists = true;
             } catch (error: any) {
-                if (error.response?.status !== 404) {
-                    throw error;
-                }
+                if (error.response?.status !== 404) throw error;
             }
 
             const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             };
 
             const response = checklistExists
-    ? await api.put(
-        `/api/checklist/${encodeURIComponent(scholarshipType)}`,
-        { requiredDocuments: documents },
-        config
-    )
-    : await api.post(
-        "/api/checklist",
-        {
-            scholarshipType,
-            requiredDocuments: documents,
-        },
-        config
-    );
+                ? await api.put(
+                      `/api/checklist/${encodeURIComponent(scholarshipType)}`,
+                      { requiredDocuments: documents },
+                      config
+                  )
+                : await api.post(
+                      "/api/checklist",
+                      { scholarshipType, requiredDocuments: documents },
+                      config
+                  );
 
-            alert(
+            toast(
                 response.data.message ||
-                (checklistExists
-                    ? "Checklist updated successfully!"
-                    : "Checklist created successfully!")
+                    (checklistExists
+                        ? "Checklist updated successfully!"
+                        : "Checklist created successfully!")
             );
         } catch (error: any) {
             console.error("Checklist save error:", error.response?.data || error);
-
-            alert(
+            toast(
                 error.response?.data?.message ||
-                "Checklist save failed. Please check the backend."
+                    "Checklist save failed. Please check the backend."
             );
         } finally {
             setSaving(false);
         }
     };
 
-
     return (
+        <div className="min-h-screen bg-[#0a0a0b] text-[#ededee] flex flex-col font-['Hanken_Grotesk'] selection:bg-[#fafafa] selection:text-black">
+            <div className="pointer-events-none fixed inset-0 [background:radial-gradient(700px_340px_at_50%_-5%,rgba(255,255,255,0.04),transparent_70%)]" />
 
+            {/* TOP NAV */}
+            <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#0a0a0b]/80 backdrop-blur-xl">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+                    <button
+                        type="button"
+                        onClick={() => navigate("/admin")}
+                        className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-[#101012] px-3.5 py-1.5 text-xs font-medium text-[#9b9ba3] hover:text-[#ededee] hover:border-white/[0.25] transition-all cursor-pointer"
+                    >
+                        <ArrowLeft size={14} className="text-[#ededee]" />
+                        <span>Back to Dashboard</span>
+                    </button>
 
+                    <div className="flex items-center gap-2 rounded-full border border-white/[0.14] bg-white/[0.03] px-3 py-1 text-xs text-[#ededee]">
+                        <Shield size={12} />
+                        <span>Rule Configuration</span>
+                    </div>
+                </div>
+            </header>
 
-
-        <div className="min-h-screen bg-[#09090b] text-white px-4 py-8 md:px-8 md:py-12">
-
-            <button
-                type="button"
-                onClick={() => navigate("/admin")}
-                className="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-sm font-medium text-zinc-300 transition hover:border-blue-500/40 hover:bg-blue-500/10 hover:text-white"
-            >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
-            </button>
-
-            <div className="mx-auto max-w-4xl">
+            {/* MAIN */}
+            <main className="relative max-w-4xl mx-auto px-4 sm:px-6 py-10 w-full flex-1">
                 {/* Header */}
                 <div className="mb-8">
-
-                    <div className="flex  flex-wrap items-center gap-3">
-                        <div className="mb-1 flex h-12 w-12 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10">
-                            <ClipboardList className="h-6 w-6 text-blue-400" />
-                        </div>
-                        <h1 className="text-3xl  font-bold tracking-tight md:text-4xl">
-                            Create Checklist
-                        </h1>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300">
-                            <Sparkles className="h-3.5 w-3.5" />
-                            Admin Tools
-                        </span>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.1] px-3 py-1 text-xs text-[#9b9ba3] mb-3">
+                        <Sparkles size={14} className="text-[#ededee]" />
+                        <span>Institutional Checklist Engine</span>
                     </div>
-
-                    <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 md:text-base">
-                        Manage scholarship requirements and keep document checklists
-                        organized for every student category.
+                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#ededee]">
+                        Configure Mandatory Checklist
+                    </h1>
+                    <p className="text-xs text-[#9b9ba3] mt-1.5">
+                        Define which documents must be uploaded and verified for each scholarship reservation tier.
                     </p>
                 </div>
 
-                {/* Main Card */}
-                <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#131316] shadow-2xl shadow-black/20">
-
-                    <div className="border-b border-white/[0.07] px-5 py-5 md:px-7">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800">
-                                <GraduationCap className="h-5 w-5 text-blue-400" />
-                            </div>
-
-                            <div>
-                                <h2 className="font-semibold">Checklist Configuration</h2>
-                                <p className="mt-1 text-xs text-zinc-500">
-                                    Select a category and manage its required documents.
-                                </p>
-                            </div>
-                        </div>
+                {/* Configuration Card */}
+                <div className="rounded-2xl border border-white/[0.07] bg-[#101012] p-6 sm:p-8 space-y-7">
+                    {/* Category Selection */}
+                    <div>
+                        <label className="mb-2 block font-['JetBrains_Mono'] text-[11px] font-medium uppercase tracking-[0.12em] text-[#9b9ba3]">
+                            Scholarship Category
+                        </label>
+                        <CustomDropdown
+                            value={scholarshipType}
+                            onChange={setScholarshipType}
+                            placeholder="Select reservation category (SC, ST, OBC, General)..."
+                            buttonClassName="!py-3 !text-[13px] !rounded-lg"
+                            buttonColorClassName="border-white/[0.1] bg-[#0c0c0e] text-[#ededee]"
+                            options={[
+                                { label: "Select Category", value: "" },
+                                { label: "SC - Scheduled Caste", value: "SC" },
+                                { label: "ST - Scheduled Tribe", value: "ST" },
+                                { label: "OBC - Other Backward Class", value: "OBC" },
+                                { label: "General Merit Tier", value: "General" },
+                            ]}
+                        />
+                        <p className="mt-2 text-[11px] text-[#67676e]">
+                            Changing category immediately fetches its existing required document rule list.
+                        </p>
                     </div>
 
-                    <div className="space-y-7 p-5 md:p-7">
-
-                        <div>
-    <label className="mb-2.5 block text-sm font-medium text-zinc-300">
-        Scholarship Category
-    </label>
-
-    <CustomDropdown
-        value={scholarshipType}
-        onChange={setScholarshipType}
-        placeholder="Select scholarship category"
-        buttonClassName="!rounded-xl !px-4 !py-3.5 focus:!border-blue-500"
-        buttonColorClassName="border-zinc-700/80 bg-[#09090b] text-white hover:border-zinc-600"
-        options={[
-            { label: "Select Scholarship Category", value: "Select Scholarship Category"},
-            { label: "SC", value: "SC" },
-            { label: "ST", value: "ST" },
-            { label: "OBC", value: "OBC" },
-            { label: "General", value: "General" },
-        ]}
-    />
-
-    <p className="mt-2 text-xs text-zinc-500">
-        Each category has its own document requirements.
-    </p>
-</div>
-
-                        {/* Add Document */}
-                        <div>
-                            <label className="mb-2.5 block text-sm font-medium text-zinc-300">
-                                Add Required Document
-                            </label>
-
-                            <div className="flex flex-col gap-3 sm:flex-row">
-                                <div className="relative flex-1">
-                                    <FilePlus2 className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-zinc-500" />
-
-                                    <input
-                                        type="text"
-                                        value={documentName}
-                                        onChange={(e) => setDocumentName(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                e.preventDefault();
-                                                addDocument();
-                                            }
-                                        }}
-                                        placeholder="e.g. Income Certificate"
-                                        className="w-full rounded-xl border border-zinc-700/80 bg-[#09090b] py-3.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-zinc-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
-                                    />
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={addDocument}
-                                    disabled={!documentName.trim()}
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold transition hover:bg-blue-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-                                >
-                                    <FilePlus2 className="h-4 w-4" />
-                                    Add Document
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Document List Header */}
-                        <div>
-                            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                                <div>
-                                    <h3 className="font-semibold">Required Documents</h3>
-                                    <p className="mt-1 text-xs text-zinc-500">
-                                        Documents students must provide.
-                                    </p>
-                                </div>
-
-                                <span className="inline-flex items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-800/70 px-3 py-1.5 text-xs font-medium text-zinc-300">
-                                    <FileText className="h-3.5 w-3.5 text-blue-400" />
-                                    {documents.length} documents
-                                </span>
+                    {/* Add Document Row */}
+                    <div>
+                        <label className="mb-2 block font-['JetBrains_Mono'] text-[11px] font-medium uppercase tracking-[0.12em] text-[#9b9ba3]">
+                            Add Required Document
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <FilePlus2 className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#67676e] h-4 w-4" />
+                                <input
+                                    type="text"
+                                    value={documentName}
+                                    onChange={(e) => setDocumentName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            addDocument();
+                                        }
+                                    }}
+                                    placeholder="e.g. Income Certificate / Caste Certificate / 12th Marksheet"
+                                    className="w-full rounded-lg border border-white/[0.1] bg-[#0c0c0e] py-3 pl-10 pr-4 text-[13px] text-[#ededee] placeholder-[#5a5a60] outline-none transition-colors focus:border-white/60"
+                                />
                             </div>
 
-                            {/* Empty State */}
-                            {documents.length === 0 ? (
-                                <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 px-5 py-12 text-center">
-                                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800">
-                                        <FolderOpen className="h-6 w-6 text-zinc-400" />
-                                    </div>
-
-                                    <p className="font-medium text-zinc-300">
-                                        No documents added yet
-                                    </p>
-                                    <p className="mt-1 text-sm text-zinc-500">
-                                        Add a document using the field above.
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                    {documents.map((doc, index) => (
-                                        <div
-                                            key={`${doc}-${index}`}
-                                            className="group flex min-w-0 items-center justify-between gap-3 rounded-xl border border-white/[0.07] bg-[#09090b] p-3.5 transition hover:border-blue-500/30 hover:bg-zinc-900/70 sm:p-4"
-                                        >
-                                            <div className="flex min-w-0 items-center gap-3">
-                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-500/15 bg-blue-500/10 text-xs font-semibold text-blue-400">
-                                                    {String(index + 1).padStart(2, "0")}
-                                                </span>
-
-                                                <div className="flex min-w-0 items-center gap-2.5">
-                                                    <FileText className="h-4 w-4 shrink-0 text-zinc-500 transition group-hover:text-blue-400" />
-                                                    <span className="break-words text-sm font-medium text-zinc-200">
-                                                        {doc}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <button
-                                                type="button"
-                                                onClick={() => removeDocument(index)}
-                                                aria-label={`Remove ${doc}`}
-                                                title="Remove document"
-                                                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-transparent px-2.5 py-2 text-xs font-medium text-zinc-500 transition hover:border-red-500/20 hover:bg-red-500/10 hover:text-red-400"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Remove</span>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Save Section */}
-                        <div className="border-t border-white/[0.07] pt-6">
                             <button
                                 type="button"
-                                disabled={
-                                    !scholarshipType ||
-                                    documents.length === 0 ||
-                                    saving
-                                }
-                                onClick={saveChecklist}
-                                className="inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500 disabled:shadow-none"
+                                onClick={addDocument}
+                                disabled={!documentName.trim()}
+                                className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-white/[0.18] bg-white/[0.03] px-5 py-3 text-xs font-semibold text-[#ededee] hover:bg-white/[0.07] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                             >
-                                {saving ? (
-                                    <>
-                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
-                                        Saving Checklist...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="h-4 w-4" />
-                                        Save Checklist
-                                    </>
-                                )}
+                                <FilePlus2 size={14} />
+                                <span>Add Rule</span>
                             </button>
+                        </div>
+                    </div>
 
-                            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-zinc-500">
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                Changes are saved to your scholarship checklist.
+                    {/* Current Documents List */}
+                    <div className="pt-2">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="font-['JetBrains_Mono'] text-[11px] font-medium uppercase tracking-[0.12em] text-[#9b9ba3]">
+                                    Enforced Checklist Items
+                                </h3>
+                                <p className="text-[11px] text-[#67676e] mt-0.5">
+                                    Students in this category must upload each certificate below
+                                </p>
                             </div>
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#0c0c0e] px-3 py-1 text-xs text-[#9b9ba3]">
+                                <FileText size={12} className="text-[#ededee]" />
+                                <span className="font-['JetBrains_Mono']">{documents.length} items</span>
+                            </span>
                         </div>
 
+                        {documents.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-white/[0.1] bg-[#0c0c0e] p-8 text-center">
+                                <FolderOpen size={28} className="mx-auto text-[#67676e] mb-2" />
+                                <p className="text-xs text-[#9b9ba3]">
+                                    {scholarshipType
+                                        ? "No documents configured for this category yet. Add items above."
+                                        : "Select a scholarship category to view and edit its rules."}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2.5">
+                                {documents.map((doc, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center justify-between rounded-xl border border-white/[0.07] bg-[#0c0c0e] px-4 py-3 transition-colors hover:border-white/[0.16]"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white/[0.05] text-[10px] font-['JetBrains_Mono'] text-[#9b9ba3]">
+                                                {idx + 1}
+                                            </span>
+                                            <span className="text-[13px] font-medium text-[#ededee]">
+                                                {doc}
+                                            </span>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => removeDocument(idx)}
+                                            className="text-[#67676e] hover:text-[#ededee] transition-colors p-1 cursor-pointer"
+                                            title="Delete rule"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Save Button */}
+                    <div className="pt-4 border-t border-white/[0.07] flex items-center justify-between gap-4 flex-wrap">
+                        <p className="text-[11px] text-[#67676e]">
+                            Updates immediately take effect on all student upload terminals.
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={saveChecklist}
+                            disabled={saving || !scholarshipType || documents.length === 0}
+                            className="inline-flex items-center gap-2 rounded-lg bg-[#fafafa] px-6 py-3 text-xs font-semibold text-[#0a0a0b] hover:opacity-90 transition-opacity active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                            <Save size={14} />
+                            <span>{saving ? "Saving Rules..." : "Save Checklist Rules"}</span>
+                        </button>
                     </div>
                 </div>
-
-                <p className="mt-5 text-center text-xs text-zinc-600">
-                    ScholarEase · Scholarship Management
-                </p>
-            </div>
+            </main>
         </div>
     );
 }

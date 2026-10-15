@@ -23,11 +23,22 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());  //ye line express ko bolti h JSON ko samajh
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://scholarease.onrender.com", // tumhara deployed frontend URL
+];
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "https://scholarease-frontend-dpr3.onrender.com"
-    ]
+    origin: function (origin, callback) {
+        // no origin (Postman/curl) ya allowed list mein ho to allow
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
 }));
  
 app.use("/api/auth", authRoutes); // mtlb /api/auth wali request authROutes ko bhejo

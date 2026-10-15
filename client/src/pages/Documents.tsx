@@ -1,62 +1,52 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { RefreshCw } from "lucide-react";
+import {
+    RefreshCw,
+    Search,
+    FileText,
+    ExternalLink,
+    RotateCcw,
+    CheckCircle2,
+    Clock,
+    XCircle,
+    ArrowUpRight,
+    LogOut,
+} from "lucide-react";
 import CustomDropdown from "../components/CustomDropdown";
+import StudentNav from "../components/StudenNav"
 
 function Documents() {
     const navigate = useNavigate();
-   
 
-    const user = JSON.parse(localStorage.getItem("user") || "null");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const nameParts = user.name.split(" ");
-    const initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+    const nameParts = (user.name || "Student").split(" ");
+    const initials =
+        nameParts
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part: string) => part.charAt(0))
+            .join("")
+            .toUpperCase() || "S";
 
     const [documents, setDocuments] = useState<any[]>([]);
-
-
     const [searchTerm, setSearchTerm] = useState("");
     const [aiFilter, setAiFilter] = useState("all");
     const [adminFilter, setAdminFilter] = useState("all");
     const [isRefreshing, setIsRefreshing] = useState(false);
-
-    const filteredDocuments = documents.filter((document) => {
-        const matchesSearch = String(document.documentType || "")
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-
-        const aiStatus = String(document.aiStatus || "pending").toLowerCase();
-        const adminStatus = String(document.status || "pending").toLowerCase();
-
-        const matchesAI =
-            aiFilter === "all" ||
-            aiStatus === aiFilter;
-
-        const matchesAdmin =
-            adminFilter === "all" ||
-            adminStatus === adminFilter;
-
-        return matchesSearch && matchesAI && matchesAdmin;
-    });
-
-
     const [loading, setLoading] = useState(true);
     const [showProfile, setShowProfile] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
-        console.log("User Logged out");
-
         navigate("/login");
-    }
+    };
 
     const fetchDocuments = async () => {
         try {
             setIsRefreshing(true);
-
             const res = await api.get("/api/documents/my-documents");
             setDocuments(res.data.documents || []);
         } catch (error) {
@@ -71,339 +61,333 @@ function Documents() {
         fetchDocuments();
     }, []);
 
+    const filteredDocuments = documents.filter((document) => {
+        const matchesSearch = String(document.documentType || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
 
+        const aiStatus = String(document.aiStatus || "pending").toLowerCase();
+        const adminStatus = String(document.status || "pending").toLowerCase();
 
+        const matchesAI = aiFilter === "all" || aiStatus === aiFilter;
+        const matchesAdmin = adminFilter === "all" || adminStatus === adminFilter;
+
+        return matchesSearch && matchesAI && matchesAdmin;
+    });
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-[#0a0a0b] text-[#ededee] flex flex-col font-['Hanken_Grotesk'] selection:bg-[#fafafa] selection:text-black">
+            {/* quiet ambient glow */}
+            <div className="pointer-events-none fixed inset-0 [background:radial-gradient(700px_340px_at_85%_-5%,rgba(255,255,255,0.04),transparent_70%)]" />
 
-            {/* Navbar */}
-            <nav className="h-16 border-b border-gray-900 flex items-center justify-between px-6">
-
-                {/* Logo */}
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-md bg-white text-black flex items-center justify-center font-bold">
-                        Λ
+            {/* TOP NAV */}
+            <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#0a0a0b]/80 backdrop-blur-xl">
+<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-7 w-7 rounded-md border border-white/[0.14] grid place-items-center font-['JetBrains_Mono'] text-[11px] font-medium">
+                            SE
+                        </div>
+                        <div> 
+                            <span className="text-sm font-semibold tracking-tight">ScholarEase</span>
+                            
+                            <p className="text-[10px] text-[#67676e] uppercase tracking-[0.16em] font-['JetBrains_Mono'] leading-none mt-0.5">
+                                Document Repository
+                            </p>
+                        </div>
                     </div>
 
-                    <span className="font-semibold">
-                        ScholarEase
-                    </span>
-                </div>
+<StudentNav />
 
+                    <div className="flex items-center gap-3">
+                        <div className="hidden xl:flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#101012] px-3 py-1 text-xs text-[#9b9ba3]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#fafafa]" />
+                            <span className="font-semibold text-[#ededee]">{user.scholarshipType || "General"}</span>
+                            <span className="text-[#67676e]">Scholarship</span>
+                        </div>
 
-                {/* Navigation */}
-                <div className="flex items-center gap-2">
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowProfile(!showProfile)}
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-[#101012] text-xs font-semibold text-[#ededee] hover:border-white/[0.25] transition-colors cursor-pointer"
+                                aria-label="Open profile menu"
+                            >
+                                {initials}
+                            </button>
 
-                    <button onClick={() => navigate("/student")} className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out ">
-
-                        <h1>Dashboard</h1>
-
-                        {/* <p>Student: {user.name}</p>
-
-<p>Scholarship: {user.scholarshipType}</p> */}
-                    </button>
-
-                    <button onClick={() => navigate("/upload")} className="hover:bg-purple-300 hover:text-black px-4 py-2 rounded-lg border border-gray-700 shadow-md transform transition active:scale-95 duration-100 ease-in-out">
-                        Upload
-                    </button>
-
-                    <button onClick={() => navigate("/documents")} className="px-4 py-2 rounded-lg border border-gray-700  hover:bg-purple-300 hover:text-black shadow-md transform transition active:scale-95 duration-100 ease-in-out">
-                        Documents
-                    </button>
-
-                </div>
-
-
-                {/* Right side */}
-                <div className="flex items-center gap-3">
-
-                    <span className="text-xs text-gray-500 border border-gray-900 px-3 py-1 rounded-full">
-                        {user.scholarshipType} Scholarship
-                    </span>
-
-                    {/* Profile */}
-                    <div className="relative">
-
-                        <button
-                            onClick={() =>
-                                setShowProfile(!showProfile)
-                            }
-                            className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs"
-                        >
-                            {initials}
-                        </button>
-
-
-                        {showProfile && (
-
-                            <div className="absolute right-0 top-10 w-56 bg-[#111111] border border-[#27272a] rounded-xl p-4 z-50">
-
-                                <p className="font-medium">
-                                    {user.name}
-                                </p>
-
-                                <p className="text-xs text-gray-500 mt-1">
-                                    {user.email}
-                                </p>
-
-                                <p className="text-xs text-gray-500 mt-2">
-                                    {user.scholarshipType} Scholarship
-                                </p>
-
-                                <button
-                                    onClick={handleLogout}
-                                    className="mt-4 w-full text-left text-sm text-red-400 hover:text-red-300"
-                                >
-                                    Logout
-                                </button>
-
-                            </div>
-
-                        )}
-
+                            {showProfile && (
+                                <div className="absolute right-0 mt-2 w-64 rounded-xl border border-white/[0.1] bg-[#0c0c0e]/95 p-3 shadow-2xl backdrop-blur-2xl z-50">
+                                    <div className="border-b border-white/[0.07] pb-3 mb-2">
+                                        <p className="text-xs font-semibold text-[#ededee] truncate">{user.name}</p>
+                                        <p className="text-[11px] text-[#9b9ba3] truncate mt-0.5">{user.email}</p>
+                                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-white/[0.14] px-2 py-0.5 text-[10px] text-[#ededee] font-['JetBrains_Mono']">
+                                            Role: Student
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setShowProfile(false);
+                                            navigate("/upload");
+                                        }}
+                                        className="w-full flex items-center justify-between rounded-lg px-2.5 py-2 text-xs text-[#9b9ba3] hover:bg-white/[0.04] hover:text-[#ededee] transition-colors cursor-pointer"
+                                    >
+                                        <span>Upload New Document</span>
+                                        <ArrowUpRight size={13} className="text-[#67676e]" />
+                                    </button>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-[#9b9ba3] hover:bg-white/[0.04] hover:text-[#ededee] transition-colors mt-1 cursor-pointer"
+                                    >
+                                        <LogOut size={13} />
+                                        <span>Log Out</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
-
                 </div>
+            </header>
 
-            </nav>
-
-
-            {/* Page */}
-            <main className="px-5 py-7">
-
-                <div className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-semibold">
-                            Documents
+            {/* MAIN */}
+            <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#ededee]">
+                            My Document Repository
                         </h1>
+                        <p className="text-xs text-[#9b9ba3] mt-1.5">
+                            Audited records and secure cloud storage for your scholarship dossier.
+                        </p>
+                    </div>
 
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={fetchDocuments}
                             disabled={isRefreshing}
-                            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-white transition hover:bg-zinc-800 disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-[#101012] px-4 py-2 text-xs font-medium text-[#9b9ba3] hover:bg-white/[0.04] hover:text-[#ededee] transition-all disabled:opacity-50 cursor-pointer"
                         >
                             <RefreshCw
-                                size={16}
-                                className={isRefreshing ? "animate-spin" : ""}
+                                size={14}
+                                className={isRefreshing ? "animate-spin text-[#ededee]" : "text-[#9b9ba3]"}
                             />
-                            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+                            <span>{isRefreshing ? "Syncing..." : "Sync Repository"}</span>
+                        </button>
+
+                        <button
+                            onClick={() => navigate("/upload")}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-[#fafafa] px-4 py-2 text-xs font-semibold text-[#0a0a0b] hover:opacity-90 transition-opacity cursor-pointer"
+                        >
+                            + Upload
                         </button>
                     </div>
-
-                    <p className="text-sm text-gray-500 mt-2">
-                        Your uploaded scholarship documents
-                    </p>
                 </div>
 
-                {loading ? (
-                    <p className="mt-6 text-zinc-400">
-                        Loading documents...
-                    </p>
-                ) : (
-                    <div className="mt-6">
-                        <p className="text-zinc-400">
-                            Total documents: {documents.length}
-                        </p>
-
-
-                        <div className="mt-4 flex flex-col gap-3 md:flex-row">
-                            <div className="relative flex-1">
-                                <input
-                                    type="text"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    placeholder="Search documents..."
-                                    className="w-full rounded-lg border border-zinc-800 bg-[#111] px-4 py-3 pl-10 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-purple-500"
-                                />
-                                <span className="absolute left-3 top-3 text-zinc-500">
-                                    ⌕
-                                </span>
-                            </div>
-
-                            <div className="relative">
-
-                                <CustomDropdown
-                                    value={aiFilter}
-                                    onChange={setAiFilter}
-                                    className="w-full lg:w-50"
-                                    buttonClassName="!h-[46px] !py-0 !text-sm"
-                                    buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
-                                    options={[
-                                        { label: "All AI statuses", value: "all" },
-                                        { label: "AI Valid", value: "valid" },
-                                        { label: "AI Invalid", value: "invalid" },
-                                        { label: "Manual Review", value: "manual_review" },
-                                        { label: "AI Pending", value: "pending" },
-                                    ]}
-                                />
-
-                            </div>
-
-
-
-
-                            <div className="relative">
-                                <CustomDropdown
-                                    value={adminFilter}
-                                    onChange={setAdminFilter}
-                                    placeholder="All admin statuses"
-                                    className="w-full lg:w-44"
-                                    buttonClassName="!h-[46px] !py-0 !text-sm"
-                                    buttonColorClassName="border-zinc-800 bg-[#111] text-white hover:border-zinc-700"
-                                    options={[
-                                        { label: "All admin statuses", value: "all" },
-                                        { label: "Approved", value: "approved" },
-                                        { label: "Admin Pending", value: "pending" },
-                                        { label: "Rejected", value: "rejected" },
-                                    ]}
-                                />
-
-
-
-                            </div>
+                {/* SEARCH & FILTERS BAR */}
+                <div className="rounded-2xl border border-white/[0.07] bg-[#101012] p-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                        {/* Search Input */}
+                        <div className="md:col-span-6 relative">
+                            <Search
+                                size={15}
+                                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#67676e]"
+                            />
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search by certificate name (e.g. Aadhaar, Income)..."
+                                className="w-full rounded-lg border border-white/[0.1] bg-[#0c0c0e] py-2.5 pl-10 pr-4 text-[13px] text-[#ededee] placeholder-[#5a5a60] outline-none transition-colors focus:border-white/60"
+                            />
                         </div>
 
-                        <p className="mt-3 text-xs text-zinc-500">
-                            Showing {filteredDocuments.length} of {documents.length} documents
+                        {/* AI Filter */}
+                        <div className="md:col-span-3">
+                            <CustomDropdown
+                                value={aiFilter}
+                                onChange={setAiFilter}
+                                placeholder="All AI statuses"
+                                buttonClassName="!py-2.5 !text-[13px] !rounded-lg"
+                                buttonColorClassName="border-white/[0.1] bg-[#0c0c0e] text-[#ededee]"
+                                options={[
+                                    { label: "AI: All Statuses", value: "all" },
+                                    { label: "AI: Valid Only", value: "valid" },
+                                    { label: "AI: Manual Review", value: "manual_review" },
+                                    { label: "AI: Invalid Only", value: "invalid" },
+                                    { label: "AI: Pending", value: "pending" },
+                                ]}
+                            />
+                        </div>
+
+                        {/* Admin Filter */}
+                        <div className="md:col-span-3">
+                            <CustomDropdown
+                                value={adminFilter}
+                                onChange={setAdminFilter}
+                                placeholder="All admin statuses"
+                                buttonClassName="!py-2.5 !text-[13px] !rounded-lg"
+                                buttonColorClassName="border-white/[0.1] bg-[#0c0c0e] text-[#ededee]"
+                                options={[
+                                    { label: "Admin: All Decisions", value: "all" },
+                                    { label: "Admin: Approved", value: "approved" },
+                                    { label: "Admin: In Review", value: "pending" },
+                                    { label: "Admin: Rejected", value: "rejected" },
+                                ]}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] font-['JetBrains_Mono'] text-[11px] text-[#67676e] px-1">
+                        <span>
+                            Displaying <strong className="text-[#ededee]">{filteredDocuments.length}</strong> of {documents.length} records
+                        </span>
+                        <span>Multi-category indexed</span>
+                    </div>
+                </div>
+
+                {/* DOCUMENTS TABLE */}
+                {loading ? (
+                    <div className="rounded-2xl border border-white/[0.07] bg-[#101012] p-12 text-center">
+                        <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#ededee] border-t-transparent" />
+                        <p className="mt-3 text-xs text-[#9b9ba3]">Loading document vault...</p>
+                    </div>
+                ) : filteredDocuments.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/[0.1] bg-[#0c0c0e] p-12 text-center">
+                        <FileText size={32} className="mx-auto text-[#67676e] mb-3" />
+                        <h3 className="text-sm font-semibold text-[#ededee]">No documents matched your filters</h3>
+                        <p className="text-xs text-[#67676e] mt-1">
+                            {documents.length === 0
+                                ? "You haven't uploaded any scholarship certificates yet."
+                                : "Try clearing search or filters to inspect your archive."}
                         </p>
+                        <button
+                            onClick={() => navigate("/upload")}
+                            className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-[#fafafa] px-4 py-2 text-xs font-semibold text-[#0a0a0b] hover:opacity-90 transition-opacity"
+                        >
+                            Upload your first document
+                        </button>
+                    </div>
+                ) : (
+                    <div className="rounded-2xl border border-white/[0.07] bg-[#101012] overflow-hidden">
+                        {/* Table Header */}
+                        <div className="hidden lg:grid grid-cols-12 border-b border-white/[0.06] bg-[#0c0c0e] px-6 py-3.5 font-['JetBrains_Mono'] text-[10px] font-medium uppercase tracking-wider text-[#67676e]">
+                            <span className="col-span-4">Certificate</span>
+                            <span className="col-span-2 text-center">AI Scan</span>
+                            <span className="col-span-2 text-center">AI Confidence</span>
+                            <span className="col-span-2 text-center">Admin Status</span>
+                            <span className="col-span-2 text-right">Actions</span>
+                        </div>
 
+                        {/* Rows */}
+                        <div className="divide-y divide-white/[0.05]">
+                          {filteredDocuments.map((doc) => {
+    const isDocApproved = doc.status?.toLowerCase() === "approved";
+    const isDocRejected = doc.status?.toLowerCase() === "rejected";
+    const isDocValid = doc.aiStatus?.toLowerCase() === "valid";
+    const isDocManual = doc.aiStatus?.toLowerCase() === "manual_review";
 
-                        <div className="mt-6 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+    return (
+        <div
+            key={doc._id}
+            className="p-4 sm:p-5 lg:px-6 lg:py-4 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 lg:items-center transition-colors hover:bg-white/[0.02]"
+        >
+            {/* Certificate */}
+            <div className="lg:col-span-4 flex items-center gap-3.5 min-w-0">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.1] bg-[#0c0c0e] text-[#ededee]">
+                    <FileText size={18} />
+                </div>
+                <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-[#ededee] truncate">{doc.documentType}</p>
+                    <p className="text-[11px] text-[#67676e] truncate mt-0.5 font-['JetBrains_Mono']">
+                        {doc.scholarshipType} • {new Date(doc.createdAt).toLocaleDateString()}
+                    </p>
+                </div>
+            </div>
 
-                            {/* Table Header */}
+            {/* wrapper: mobile pe ek flex row jo wrap karti hai; lg pe gayab (contents) taaki grid align rahe */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 lg:contents">
+                {/* AI Status */}
+                <div className="lg:col-span-2 flex lg:justify-center">
+                    <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider font-['JetBrains_Mono'] ${
+                            isDocValid
+                                ? "bg-[#fafafa] text-[#0a0a0b]"
+                                : isDocManual
+                                ? "border border-white/[0.18] text-[#9b9ba3]"
+                                : "bg-white/[0.05] text-[#67676e] line-through decoration-1"
+                        }`}
+                    >
+                        {doc.aiStatus || "Pending"}
+                    </span>
+                </div>
 
-                            <div className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_120px] border-b border-zinc-800 px-4 py-3 text-[11px] uppercase tracking-wider text-zinc-500">
+                {/* Confidence */}
+                <div className="lg:col-span-2 flex items-center gap-2 lg:justify-center">
+                    <div className="w-16 h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
+                        <div
+                            className="h-full rounded-full bg-[#ededee]"
+                            style={{ width: `${doc.aiConfidence || 0}%` }}
+                        />
+                    </div>
+                    <span className="text-xs font-semibold text-[#ededee] font-['JetBrains_Mono']">
+                        {doc.aiConfidence ?? 0}%
+                    </span>
+                </div>
 
-                                <span>Document</span>
-                                <span className="text-center">AI Status</span>
-                                <span className="text-center">Confidence</span>
-                                <span className="text-center">Remarks</span>
-                                <span className="text-center">Admin</span>
-                                <span className="text-center">Action</span>
+                {/* Admin Status */}
+                <div className="lg:col-span-2 flex lg:justify-center">
+                    <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize ${
+                            isDocApproved
+                                ? "bg-[#fafafa] text-[#0a0a0b]"
+                                : isDocRejected
+                                ? "bg-white/[0.05] text-[#67676e] line-through decoration-1"
+                                : "border border-white/[0.18] text-[#9b9ba3]"
+                        }`}
+                    >
+                        {isDocApproved ? (
+                            <CheckCircle2 size={12} />
+                        ) : isDocRejected ? (
+                            <XCircle size={12} />
+                        ) : (
+                            <Clock size={12} />
+                        )}
+                        {doc.status || "Pending"}
+                    </span>
+                </div>
 
+                {/* Actions */}
+                <div className="lg:col-span-2 flex items-center gap-2 ml-auto lg:ml-0 lg:justify-end">
+                    {isDocRejected && (
+                        <button
+                            onClick={() =>
+                                navigate(
+                                    `/upload?documentType=${encodeURIComponent(doc.documentType)}`
+                                )
+                            }
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/[0.18] px-2.5 py-1.5 text-[11px] font-medium text-[#ededee] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                            <RotateCcw size={12} />
+                            Replace
+                        </button>
+                    )}
 
-
-                            </div>
-
-                            {/* Documents */}
-                            {filteredDocuments.map((document) => (
-
-
-                                <div
-
-
-                                    key={document._id}
-                                    className="grid grid-cols-[1.2fr_0.7fr_0.7fr_2fr_0.8fr_120px] items-center border-b border-zinc-900 px-4 py-3 last:border-b-0"
-                                >
-
-                                    {/* Document */}
-                                    <div className="text-sm font-medium text-zinc-200">
-                                        {document.documentType}
-                                    </div>
-
-                                    {/* AI Status */}
-                                    <div className="text-center">
-                                        <span
-                                            className={`rounded border px-2 py-1 text-xs ${document.aiStatus === "Valid"
-                                                ? "border-green-500/40 bg-green-500/5 text-green-400"
-                                                : document.aiStatus === "Invalid"
-                                                    ? "border-red-500/40 bg-red-500/5 text-red-400"
-                                                    : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
-                                                }`}
-                                        >
-                                            {document.aiStatus === "Valid"
-                                                ? "Valid"
-                                                : document.aiStatus === "Invalid"
-                                                    ? "Invalid"
-                                                    : "Pending"}
-                                        </span>
-                                    </div>
-
-                                    {/* Confidence */}
-                                    <div
-                                        className={`text-center text-sm font-medium ${document.aiConfidence >= 70
-                                            ? "text-green-400"
-                                            : document.aiConfidence >= 40
-                                                ? "text-yellow-400"
-                                                : "text-red-400"
-                                            }`}
-                                    >
-                                        {document.aiConfidence}%
-                                    </div>
-
-                                    {/* Remarks */}
-                                    <div
-
-                                        className="text-center w-full truncate text-sm text-zinc-500"
-                                        title={document.aiRemarks}
-                                    >
-                                        {document.aiRemarks || "No remarks"}
-                                    </div>
-
-                                    {/* Admin Status */}
-                                    <div className="text-center">
-                                        <span
-                                            className={`rounded border px-2 py-1 text-xs ${document.status === "approved"
-                                                ? "border-green-500/40 bg-green-500/5 text-green-400"
-                                                : document.status === "rejected"
-                                                    ? "border-red-500/40 bg-red-500/5 text-red-400"
-                                                    : "border-yellow-500/40 bg-yellow-500/5 text-yellow-400"
-                                                }`}
-                                        >
-                                            {document.status === "approved"
-                                                ? "Approved"
-                                                : document.status === "rejected"
-                                                    ? "Rejected"
-                                                    : "Pending"}
-                                        </span>
-                                    </div>
-
-
-                                    <div className="flex items-center justify-center gap-2 pr-4">
-
-
-                                        {document.status === "rejected" && (
-                                            <button
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/upload?documentType=${encodeURIComponent(
-                                                            document.documentType
-                                                        )}`
-                                                    )
-                                                }
-                                                className="rounded-lg border border-red-500/40 px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
-                                            >
-                                                Replace
-                                            </button>
-                                        )}
-
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    document.fileUrl,
-                                                    "_blank",
-                                                    "noopener,noreferrer"
-                                                )
-                                            }
-                                            disabled={!document.fileUrl}
-                                            className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-white transition hover:border-purple-500 hover:bg-purple-500/10 disabled:cursor-not-allowed disabled:opacity-40"
-                                        >
-
-                                            View
-                                        </button>
-                                    </div>
-
-
-                                </div>
-
-                            ))}
+                    <button
+                        onClick={() => window.open(doc.fileUrl, "_blank", "noopener,noreferrer")}
+                        disabled={!doc.fileUrl}
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/[0.1] bg-[#0c0c0e] px-2.5 py-1.5 text-[11px] font-medium text-[#ededee] hover:border-white/[0.25] transition-all cursor-pointer disabled:opacity-50"
+                    >
+                        <span>View</span>
+                        <ExternalLink size={12} className="text-[#67676e]" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+})}
                         </div>
                     </div>
                 )}
-
             </main>
-
         </div>
     );
 }
